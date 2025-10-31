@@ -2,9 +2,9 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
-@app.route("/toppage")
+@app.route("/top")
 def toppage():
-    return render_template("toppage.html")
+    return render_template("top.html")
 
 @app.route("/shousai")
 def shousai():
