@@ -3,7 +3,7 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 @app.route("/top")
-def toppage():
+def top():
     return render_template("top.html")
 
 @app.route("/shousai")

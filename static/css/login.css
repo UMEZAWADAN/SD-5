@@ -1,28 +1,3 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>認知症初期支援業務管理システム</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-  <div class="header">
-    ログイン　認知症初期支援業務管理システム
-  </div>
-
-  <div class="login-box">
-    <label>管理者ID</label>
-    <input type="text">
-
-    <label>パスワード</label>
-    <input type="password">
-
-    <button>ログイン</button>
-  </div>
-
-</body>
-</html>
 body {
   font-family: "Meiryo", sans-serif;
   text-align: center;
