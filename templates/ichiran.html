@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>対象者一覧</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <header class="header">
+      <h1>対象者一覧</h1>
+    </header>
+
+    <section class="search-section">
+      <h2>対象者の検索</h2>
+
+      <div class="search-box">
+        <div class="form-row">
+          <label for="keyword">キーワード</label>
+          <input type="text" id="keyword" name="keyword">
+        </div>
+
+        <div class="form-row">
+          <label>カテゴリ</label>
+          <select>
+            <option>???</option>
+          </select>
+          <select>
+            <option>???</option>
+          </select>
+          <select>
+            <option>???</option>
+          </select>
+          <button type="button" class="search-button">検索</button>
+        </div>
+      </div>
+
+      <h3>検索結果</h3>
+
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>氏名</th>
+            <th>年齢</th>
+            <th>症状</th>
+            <th>担当者</th>
+            <th>状況</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5" class="empty">（データなし）</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+</body>
+</html>
