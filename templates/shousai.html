@@ -2,437 +2,59 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>対象者詳細 - 認知症支援システム（サンプル）</title>
-  <!-- Bootstrap CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* 小さな見た目調整 */
-    .card-header small { color: #6c757d; }
-    .readonly { background:#f8f9fa; }
-    .score-badge { font-size: 1rem; }
-    textarea.form-control { min-height: 80px; }
-    .dasc-item { display:flex; align-items:center; gap:0.75rem; }
-    .muted-small { font-size:0.85rem; color:#6c757d; }
-  </style>
+  <title>対象者詳細</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
 </head>
-<body class="bg-light">
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-3">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">認知症支援システム（サンプル）</a>
-      <div class="d-flex">
-        <span id="currentRoleBadge" class="badge bg-secondary">ロール: 管理者</span>
-      </div>
+<body>
+  <header>
+    <h1>認知症初期集中支援チーム支援システム</h1>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+      <h2>対象者情報</h2>
+      <p><strong>氏名:</strong> <span id="pName"></span></p>
+      <p><strong>生年月日:</strong> <span id="pBday"></span></p>
+      <p><strong>性別:</strong> <span id="pSex"></span></p>
+      <p><strong>住所:</strong> <span id="pAddress"></span></p>
     </div>
-  </nav>
 
-  <main class="container mb-5">
-    <!-- 対象者ヘッダ -->
-    <section class="mb-3">
-      <div class="card">
-        <div class="card-body d-flex justify-content-between align-items-center">
-          <div>
-            <h4 id="personName">山田 太郎 <small class="text-muted">（仮）</small></h4>
-            <div class="muted-small">生年月日: <span id="personBday">1947-08-12</span>　|　性別: <span id="personSex">男性</span>　|　住所: <span id="personAddress">茅ヶ崎市○○町</span></div>
-          </div>
-          <div class="text-end">
-            <button id="editPersonBtn" class="btn btn-outline-primary btn-sm">編集</button>
-            <button id="exportAllBtn" class="btn btn-success btn-sm">CSVでエクスポート</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="row">
-      <!-- 左カラム：評価・帳票 -->
-      <div class="col-lg-6 mb-3">
-        <!-- DASC-21 カード -->
-        <div class="card mb-3">
-          <div class="card-header">
-            <strong>DASC-21 評価</strong>
-            <small class="ms-2">（自動計算）</small>
-          </div>
-          <div class="card-body">
-            <form id="dascForm">
-              <div class="mb-2 muted-small">※各項目は 0〜3 のスコアで入力（実データのルールに合わせてください）</div>
-              <div id="dascList" class="mb-3">
-                <!-- JSで21項目を動的生成します -->
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <span class="me-2">合計点:</span>
-                  <span id="dascTotal" class="badge bg-primary score-badge">0</span>
-                  <span class="ms-3">判定:</span>
-                  <span id="dascJudgement" class="badge bg-info score-badge">未実施</span>
-                </div>
-                <div>
-                  <button type="button" id="saveDascBtn" class="btn btn-primary btn-sm">保存（例: API送信）</button>
-                  <button type="button" id="exportDascCsv" class="btn btn-outline-secondary btn-sm">CSV出力</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- 帳票・ダウンロード -->
-        <div class="card">
-          <div class="card-header"><strong>帳票出力</strong> <small>（サンプル）</small></div>
-          <div class="card-body">
-            <p class="muted-small">このサンプルではブラウザでCSVを生成します。実運用ではバックエンドで openpyxl 等を使い正式な.xlsxを生成してください。</p>
-            <div class="d-flex gap-2">
-              <button id="downloadVisitCsv" class="btn btn-outline-success btn-sm">訪問記録をExcel(CSV)で出力</button>
-              <button id="downloadDascCsv" class="btn btn-outline-success btn-sm">DASC-21結果を出力</button>
-            </div>
-          </div>
-        </div>
+    <div class="flex-row">
+      <div class="card flex-col">
+        <h2>DASC-21評価</h2>
+        <div id="dascList"></div>
+        <p><strong>合計点:</strong> <span id="dascTotal" class="badge primary">0</span>
+           <strong>判定:</strong> <span id="dascJudge" class="badge info">未実施</span></p>
+        <button id="downloadDascCsv" class="success">DASC結果を出力</button>
       </div>
 
-      <!-- 右カラム：訪問記録・支援方針 -->
-      <div class="col-lg-6 mb-3">
-        <!-- 訪問記録一覧 -->
-        <div class="card mb-3">
-          <div class="card-header">
-            <strong>訪問記録一覧</strong>
-            <small class="ms-2 muted-small">（最新5件表示）</small>
+      <div class="card flex-col">
+        <h2>訪問記録</h2>
+        <table class="table">
+          <thead><tr><th>日付</th><th>担当者</th><th>種類</th><th>要点</th></tr></thead>
+          <tbody id="visitBody"></tbody>
+        </table>
+        <form id="visitForm">
+          <div class="input-group"><label>訪問日</label><input type="date" id="visitDate"></div>
+          <div class="input-group"><label>担当者</label><input type="text" id="visitStaff"></div>
+          <div class="input-group"><label>種類</label>
+            <select id="visitType">
+              <option>訪問</option>
+              <option>電話</option>
+              <option>会議</option>
+            </select>
           </div>
-          <div class="card-body">
-            <table class="table table-sm" id="visitTable">
-              <thead>
-                <tr>
-                  <th>日付</th>
-                  <th>担当</th>
-                  <th>種類</th>
-                  <th>要点</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- ダミーデータはJSで挿入 -->
-              </tbody>
-            </table>
-
-            <hr>
-            <h6 class="mb-2">新規訪問記録（入力）</h6>
-            <form id="visitForm" class="mb-0">
-              <div class="mb-2">
-                <label class="form-label">訪問日</label>
-                <input type="date" id="visitDate" class="form-control form-control-sm">
-              </div>
-              <div class="mb-2">
-                <label class="form-label">担当者</label>
-                <input type="text" id="visitStaff" class="form-control form-control-sm">
-              </div>
-              <div class="mb-2">
-                <label class="form-label">記録種別</label>
-                <select id="visitType" class="form-select form-select-sm">
-                  <option>訪問</option>
-                  <option>電話</option>
-                  <option>会議</option>
-                </select>
-              </div>
-              <div class="mb-2">
-                <label class="form-label">要点</label>
-                <textarea id="visitNote" class="form-control form-control-sm"></textarea>
-              </div>
-              <div class="d-flex justify-content-end">
-                <button type="button" id="addVisitBtn" class="btn btn-primary btn-sm">追加</button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- 支援方針 -->
-        <div class="card">
-          <div class="card-header">
-            <strong>支援方針</strong>
-            <small class="ms-2 muted-small">（会議・決定内容）</small>
-          </div>
-          <div class="card-body">
-            <div id="supportPlanArea">
-              <!-- 実データはここに表示 -->
-              <h5 id="planGoal">目標：安全に自宅で生活を継続する</h5>
-              <p id="planActions">家族への服薬支援指導、訪問頻度を週1→週2に増やす、GPSによる見守り検討</p>
-              <div class="muted-small">担当：<span id="planStaff">包括支援センター ○○</span>　　開始日：<span id="planStart">2025-10-01</span></div>
-            </div>
-            <hr>
-            <button class="btn btn-outline-primary btn-sm" id="editPlanBtn">方針を編集</button>
-          </div>
-        </div>
+          <div class="input-group"><label>要点</label><textarea id="visitNote"></textarea></div>
+          <button type="button" id="addVisitBtn" class="primary">追加</button>
+        </form>
+        <button id="downloadVisitCsv" class="success">訪問記録を出力</button>
       </div>
     </div>
 
-    <!-- モーダル：対象者編集 -->
-    <div class="modal fade" id="personModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <form id="personForm">
-            <div class="modal-header">
-              <h5 class="modal-title">対象者情報編集</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-              <div class="row g-2">
-                <div class="col-md-6">
-                  <label class="form-label">氏名</label>
-                  <input class="form-control" id="editName">
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">フリガナ</label>
-                  <input class="form-control" id="editKana">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">生年月日</label>
-                  <input type="date" class="form-control" id="editBday">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">性別</label>
-                  <select class="form-select" id="editSex">
-                    <option>男性</option>
-                    <option>女性</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">電話</label>
-                  <input class="form-control" id="editPhone">
-                </div>
-                <div class="col-12">
-                  <label class="form-label">住所</label>
-                  <input class="form-control" id="editAddress">
-                </div>
-                <div class="col-12">
-                  <label class="form-label">備考</label>
-                  <textarea class="form-control" id="editMemo"></textarea>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">閉じる</button>
-              <button type="button" id="savePersonBtn" class="btn btn-primary btn-sm">保存</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+  </div>
 
-  </main>
+<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Page Script -->
-  <script>
-    /************************************************************************
-     * サンプル用フロントエンドロジック
-     * - 静的HTMLでDASC-21の21項目を生成し、合計を算出・表示します
-     * - 簡易CSVエクスポート（Excelで開けます）機能を提供
-     * - 実運用ではAPIエンドポイントにPOST/GETする部分を書き換えてください
-     ************************************************************************/
-
-    // --- 簡易ロール制御（サンプル） ---
-    const currentRole = '職員'; // '管理者' / '職員' / '医師' などに変更可
-    document.getElementById('currentRoleBadge').textContent = `ロール: ${currentRole}`;
-
-    // --- 初期ダミーデータ（実運用ではAPIから取得） ---
-    const person = {
-      id: 1001,
-      name: '山田 太郎',
-      bday: '1947-08-12',
-      sex: '男性',
-      address: '茅ヶ崎市○○町',
-      phone: '080-xxxx-xxxx',
-      memo: '糖尿病あり'
-    };
-    const visits = [
-      {date:'2025-10-20', staff:'包括支援センター A', type:'訪問', note:'徘徊が増加、家族の不安有り'},
-      {date:'2025-10-13', staff:'保健師 B', type:'訪問', note:'服薬状況確認済み'},
-      {date:'2025-09-30', staff:'医師 C', type:'電話', note:'主治医意見書依頼中'}
-    ];
-    const dascExample = {
-      date:'2025-10-20', items: Array(21).fill(0), total:0, judgement:'未実施', evaluator:'包括支援センター A'
-    };
-
-    // --- ページ初期化 ---
-    function initPage(){
-      // 対象者情報表示
-      document.getElementById('personName').textContent = person.name;
-      document.getElementById('personBday').textContent = person.bday;
-      document.getElementById('personSex').textContent = person.sex;
-      document.getElementById('personAddress').textContent = person.address;
-
-      // 訪問テーブルに行追加
-      refreshVisitTable();
-
-      // DASC-21の項目生成
-      const dascContainer = document.getElementById('dascList');
-      dascContainer.innerHTML = '';
-      for(let i=1;i<=21;i++){
-        const row = document.createElement('div');
-        row.className = 'mb-2 dasc-item';
-        row.innerHTML = `
-          <label class="form-label mb-0" style="width:48%;">Q${i}：質問文（省略）</label>
-          <select data-q="${i}" class="form-select form-select-sm" style="width:20%;">
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-          </select>
-          <div style="width:30%;"><small class="muted-small">メモ欄</small></div>
-        `;
-        dascContainer.appendChild(row);
-      }
-
-      // イベント：DASCの入力が変われば合計再算出
-      document.querySelectorAll('#dascList select').forEach(sel=>{
-        sel.addEventListener('change', calcDascTotal);
-      });
-
-      // 編集ボタン
-      document.getElementById('editPersonBtn').addEventListener('click', ()=>{
-        // モーダルに値をセット
-        document.getElementById('editName').value = person.name;
-        document.getElementById('editBday').value = person.bday;
-        document.getElementById('editSex').value = person.sex;
-        document.getElementById('editPhone').value = person.phone;
-        document.getElementById('editAddress').value = person.address;
-        document.getElementById('editMemo').value = person.memo;
-        const myModal = new bootstrap.Modal(document.getElementById('personModal'));
-        myModal.show();
-      });
-
-      // 保存ボタン（モーダル）
-      document.getElementById('savePersonBtn').addEventListener('click', ()=>{
-        person.name = document.getElementById('editName').value;
-        person.bday = document.getElementById('editBday').value;
-        person.sex = document.getElementById('editSex').value;
-        person.phone = document.getElementById('editPhone').value;
-        person.address = document.getElementById('editAddress').value;
-        person.memo = document.getElementById('editMemo').value;
-        // 画面更新（実運用ではAPIにPUTする）
-        document.getElementById('personName').textContent = person.name;
-        document.getElementById('personBday').textContent = person.bday;
-        document.getElementById('personSex').textContent = person.sex;
-        document.getElementById('personAddress').textContent = person.address;
-        bootstrap.Modal.getInstance(document.getElementById('personModal')).hide();
-      });
-
-      // 新規訪問追加
-      document.getElementById('addVisitBtn').addEventListener('click', ()=>{
-        const vdate = document.getElementById('visitDate').value;
-        const vstaf = document.getElementById('visitStaff').value || '匿名';
-        const vtype = document.getElementById('visitType').value;
-        const vnote = document.getElementById('visitNote').value;
-        if(!vdate || !vnote){
-          alert('訪問日と要点を入力してください');
-          return;
-        }
-        visits.unshift({date:vdate, staff:vstaf, type:vtype, note:vnote});
-        refreshVisitTable();
-        // 実運用ならここでPOSTしてDB保存
-        document.getElementById('visitForm').reset();
-      });
-
-      // エクスポートボタン
-      document.getElementById('downloadVisitCsv').addEventListener('click', ()=>downloadVisitsCsv());
-      document.getElementById('downloadDascCsv').addEventListener('click', ()=>downloadDascCsv());
-      document.getElementById('exportDascCsv').addEventListener('click', ()=>downloadDascCsv());
-      document.getElementById('saveDascBtn').addEventListener('click', ()=>saveDasc());
-
-      // 権限チェック（例：医師は編集可、閲覧専用にしたい場合）
-      if(currentRole !== '管理者' && currentRole !== '職員'){
-        // 読み取り専用にする（サンプル）
-        document.querySelectorAll('input,select,textarea,button').forEach(el=>{
-          if(el.id !== 'exportAllBtn' && el.id !== 'downloadVisitCsv') el.disabled = true;
-        });
-        document.getElementById('currentRoleBadge').className = 'badge bg-warning text-dark';
-      }
-    }
-
-    // --- 訪問テーブル描画 ---
-    function refreshVisitTable(){
-      const tbody = document.querySelector('#visitTable tbody');
-      tbody.innerHTML = '';
-      visits.slice(0,5).forEach(v=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${v.date}</td><td>${escapeHtml(v.staff)}</td><td>${v.type}</td><td>${escapeHtml(v.note)}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // --- DASC合計計算・判定（閾値は例：<30 軽度, <50 中等度, >=50 重度） ---
-    function calcDascTotal(){
-      const vals = Array.from(document.querySelectorAll('#dascList select')).map(s=>parseInt(s.value||0,10));
-      const total = vals.reduce((a,b)=>a+b,0);
-      document.getElementById('dascTotal').textContent = total;
-      let judgement = '軽度';
-      if(total >= 50) judgement = '重度';
-      else if(total >= 30) judgement = '中等度';
-      document.getElementById('dascJudgement').textContent = judgement;
-    }
-
-    // --- DASC保存（例：POST） ---
-    function saveDasc(){
-      const vals = Array.from(document.querySelectorAll('#dascList select')).map(s=>parseInt(s.value||0,10));
-      const total = vals.reduce((a,b)=>a+b,0);
-      const payload = {
-        person_id: person.id,
-        date: new Date().toISOString().slice(0,10),
-        items: vals,
-        total: total,
-        judgement: document.getElementById('dascJudgement').textContent,
-        evaluator: 'テスト者'
-      };
-      console.log('DASC save payload:', payload);
-      alert('DASCを保存（サンプル）。実運用ではここでAPI送信してください。');
-      // 実運用例:
-      // fetch('/api/dasc', {method:'POST', body:JSON.stringify(payload), headers:{'Content-Type':'application/json'}})
-    }
-
-    // --- CSVダウンロード（訪問） ---
-    function downloadVisitsCsv(){
-      const headers = ['date','staff','type','note'];
-      const rows = visits.map(v => [v.date, v.staff, v.type, v.note]);
-      const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${(String(c)).replace(/"/g,'""')}"`).join(','))].join('\r\n');
-      downloadText(csv, `${person.name.replace(/\s+/g,'_')}_visits.csv`, 'text/csv');
-    }
-
-    function downloadDascCsv(){
-      // 現在のDASCの値を収集して出力
-      const vals = Array.from(document.querySelectorAll('#dascList select')).map(s=>s.value||'0');
-      const total = document.getElementById('dascTotal').textContent;
-      const judgement = document.getElementById('dascJudgement').textContent;
-      const headers = ['person_id','date','total','judgement',...Array.from({length:21},(_,i)=>`q${i+1}`)];
-      const row = [person.id, new Date().toISOString().slice(0,10), total, judgement, ...vals];
-      const csv = [headers.join(','), row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')].join('\r\n');
-      downloadText(csv, `${person.name.replace(/\s+/g,'_')}_dasc21.csv`, 'text/csv');
-    }
-
-    // --- 汎用ダウンロード ---
-    function downloadText(text, filename, mime){
-      const blob = new Blob([text], {type: mime || 'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1000);
-    }
-
-    // --- 保存（ダミー） ---
-    function saveAllSnapshotAsCsv(){
-      // 例：全データをCSVでまとめて出力するボタン処理
-      const allRows = [
-        ['person_id','name','bday','sex','address'],
-        [person.id, person.name, person.bday, person.sex, person.address]
-      ];
-      const csv = allRows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
-      downloadText(csv, `${person.name.replace(/\s+/g,'_')}_snapshot.csv`, 'text/csv');
-    }
-    document.getElementById('exportAllBtn').addEventListener('click', saveAllSnapshotAsCsv);
-
-    // --- ユーティリティ ---
-    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-    // 初期化実行
-    initPage();
-  </script>
 </body>
 </html>
