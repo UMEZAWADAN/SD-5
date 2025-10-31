@@ -1,0 +1,101 @@
+body {
+  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  background-color: #f8f8f8;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 90%;
+  max-width: 1100px;
+  margin: 20px auto;
+  background: white;
+  border: 1px solid #ccc;
+}
+
+.header {
+  background-color: #f2f2f2;
+  padding: 15px 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.8em;
+}
+
+.search-section {
+  padding: 20px;
+}
+
+.search-section h2 {
+  margin-bottom: 15px;
+  font-size: 1.2em;
+  color: #444;
+}
+
+.search-box {
+  background: #eee;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+label {
+  width: 80px;
+  font-weight: bold;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+}
+
+select {
+  padding: 5px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+}
+
+.search-button {
+  margin-left: 20px;
+  padding: 6px 20px;
+  border: 1px solid #777;
+  border-radius: 5px;
+  background: white;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #f0f0f0;
+}
+
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.result-table th,
+.result-table td {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 8px;
+}
+
+.result-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.empty {
+  color: #888;
+}
