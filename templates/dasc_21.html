@@ -7,14 +7,30 @@
 <body>
     <header>
         <h1>DASC-21</h1>
-        <p>39/84点　軽度認知症の可能性</p>
+        <label>39/84点　軽度認知症の可能性</label>
         <input type="button" value="Excelファイルに出力">
     </header>
     <article>
-        <label for="name">ご本人の氏名</label>
-        <input type="textbox" name="name">
-        <label for="name">ご本人の氏名</label>
-        <input type="textbox" name="name">
+        <div>
+            <label for="name">ご本人の氏名</label>
+            <input type="textbox" id="name" name="name">
+            <label for="born">生年月日</label>
+            <input type="textbox" id="born" name="born">
+            <input type="radio" id="male" name="gender" value="male">
+            <label for="male">男</label>
+            <input type="radio" id="female" name="gender" value="female">
+            <label for="male">女</label>
+        </div>
+        
+        <div>
+            <label for="name">ご本人以外の情報提供者の氏名</label>
+            <input type="textbox" id="infoName" name="infoName">
+            <label for="name">ご本人との続柄</label>
+            <input type="textbox" id="relation" name="relation">
+            <label for="name">ご本人以外の情報提供者の氏名</label>
+            <input type="textbox" id="infoName" name="infoName">
+        </div>
+
     </article>
 </body>
 </html>
