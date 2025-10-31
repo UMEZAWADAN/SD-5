@@ -12,7 +12,6 @@
     color: #111;
   }
 
-  /* --- ヘッダー --- */
   header {
     background-color: #e5e5e5;
     border: 1px solid #aaa;
@@ -46,7 +45,6 @@
     background-color: #f2f2f2;
   }
 
-  /* --- メイン --- */
   main {
     display: flex;
     flex-direction: column;
@@ -69,34 +67,35 @@
   .menu-btn:hover {
     background-color: #dcdcdc;
   }
-
-  /* --- フッター（任意） --- */
-  footer {
-    margin-top: 80px;
-    text-align: center;
-    color: #777;
-    font-size: 12px;
-  }
 </style>
 </head>
 <body>
-
-  <!-- ヘッダー部 -->
   <header>
     <div class="header-left">TOP</div>
-    <div class="header-center">（ユーザー名）</div>
-    <button class="logout-btn">ログアウト</button>
+    <div class="header-center" id="username-display">（ユーザー名）</div>
+    <button class="logout-btn" onclick="logout()">ログアウト</button>
   </header>
 
-  <!-- メイン部 -->
   <main>
     <button class="menu-btn" onclick="location.href='list.html'">対象者一覧</button>
     <button class="menu-btn" onclick="location.href='register.html'">対象者詳細登録</button>
   </main>
 
-  <footer>
-    <!-- 任意で追加情報など -->
-  </footer>
+  <script>
+    // ログイン画面から受け取ったユーザー名を表示
+    const name = localStorage.getItem("username");
+    if (!name) {
+      alert("ログインしてください。");
+      location.href = "login.html";
+    } else {
+      document.getElementById("username-display").textContent = name;
+    }
 
+    // ログアウト処理
+    function logout() {
+      localStorage.removeItem("username");
+      location.href = "login.html";
+    }
+  </script>
 </body>
 </html>
