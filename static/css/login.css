@@ -1,0 +1,43 @@
+body {
+  font-family: "Meiryo", sans-serif;
+  text-align: center;
+  background-color: #fff;
+}
+
+.header {
+  background: #e6e6e6;
+  padding: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  border-bottom: 1px solid #aaa;
+}
+
+.login-box {
+  display: inline-block;
+  background: #eee;
+  border: 1px solid #aaa;
+  padding: 40px;
+  margin-top: 60px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-top: 20px;
+  font-size: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  font-size: 18px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+
+button {
+  display: block;
+  margin: 30px auto 0;
+  padding: 10px 40px;
+  font-size: 20px;
+}
