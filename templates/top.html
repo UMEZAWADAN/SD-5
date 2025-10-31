@@ -11,11 +11,11 @@
   <header>
     <div class="header-left">TOP</div>
     <div class="header-center">{{ username or "（ユーザー名）" }}</div>
-    <button class="logout-btn" onclick="location.href='{{ url_for('top') }}'">ログアウト</button>
+    <button class="logout-btn" >ログアウト</button>
   </header>
   
   <main>
-    <button class="menu-btn" onclick="location.href='{{ url_for('list_page') }}'">対象者一覧</button>
+    <button class="menu-btn" onclick="location.href='{{ url_for('list') }}'">対象者一覧</button>
     <button class="menu-btn" onclick="location.href='{{ url_for('shousai') }}'">対象者詳細登録</button>
   </main>
 
