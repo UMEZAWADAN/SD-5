@@ -1,36 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <title>DASC-21評価</title>
-    <meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="../static/dasc_21.css">
+<meta charset="UTF-8">
+<title>DASC-21</title>
 </head>
 <body>
-    <header>
-        <h1>DASC-21</h1>
-        <label>39/84点　軽度認知症の可能性</label>
-        <input type="button" value="Excelファイルに出力">
-    </header>
-    <article>
-        <div>
-            <label for="name">ご本人の氏名</label>
-            <input type="textbox" id="name" name="name">
-            <label for="born">生年月日</label>
-            <input type="textbox" id="born" name="born">
-            <input type="radio" id="male" name="gender" value="male">
-            <label for="male">男</label>
-            <input type="radio" id="female" name="gender" value="female">
-            <label for="male">女</label>
-        </div>
-        
-        <div>
-            <label for="name">ご本人以外の情報提供者の氏名</label>
-            <input type="textbox" id="infoName" name="infoName">
-            <label for="name">ご本人との続柄</label>
-            <input type="textbox" id="relation" name="relation">
-            <label for="name">ご本人以外の情報提供者の氏名</label>
-            <input type="textbox" id="infoName" name="infoName">
-        </div>
 
-    </article>
+<div class="container">
+    <div class="title">DASC-21</div>
+
+    <div class="row">
+        <div class="label">ご本人の氏名</div>
+        <input type="text">
+        <div class="label">生年月日</div>
+        <input type="number" placeholder="年" style="width:60px;">年
+        <input type="number" placeholder="月" style="width:40px;">月
+        <input type="number" placeholder="日" style="width:40px;">日
+        <input type="number" placeholder="年齢" style="width:40px;">歳
+    </div>
+
+    <div class="row gender">
+        <div class="label">性別</div>
+        <label><input type="radio" name="gender">男</label>
+        <label><input type="radio" name="gender">女</label>
+    </div>
+
+    <div class="row">
+        <div class="label">本人様以外の情報提供者氏名</div>
+        <input type="text">
+        <div class="label">本人との続柄</div>
+        <input type="text">
+        <div class="label">記入者氏名</div>
+        <input type="text">
+    </div>
+
+    <table class="scale-table">
+        <tr>
+            <th>質問項目</th>
+            <th>1点<br>感じない</th>
+            <th>2点<br>少し感じる</th>
+            <th>3点<br>感じる</th>
+            <th>4点<br>とても感じる</th>
+            <th>備考</th>
+        </tr>
+        <tr>
+            <td>物忘れが多いと感じますか</td>
+            <td><input type="radio" name="q1"></td>
+            <td><input type="radio" name="q1"></td>
+            <td><input type="radio" name="q1"></td>
+            <td><input type="radio" name="q1"></td>
+            <td rowspan="3"><div class="notes"></div><div class="notes"></div><div class="notes"></div></td>
+        </tr>
+        <tr>
+            <td>？？？</td>
+            <td><input type="radio" name="q2"></td>
+            <td><input type="radio" name="q2"></td>
+            <td><input type="radio" name="q2"></td>
+            <td><input type="radio" name="q2"></td>
+        </tr>
+        <tr>
+            <td>？？？</td>
+            <td><input type="radio" name="q3"></td>
+            <td><input type="radio" name="q3"></td>
+            <td><input type="radio" name="q3"></td>
+            <td><input type="radio" name="q3"></td>
+        </tr>
+    </table>
+
+    <div class="row" style="margin-top:15px;">
+        <div class="score-box">
+            <strong>39 / 84 点</strong><br>軽度認知症の可能性
+        </div>
+    </div>
+
+    <div class="button-area">
+        <button>Excelファイルに出力</button>
+    </div>
+</div>
+
 </body>
+</html>
 </html>
