@@ -2,9 +2,9 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
-@app.route("/")
-def index():
-    return "<p>動作確認用トップ。<a href='/shousai'>対象者詳細へ</a></p>"
+@app.route("/toppage")
+def toppage():
+    return render_template("toppage.html")
 
 @app.route("/shousai")
 def shousai():
