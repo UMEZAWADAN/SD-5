@@ -31,7 +31,7 @@ h2 {
 }
 
 .check-group label {
-  margin: 0; /* ← label間の余白を削除 */
+  margin: 0; 
   font-weight: 600;
 }
 
@@ -42,7 +42,7 @@ h2 {
 }
 
 .check-group div {
-  margin-bottom: 3px; /* ← 各項目の間をやや詰める */
+  margin-bottom: 1px; 
 }
 
 textarea {
@@ -72,5 +72,7 @@ textarea {
   color: #fff;
   border-color: #0066cc;
 }
+
+
 
 
