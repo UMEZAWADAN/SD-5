@@ -2,104 +2,99 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>訪問記録表</title>
+  <title>訪問記録表（初回・継続）</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/houmon.css') }}">
 </head>
 <body>
 
   <header>
-    <h1>訪問記録表</h1>
+    <h1>認知症初期集中支援チーム支援システム</h1>
   </header>
 
-  <div class="container">
-    <div class="card">
-      <div class="title-row">
-        <h2>
-          訪問記録表（
-          <label><input type="radio" name="type" value="初回"> 初回</label> ・
-          <label><input type="radio" name="type" value="継続"> 継続</label>
-          ）
-        </h2>
-        <button class="secondary">枚数追加</button>
-      </div>
+  <main class="form-wrapper">
+    <div class="form-header">
+      <h2>
+        訪問記録表（
+        <label><input type="radio" name="type" value="初回"> 初回</label> ・
+        <label><input type="radio" name="type" value="継続"> 継続</label>
+        ）
+      </h2>
+      <button class="secondary">枚数追加</button>
+    </div>
 
-      <div class="flex-row">
-        <div class="flex-col input-group">
+    <form>
+      <div class="row">
+        <div class="cell">
           <label>対象者名</label>
           <input type="text" name="name">
         </div>
-        <div class="flex-col input-group">
+        <div class="cell">
           <label>生年月日</label>
           <input type="text" name="birth" placeholder="T・S　年　月　日（　歳）">
         </div>
       </div>
 
-      <div class="flex-row">
-        <div class="flex-col input-group">
+      <div class="row">
+        <div class="cell">
           <label>訪問年月日</label>
           <input type="text" name="visit_date" placeholder="年　月　日（　）">
         </div>
-        <div class="flex-col input-group">
+        <div class="cell">
           <label>訪問時間</label>
           <input type="text" name="visit_time" placeholder="：〜：　（　）時間">
         </div>
       </div>
 
-      <div class="input-group">
+      <div class="row single">
         <label>訪問目的</label>
         <textarea name="purpose"></textarea>
       </div>
 
-      <div class="visit-section">
+      <h3 class="section-title">訪問時の状況</h3>
+      <div class="visit-status">
         <div class="left-box">
-          <label>[訪問に対する本人の反応]</label>
+          <label>[訪問に対する本人の反応・理解]</label>
           <textarea></textarea>
+
           <label>[認知機能]</label>
+          <textarea></textarea>
+
+          <label>[精神症状・行動症状]</label>
+          <textarea></textarea>
+
+          <label>[身体状況]</label>
+          <textarea></textarea>
+
+          <label>[生活状況]</label>
           <textarea></textarea>
         </div>
 
         <div class="right-box">
           <label>[アセスメントシート]</label>
-          <p>DASC-21　<input type="text" size="3"> 点</p>
-          <p>DBD13　<input type="text" size="3"> 点</p>
+          <p>DASC-21　<input type="text" size="3"> 点　　DBD13　<input type="text" size="3"> 点</p>
+
           <label>[判断]</label>
+          <textarea></textarea>
+
+          <label>[本人の意向・希望]</label>
+          <textarea></textarea>
+
+          <label>[介護者の意向・希望]</label>
+          <textarea></textarea>
+
+          <label>[その他]</label>
           <textarea></textarea>
         </div>
       </div>
 
-      <div class="input-group">
-        <label>[身体機能]</label>
-        <textarea></textarea>
+      <h3 class="section-title">判断・支援内容 / 今後の方針</h3>
+      <div class="row">
+        <div class="cell full">
+          <textarea></textarea>
+        </div>
       </div>
 
-      <div class="input-group">
-        <label>[生活状況]</label>
-        <textarea></textarea>
-      </div>
-
-      <div class="input-group">
-        <label>[家族状況]</label>
-        <textarea></textarea>
-      </div>
-
-      <div class="input-group">
-        <label>[介護サービス・支援状況]</label>
-        <textarea></textarea>
-      </div>
-
-      <div class="input-group">
-        <label>[今後の支援方針]</label>
-        <textarea></textarea>
-      </div>
-
-      <div class="button-area">
-        <button class="primary">保存</button>
-        <button class="secondary">類似ケース検索</button>
-        <button class="success">Excelファイルに出力</button>
-      </div>
-
-    </div>
-  </div>
-
-</body>
-</html>
+      <div class="row">
+        <div class="cell">
+          <label>□ 継続訪問：</label>
+          <input type="text" placeholder="年　月　日">
