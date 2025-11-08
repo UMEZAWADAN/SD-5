@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>対象者詳細</title>
+  <link rel="stylesheet" type="text/css" href="../static/css/shousai_kihon.css">
+<!-- 
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai_kihon.css') }}">
+-->
+</head>
+
+<body>
+  <h2>利用者基本情報</h2>
+  <h3>作成担当者：<input type="text" name="sakusei_name"></h3>
+  <div class="kihon_jouhou">
+    <h3>《基本情報》</h3>
+    <div class="soudan_date_part">
+      <h4>相談日</h4>
+      <div class="date">
+        <p><input type="text" name="year">年</p>
+        <p><input type="text" name="month">月</p>
+        <p><input type="text" name="day">日</p>
+        <p>(<input type="text" name="youbi">)</p>
+      </div>
+
+      <div class="soudan_houhou">
+        <input type="radio" name="raisho" value="来所">来所
+        <input type="radio" name="denwa" value="電話">電話
+        <input type="radio" name="sonota" value="その他">その他
+        <input type="text" name="sonota">
+      </div>
+
+      <div class="shokai_sairai">
+        <input type="radio" name="shokai" value="初回">初回
+        <input type="radio" name="sairai" value="再来">再来
+        <p>(前 <input type="text" name="month"> / <input type="text" name="day">)</p>
+      </div>
+    </div>
+
+    <div class="genkyou_part">
+      <h4>本人の現況</h4>
+      <div class="zaitaku_nyuuin">
+        <input type="radio" name="zaitaku" value="在宅">在宅
+        <input type="radio" name="nyuuin_nyuusho" value="入院又は入所中">入院又は入所中
+        <p>(<input type="text" name="nyuuin_nyuusho">)</p>
+      </div>
+    </div>
+
+    <div class="honnin_name_part">
+      <div class="honnin_name">
+        <h4>フリガナ</h4>
+        <input type="text" name="hurigana">
+        <br>
+        <h4>本人氏名</h4>
+        <input type="text" name="name">
+      </div>
+
+      <div class="gender">
+        <input type="radio" name="male" value="男">男
+        <input type="radio" name="female" value="女">女
+      </div>
+
+      <div class="birthday">
+        <input type="radio" name="taishou" value="T">T
+        <input type="radio" name="shouwa" value="S">S
+        <p><input type="text" name="year">年</p>
+        <p><input type="text" name="month">月</p>
+        <p><input type="text" name="day">日</p>
+        <p>生(<input type="text" name="youbi">)歳</p>
+      </div>
+    </div>
+
+    <div class="address_part">
+      <div class="address">
+        <h4>住所</h4>
+        <input type="text" name="address">
+      </div>
+
+      <div class="tel_fax">
+        <p>Tel<input type="text" name="tel1">(<input type="text" name="tel2">)<input type="text" name="tel3"></p><br>
+        <p>Fax<input type="text" name="fax1">(<input type="text" name="fax2">)<input type="text" name="fax3"></p>
+      </div>
+    </div>
+  </div>
+  
+
+<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+
+</body>
+</html>
