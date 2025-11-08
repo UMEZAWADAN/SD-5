@@ -2,41 +2,93 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>対象者詳細</title>
+  <title>訪問記録票</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
 </head>
 <body>
   <header>
-    <h1>認知症初期集中支援チーム支援システム</h1>
+    <h1>認知症初期集中支援チーム支援システム｜訪問記録票</h1>
+    <button class="add-page-btn">＋ 枚数追加</button>
   </header>
 
   <div class="container">
-      <div class="card flex-col">
-        <h2>訪問記録</h2>
-        <table class="table">
-          <thead><tr><th>日付</th><th>担当者</th><th>種類</th><th>要点</th></tr></thead>
-          <tbody id="visitBody"></tbody>
-        </table>
-        <form id="visitForm">
-          <div class="input-group"><label>訪問日</label><input type="date" id="visitDate"></div>
-          <div class="input-group"><label>担当者</label><input type="text" id="visitStaff"></div>
+    <section class="card">
+      <h2>訪問記録表</h2>
+      <div class="radio-group">
+        <label><input type="radio" name="recordType" value="初回" checked> 初回</label>
+        <label><input type="radio" name="recordType" value="継続"> 継続</label>
+      </div>
+
+      <div class="flex-row">
+        <div class="input-group">
+          <label>訪問日</label>
+          <input type="date" id="visitDate">
+        </div>
+        <div class="input-group">
+          <label>訪問者</label>
+          <input type="text" id="visitStaff" placeholder="例：佐藤太郎">
+        </div>
+        <div class="input-group">
+          <label>訪問先</label>
+          <input type="text" id="visitPlace" placeholder="例：利用者自宅">
+        </div>
+        <div class="input-group">
+          <label>訪問種別</label>
+          <select id="visitType">
+            <option>訪問</option>
+            <option>電話</option>
+            <option>会議</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>同行者</label>
+        <input type="text" id="visitPartner" placeholder="同行したスタッフ名など">
+      </div>
+
+      <div class="input-group">
+        <label>訪問概要</label>
+        <textarea id="visitSummary" placeholder="支援内容や観察事項などを記入"></textarea>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>訪問記録一覧</h2>
+      <table class="table">
+        <thead>
+          <tr><th>日付</th><th>担当者</th><th>種類</th><th>要点</th></tr>
+        </thead>
+        <tbody id="visitBody"></tbody>
+      </table>
+
+      <form id="visitForm">
+        <div class="flex-row">
+          <div class="input-group"><label>日付</label><input type="date" id="visitDateAdd"></div>
+          <div class="input-group"><label>担当者</label><input type="text" id="visitStaffAdd"></div>
           <div class="input-group"><label>種類</label>
-            <select id="visitType">
+            <select id="visitTypeAdd">
               <option>訪問</option>
               <option>電話</option>
               <option>会議</option>
             </select>
           </div>
-          <div class="input-group"><label>要点</label><textarea id="visitNote"></textarea></div>
-          <button type="button" id="addVisitBtn" class="primary">追加</button>
-        </form>
-        <button id="downloadVisitCsv" class="success">訪問記録を出力</button>
-      </div>
+        </div>
+        <div class="input-group">
+          <label>要点</label><textarea id="visitNoteAdd" placeholder="訪問で話した内容など"></textarea>
+        </div>
+        <button type="button" id="addVisitBtn" class="primary">追加</button>
+      </form>
+    </section>
+
+    <div class="button-area">
+      <button id="saveBtn" class="primary">保存</button>
+      <button id="searchBtn" class="secondary">類似ケース検索</button>
+      <button id="exportExcelBtn" class="success">Excelファイルに出力</button>
     </div>
 
   </div>
 
-<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
-
+  <script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
 </body>
 </html>

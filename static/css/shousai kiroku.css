@@ -1,0 +1,134 @@
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  background-color: #f5f6fa;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #3f72af;
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.add-page-btn {
+  background: #fff;
+  color: #3f72af;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  padding: 15px 20px;
+}
+
+h2 {
+  font-size: 1rem;
+  margin-top: 0;
+  color: #333;
+  border-bottom: 2px solid #3f72af;
+  padding-bottom: 4px;
+}
+
+.flex-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 180px;
+  margin-bottom: 10px;
+}
+
+label {
+  font-size: 0.9rem;
+  margin-bottom: 3px;
+}
+
+input, select, textarea, button {
+  font-size: 0.9rem;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.table th, .table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #e6ebf0;
+}
+
+button {
+  cursor: pointer;
+}
+
+button.primary {
+  background-color: #3f72af;
+  color: #fff;
+  border: none;
+}
+
+button.secondary {
+  background-color: #e6ebf0;
+  border: 1px solid #ccc;
+}
+
+button.success {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+}
+
+.button-area {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px 0;
+}
+
+.radio-group {
+  margin-bottom: 10px;
+}
+.radio-group label {
+  margin-right: 20px;
+}
