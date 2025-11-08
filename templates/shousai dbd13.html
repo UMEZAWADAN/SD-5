@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>DBD13 評価</title>
+  <title>DBD13</title>
   <link rel="stylesheet" href="../static/css/dbd13.css">
 </head>
 <body>
   <div class="container">
     <main class="card" role="main" aria-labelledby="dbd-title">
-      <h2 id="dbd-title" class="title-main">DBD13 評価</h2>
+      <h2 id="dbd-title" class="title-main">DBD13</h2>
       <p class="subtitle">認知症の診断、または疑いのある場合に評価</p>
 
       <div class="dbd-header" role="row" aria-hidden="true">
@@ -156,16 +156,15 @@
         </div>
 
         <div class="bottom-controls">
-          <div class="score-box" id="summary">0 / 52 点</div>
+          <div class="score-box" id="summary" role="status" aria-live="polite">0 / 52 点</div>
           <div class="button-row">
             <button class="export-btn" type="button" onclick="calcAndShow()">一時保存</button>
             <button class="export-btn" id="exportBtn" type="button" title="Excelファイルに出力">Excelファイルに出力</button>
           </div>
         </div>
 
-
       </form>
-    </main>
+    </div>
   </div>
 </body>
 </html>
