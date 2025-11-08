@@ -1,41 +1,157 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <title>対象者詳細</title>
-  <link rel="stylesheet" type="text/css" href="../static/css/kiroku.css"></head>
-<body>
-  <header>
-    <h1>認知症初期集中支援チーム支援システム</h1>
-  </header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>認知症初期集中支援 訪問記録票（初回・継続）</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="p-4">
 
   <div class="container">
-      <div class="card flex-col">
-        <h2>訪問記録</h2>
-        <table class="table">
-          <thead><tr><th>日付</th><th>担当者</th><th>種類</th><th>要点</th></tr></thead>
-          <tbody id="visitBody"></tbody>
-        </table>
-        <form id="visitForm">
-          <div class="input-group"><label>訪問日</label><input type="date" id="visitDate"></div>
-          <div class="input-group"><label>担当者</label><input type="text" id="visitStaff"></div>
-          <div class="input-group"><label>種類</label>
-            <select id="visitType">
-              <option>訪問</option>
-              <option>電話</option>
-              <option>会議</option>
-            </select>
-          </div>
-          <div class="input-group"><label>要点</label><textarea id="visitNote"></textarea></div>
-          <button type="button" id="addVisitBtn" class="primary">追加</button>
-        </form>
-        <button id="downloadVisitCsv" class="success">訪問記録を出力</button>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="mb-0">認知症初期集中支援 訪問記録票</h3>
+      <div>
+        <label class="form-check-label me-3">
+          <input type="radio" class="form-check-input" name="visit_type" value="初回"> 初回
+        </label>
+        <label class="form-check-label me-3">
+          <input type="radio" class="form-check-input" name="visit_type" value="継続"> 継続
+        </label>
+        <button class="btn btn-outline-secondary btn-sm">枚数追加</button>
       </div>
     </div>
 
-  </div>
+    <form>
+      <div class="form-section">
+        <div class="section-title">基本情報</div>
 
-<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">対象者名</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">生年月日</label>
+            <div class="input-group">
+              <span class="input-group-text">T・S</span>
+              <input type="text" class="form-control" placeholder="年">
+              <span class="input-group-text">年</span>
+              <input type="text" class="form-control" placeholder="月">
+              <span class="input-group-text">月</span>
+              <input type="text" class="form-control" placeholder="日">
+              <span class="input-group-text">日</span>
+              <input type="text" class="form-control" placeholder="歳">
+              <span class="input-group-text">歳</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">訪問年月日</label>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="年">
+              <span class="input-group-text">年</span>
+              <input type="text" class="form-control" placeholder="月">
+              <span class="input-group-text">月</span>
+              <input type="text" class="form-control" placeholder="日">
+              <span class="input-group-text">日</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">訪問時間</label>
+            <div class="input-group">
+              <input type="time" class="form-control">
+              <span class="input-group-text">〜</span>
+              <input type="time" class="form-control">
+              <span class="input-group-text">（）時間</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">訪問目的</label>
+          <textarea class="form-control"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">訪問時の状況</div>
+
+        <div class="mb-3">
+          <label class="form-label">[訪問に対する本人の反応・理解]</label>
+          <textarea class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">[アセスメントシート]</label>
+          <div class="input-group mb-2">
+            <span class="input-group-text">DASC-21</span>
+            <input type="number" class="form-control">
+            <span class="input-group-text">点</span>
+            <span class="input-group-text">DBD13</span>
+            <input type="number" class="form-control">
+            <span class="input-group-text">点</span>
+          </div>
+          <label class="form-label">[判断]</label>
+          <textarea class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">[認知機能]</label>
+          <textarea class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">[精神症状・行動症状]</label>
+          <textarea class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">[身体状況]</label>
+          <textarea class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">[生活状況]</label>
+          <textarea class="form-control"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-title">今後の方針</div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="visitCheck">
+          <label class="form-check-label" for="visitCheck">継続訪問</label>
+          <input type="date" class="form-control mt-2">
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="teamCheck">
+          <label class="form-check-label" for="teamCheck">チーム員会議</label>
+          <input type="date" class="form-control mt-2">
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="otherCheck">
+          <label class="form-check-label" for="otherCheck">その他</label>
+          <input type="text" class="form-control mt-2" placeholder="内容を入力">
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary mx-2">保存</button>
+        <button type="button" class="btn btn-secondary mx-2">類似ケース検索</button>
+        <button type="button" class="btn btn-success mx-2">Excelファイルに出力</button>
+      </div>
+
+    </form>
+  </div>
 
 </body>
 </html>

@@ -1,0 +1,75 @@
+.container {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.check-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.check-table th,
+.check-table td {
+  border: 1px solid #ccc;
+  padding: 3px 4px; /* ← 少し詰める */
+  vertical-align: top;
+}
+
+.check-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px; /* ← 以前は6px。縦の間隔を半分に */
+}
+
+.check-group label {
+  margin: 0; /* ← label間の余白を削除 */
+  font-weight: 600;
+}
+
+.check-group input[type="radio"],
+.check-group input[type="checkbox"] {
+  margin-right: 4px;
+  margin-bottom: 1px; /* ← 下方向の空白を軽くする */
+}
+
+.check-group div {
+  margin-bottom: 0px; /* ← 各項目の間をやや詰める */
+}
+
+textarea {
+  width: 100%;
+  height: 60px;
+  resize: vertical;
+  margin: 0;
+}
+
+.btn-area {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 8px 20px;
+  border: 1px solid #333;
+  background: #f8f8f8;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-primary {
+  background: #0066cc;
+  color: #fff;
+  border-color: #0066cc;
+}
+
