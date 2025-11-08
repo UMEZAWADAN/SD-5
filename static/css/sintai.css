@@ -42,7 +42,7 @@ h2 {
 }
 
 .check-group div {
-  margin-bottom: 3px; /* ← 各項目の間をやや詰める */
+  margin-bottom: 1px; 
 }
 
 textarea {
@@ -72,5 +72,6 @@ textarea {
   color: #fff;
   border-color: #0066cc;
 }
+
 
 
