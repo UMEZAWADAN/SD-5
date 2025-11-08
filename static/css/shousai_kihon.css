@@ -1,0 +1,7 @@
+.soudan_date_part *, .genkyou_part *, .honnin_name_part *, .address_part *{
+    display: inline;
+}
+
+.soudan_date_part .date input, .shokai_sairai p input, .birthday p input{
+    width: 30px;
+}

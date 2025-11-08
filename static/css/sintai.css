@@ -19,30 +19,30 @@ h2 {
 
 .check-table th,
 .check-table td {
-  border: 0px solid #ccc;
-  padding: 6px 8px; 
+  border: 1px solid #ccc;
+  padding: 3px 4px; /* ← 少し詰める */
   vertical-align: top;
 }
 
 .check-group {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 1px; /* ← 以前は6px。縦の間隔を半分に */
 }
 
 .check-group label {
-  margin: 0; 
+  margin: 0; /* ← label間の余白を削除 */
   font-weight: 600;
 }
 
 .check-group input[type="radio"],
 .check-group input[type="checkbox"] {
   margin-right: 4px;
-  margin-bottom: 0px; 
+  margin-bottom: 1px; /* ← 下方向の空白を軽くする */
 }
 
 .check-group div {
-  margin-bottom: 0px; 
+  margin-bottom: 0px; /* ← 各項目の間をやや詰める */
 }
 
 textarea {
@@ -72,8 +72,4 @@ textarea {
   color: #fff;
   border-color: #0066cc;
 }
-
-
-
-
 
