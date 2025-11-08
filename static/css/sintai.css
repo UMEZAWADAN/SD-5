@@ -20,7 +20,7 @@ h2 {
 .check-table th,
 .check-table td {
   border: 1px solid #ccc;
-  padding: 6px 8px; /* ← 少し詰める */
+  padding: 3px 4px; /* ← 少し詰める */
   vertical-align: top;
 }
 
@@ -72,3 +72,4 @@ textarea {
   color: #fff;
   border-color: #0066cc;
 }
+
