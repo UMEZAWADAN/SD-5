@@ -155,15 +155,15 @@
           <div class="radio-cell"><input type="radio" name="q13" value="4"></div>
         </div>
 
-        <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
-          <div class="button-area">
-          <button class="export-btn" type="button" onclick="calcAndShow()">合計点を計算</button>
-          <button class="export-btn" type="button" onclick="resetAll()" id="resetBtn">リセット</button>
-          <div class="score-box" id="summary" role="status" aria-live="polite">0 / 52 点</div>
-          <button class="export-btn" id="exportBtn" type="button" title="Excelファイルに出力">Excelファイルに出力</button>
+        <div class="bottom-controls">
+          <div class="score-box" id="summary">0 / 52 点</div>
+          <div class="button-row">
+            <button class="export-btn" type="button" onclick="calcAndShow()">一時保存</button>
+            <button class="export-btn" id="exportBtn" type="button" title="Excelファイルに出力">Excelファイルに出力</button>
+          </div>
         </div>
 
-        <p class="small note">選択後「合計点を計算」を押してください</p>
+
       </form>
     </main>
   </div>
