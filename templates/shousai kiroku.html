@@ -1,100 +1,113 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>訪問記録表（初回・継続）</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/houmon.css') }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI帳票作成ツール</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background-color: #0078d7;
+    color: white;
+    padding: 20px 40px;
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px;
+  }
+
+  .container {
+    background: white;
+    width: 90%;
+    max-width: 1200px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 40px 60px;
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 24px;
+    border-left: 5px solid #0078d7;
+    padding-left: 12px;
+  }
+
+  .upload-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+
+  .upload-label {
+    font-size: 1.1rem;
+    color: #333;
+    flex: 1;
+  }
+
+  .upload-button {
+    background-color: #21a366;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s;
+  }
+
+  .upload-button:hover {
+    background-color: #1e8e5c;
+  }
+
+  .output-section {
+    margin-top: 40px;
+  }
+
+  textarea {
+    width: 100%;
+    height: 300px;
+    padding: 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+  }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+  }
+</style>
 </head>
 <body>
+  <header>AI帳票作成ツール</header>
+  <main>
+    <div class="container">
+      <h2>① Excelファイルをアップロード</h2>
+      <div class="upload-section">
+        <div class="upload-label">対象のExcelファイルを選択してください：</div>
+        <button class="upload-button">Excelを選択</button>
+      </div>
 
-  <header>
-    <h1>認知症初期集中支援チーム支援システム</h1>
-  </header>
-
-  <main class="form-wrapper">
-    <div class="form-header">
-      <h2>
-        訪問記録表（
-        <label><input type="radio" name="type" value="初回"> 初回</label> ・
-        <label><input type="radio" name="type" value="継続"> 継続</label>
-        ）
-      </h2>
-      <button class="secondary">枚数追加</button>
+      <h2>② 出力内容（AI処理結果）</h2>
+      <div class="output-section">
+        <textarea placeholder="ここに生成された内容が表示されます..."></textarea>
+      </div>
     </div>
-
-    <form>
-      <div class="row">
-        <div class="cell">
-          <label>対象者名</label>
-          <input type="text" name="name">
-        </div>
-        <div class="cell">
-          <label>生年月日</label>
-          <input type="text" name="birth" placeholder="T・S　年　月　日（　歳）">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="cell">
-          <label>訪問年月日</label>
-          <input type="text" name="visit_date" placeholder="年　月　日（　）">
-        </div>
-        <div class="cell">
-          <label>訪問時間</label>
-          <input type="text" name="visit_time" placeholder="：〜：　（　）時間">
-        </div>
-      </div>
-
-      <div class="row single">
-        <label>訪問目的</label>
-        <textarea name="purpose"></textarea>
-      </div>
-
-      <h3 class="section-title">訪問時の状況</h3>
-      <div class="visit-status">
-        <div class="left-box">
-          <label>[訪問に対する本人の反応・理解]</label>
-          <textarea></textarea>
-
-          <label>[認知機能]</label>
-          <textarea></textarea>
-
-          <label>[精神症状・行動症状]</label>
-          <textarea></textarea>
-
-          <label>[身体状況]</label>
-          <textarea></textarea>
-
-          <label>[生活状況]</label>
-          <textarea></textarea>
-        </div>
-
-        <div class="right-box">
-          <label>[アセスメントシート]</label>
-          <p>DASC-21　<input type="text" size="3"> 点　　DBD13　<input type="text" size="3"> 点</p>
-
-          <label>[判断]</label>
-          <textarea></textarea>
-
-          <label>[本人の意向・希望]</label>
-          <textarea></textarea>
-
-          <label>[介護者の意向・希望]</label>
-          <textarea></textarea>
-
-          <label>[その他]</label>
-          <textarea></textarea>
-        </div>
-      </div>
-
-      <h3 class="section-title">判断・支援内容 / 今後の方針</h3>
-      <div class="row">
-        <div class="cell full">
-          <textarea></textarea>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="cell">
-          <label>□ 継続訪問：</label>
-          <input type="text" placeholder="年　月　日">
+  </main>
+  <footer>© 2025 AI帳票作成システム</footer>
+</body>
+</html>
