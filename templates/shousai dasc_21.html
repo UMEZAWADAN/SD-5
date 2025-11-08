@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DASC-21 入力フォーム</title>
+  <link rel="stylesheet" href="../static/css/dasc_21.css"></head>
+<body>
+  <main>
+    <form id="dascForm">
+
+      <!-- タイトル -->
+      <div class="form-title">
+        <h1>DASC-21</h1>
+      </div>
+
+      <!-- 基本情報 -->
+      <section class="info-section">
+        <h2>基本情報</h2>
+        <div class="info-grid">
+          <div>
+            <label>ご本人の氏名：</label>
+            <input type="text" name="name">
+          </div>
+          <div class="birth-row">
+            <label>生年月日：</label>
+            <input type="text" class="birth-input" placeholder="年" size="4"> 年
+            <input type="text" class="birth-input" placeholder="月" size="2"> 月
+            <input type="text" class="birth-input" placeholder="日" size="2"> 日
+            （ <input type="text" class="age-input" placeholder="年齢" size="2"> 歳 ）
+          </div>
+          <div>
+            <label>性別：</label>
+            <label><input type="radio" name="gender" value="男"> 男</label>
+            <label><input type="radio" name="gender" value="女"> 女</label>
+          </div>
+          <div>
+            <label>情報提供者氏名：</label>
+            <input type="text" name="provider">
+          </div>
+          <div>
+            <label>本人との続柄：</label>
+            <input type="text" name="relation">
+          </div>
+          <div>
+            <label>記入者氏名：</label>
+            <input type="text" name="writer">
+          </div>
+        </div>
+      </section>
+
+      <!-- 評価項目 -->
+      <section class="assessment-section">
+        <h2>評価項目</h2>
+        <table class="dasc-table">
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>1点<br>感じない</th>
+              <th>2点<br>少し感じる</th>
+              <th>3点<br>感じる</th>
+              <th>4点<br>とても感じる</th>
+              <th>備考</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>もの忘れが多いと感じますか</td>
+              <td><input type="radio" name="q1" value="1"></td>
+              <td><input type="radio" name="q1" value="2"></td>
+              <td><input type="radio" name="q1" value="3"></td>
+              <td><input type="radio" name="q1" value="4"></td>
+              <td><textarea name="note1"></textarea></td>
+            </tr>
+            <tr>
+              <td>1年前と比べて、もの忘れが増えたと感じますか</td>
+              <td><input type="radio" name="q2" value="1"></td>
+              <td><input type="radio" name="q2" value="2"></td>
+              <td><input type="radio" name="q2" value="3"></td>
+              <td><input type="radio" name="q2" value="4"></td>
+              <td><textarea name="note2"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 結果表示 -->
+      <section class="result-section">
+        <p><strong>評価結果：</strong> <span id="score">--</span> / 84 点</p>
+        <p id="comment">まだ評価が実施されていません。</p>
+      </section>
+
+      <!-- ボタン -->
+      <div class="button-area">
+        <button type="button" onclick="calcScore()">結果を計算</button>
+        <button type="button">保存</button>
+        <button type="button">Excelに出力</button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    function calcScore() {
+      let total = 0;
+      let questions = document.querySelectorAll('input[type="radio"]:checked');
+      questions.forEach(q => total += parseInt(q.value));
+      document.getElementById("score").textContent = total;
+
+      let comment = "";
+      if (total <= 39) comment = "軽度認知症の可能性あり（観察と受診を推奨）";
+      else if (total <= 60) comment = "中等度の認知機能低下がみられます";
+      else comment = "日常生活に支障が生じている可能性があります";
+      document.getElementById("comment").textContent = comment;
+    }
+  </script>
+</body>
+</html>
