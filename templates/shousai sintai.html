@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>対象者詳細</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
+  <link rel="stylesheet" type="text/css" href="../static/css/sintai.css">
 </head>
 <body>
   <header>
@@ -12,9 +12,220 @@
 
   <div class="container">
 
-  </div>
+    <div class="card">
+      <header class="form-header">
+        <h2>身体状況チェック表</h2>
+        <div class="visit-row">
+          <div class="field">
+            <label>訪問年月</label>
+            <div class="visit-inputs">
+              <input type="number" placeholder="年" />
+              <input type="number" placeholder="月" />
+              <input type="number" placeholder="日" />
+            </div>
+          </div>
+          <div class="field">
+            <label>訪問時間</label>
+            <div class="visit-inputs">
+              <input type="time" /> 〜 <input type="time" />
+            </div>
+          </div>
+        </div>
+      </header>
 
-<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+      <table class="check-table">
+        <thead>
+          <tr>
+            <th>標準項目</th>
+            <th>チェック項目</th>
+            <th>備考</th>
+          </tr>
+        </thead>
 
+        <tbody>
+          <!-- ▼ 運動・移動 -->
+          <tr>
+            <td>運動・移動</td>
+            <td>
+              <div class="check-group">
+                <label>運動機能（支えの必要性）</label>
+                <div>
+                  <input type="radio" name="tachi" />なし
+                  <input type="radio" name="tachi" />あり
+                </div>
+                <label>歩行状況（歩行レベル）</label>
+                <div>
+                  <input type="checkbox" />屋内（自立）
+                  <input type="checkbox" />屋内（介助）
+                  <input type="checkbox" />屋外（自立）
+                  <input type="checkbox" />屋外（介助）
+                  <input type="checkbox" />杖
+                  <input type="checkbox" />歩行車
+                  <input type="checkbox" />車いす
+                </div>
+                <label>転倒傾向</label>
+                <div>
+                  <input type="checkbox" />あり
+                  <input type="checkbox" />なし
+                </div>
+                <label>移動方法・範囲</label>
+                <div>
+                  <input type="checkbox" />公共交通機関
+                  <input type="checkbox" />タクシー
+                  <input type="checkbox" />車（運転）
+                  <input type="checkbox" />車（同乗）
+                  <input type="checkbox" />自転車
+                  <input type="checkbox" />徒歩
+                </div>
+              </div>
+            </td>
+            <td><textarea placeholder="備考を入力"></textarea></td>
+          </tr>
+
+          <!-- ▼ コミュニケーション -->
+          <tr>
+            <td>コミュニケーション</td>
+            <td>
+              <div class="check-group">
+                <label>訪問者との意思疎通ができるか</label>
+                <div>
+                  <input type="radio" name="comm1" />できる
+                  <input type="radio" name="comm1" />できない
+                </div>
+                <label>指示への反応</label>
+                <div>
+                  <input type="radio" name="comm2" />できる
+                  <input type="radio" name="comm2" />ややできる
+                  <input type="radio" name="comm2" />できない
+                </div>
+                <label>日常の意思決定</label>
+                <div>
+                  <input type="radio" name="comm3" />できる
+                  <input type="radio" name="comm3" />ややできる
+                  <input type="radio" name="comm3" />できない
+                </div>
+                <label>目が見えにくいか</label>
+                <div>
+                  <input type="radio" name="eye" />はい
+                  <input type="radio" name="eye" />いいえ
+                  <input type="radio" name="eye" />不明
+                </div>
+                <label>耳が聞こえにくいか</label>
+                <div>
+                  <input type="radio" name="ear" />はい
+                  <input type="radio" name="ear" />いいえ
+                  <input type="radio" name="ear" />不明
+                  <br>
+                  <input type="checkbox" />補聴器あり
+                  <input type="checkbox" />補聴器なし
+                </div>
+              </div>
+            </td>
+            <td><textarea placeholder="備考を入力"></textarea></td>
+          </tr>
+
+          <!-- ▼ 以下 衛生状態・栄養状態など -->
+          <tr>
+            <td>衛生状態</td>
+            <td>
+              <div class="check-group">
+                <label>入浴の状況（清潔さの確認）</label><br>
+                <input type="checkbox" />入浴
+                <input type="checkbox" />シャワー
+                <input type="checkbox" />清拭
+                <input type="checkbox" />自立
+                <input type="checkbox" />一部介助
+                <input type="checkbox" />全介助
+                <br>
+                <label>衣類は清潔か</label>
+                <input type="radio" name="clothes" />はい
+                <input type="radio" name="clothes" />いいえ
+              </div>
+            </td>
+            <td><textarea placeholder="備考を入力"></textarea></td>
+          </tr>
+
+          <tr>
+            <td>栄養状態</td>
+            <td>
+              <div class="check-group">
+                <label>痩せている／肥満している</label>
+                <input type="radio" name="weight" />痩せ
+                <input type="radio" name="weight" />普通
+                <input type="radio" name="weight" />肥満
+                <br>
+                <label>むくみがあるか</label>
+                <input type="radio" name="mukumi" />はい
+                <input type="radio" name="mukumi" />いいえ
+              </div>
+            </td>
+            <td><textarea placeholder="備考を入力"></textarea></td>
+          </tr>
+
+          <tr>
+            <td>排泄状態</td>
+            <td>
+              <div class="check-group">
+                <label>排尿の状況</label><br>
+                <input type="checkbox" />自立
+                <input type="checkbox" />支障あり
+                <input type="checkbox" />失禁
+                <input type="checkbox" />おむつ使用
+                <br>
+                <label>排便の状況</label><br>
+                <input type="checkbox" />便秘
+                <input type="checkbox" />下痢
+                <input type="checkbox" />下剤使用
+              </div>
+            </td>
+            <td><textarea placeholder="備考を入力"></textarea></td>
+          </tr>
+
+          <tr>
+            <td>睡眠状態</td>
+            <td>
+              <div class="check-group">
+                <label>睡眠は良好か</label><br>
+                <input type="radio" name="sleep" />はい
+                <input type="radio" name="sleep" />いいえ
+                <br>
+                <label>就床時間 / 起床時間</label><br>
+                <input type="time" />〜<input type="time" />
+              </div>
+            </td>
+            <td><textarea placeholder="備考を入力"></textarea></td>
+          </tr>
+
+          <tr>
+            <td>その他</td>
+            <td>
+              <div class="check-group">
+                <label>居住環境の問題</label><br>
+                <input type="radio" name="house" />なし
+                <input type="radio" name="house" />あり
+                <br>
+                <label>家族の支援力</label><br>
+                <input type="checkbox" />十分
+                <input type="checkbox" />不足
+                <br>
+                <label>SOS発信</label><br>
+                <input type="radio" name="sos" />できる
+                <input type="radio" name="sos" />できない
+              </div>
+            </td>
+            <td><textarea placeholder="備考を入力"></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="btn-area">
+        <button class="btn">保存</button>
+        <button class="btn btn-primary">Excel出力</button>
+      </div>
+    </div>
+
+  </div><!-- /.container -->
+
+  <script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
 </body>
 </html>
