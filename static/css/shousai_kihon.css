@@ -1,7 +1,35 @@
-.soudan_date_part *, .genkyou_part *, .honnin_name_part *, .address_part *{
+body{
+    background-color: #EEF3F8;
+}
+
+.riyousha_kihon_jouhou{
+    background-color: white;
+    padding: 10px;
+    
+}
+
+/*.soudan_date_part *, .genkyou_part *, .honnin_name_part *, .address_part *{
+    display: inline;
+
+}*/
+
+h2{
+    text-align: center;
+}
+
+h3.sakusei_name{
+    text-align: right;
+}
+
+h4 ~ div{
+    margin-left: 20px;
+}
+
+h4 ~ div *{
     display: inline;
 }
 
-.soudan_date_part .date input, .shokai_sairai p input, .birthday p input{
+
+.short_text{
     width: 30px;
 }
