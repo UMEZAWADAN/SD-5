@@ -19,12 +19,10 @@
         <h4>相談日</h4>
         <div class="soudan_date">
           <label>相談日</label>
-          <p>
-            <input type="text" name="year" class="short_text">年
-            <input type="text" name="month" class="short_text">月
-            <input type="text" name="day" class="short_text">日
-            (<input type="text" name="youbi" class="short_text">)
-          </p>
+          <input type="text" name="year" class="short_text">年
+          <input type="text" name="month" class="short_text">月
+          <input type="text" name="day" class="short_text">日
+          (<input type="text" name="youbi" class="short_text">)
         </div>
 
         <div class="soudan_houhou">
@@ -54,7 +52,6 @@
         <div class="honnin_name">
           <label>本人氏名</label>
           <input type="text" name="name">
-          
           <label>フリガナ</label>
           <input type="text" name="hurigana">
         </div>
@@ -67,12 +64,10 @@
         <div class="birthday">
           <input type="radio" name="b_gengou_ts" value="T">T
           <input type="radio" name="b_gengou_ts" value="S">S
-          <p>
-            <input type="text" name="year" class="short_text">年
-            <input type="text" name="month" class="short_text">月
-            <input type="text" name="day" class="short_text">日 生
-            (<input type="text" name="youbi" class="short_text">)歳
-          </p>
+          <input type="text" name="year" class="short_text">年
+          <input type="text" name="month" class="short_text">月
+          <input type="text" name="day" class="short_text">日 生
+          (<input type="text" name="youbi" class="short_text">)歳
         </div>
       </div>
 
@@ -84,9 +79,15 @@
         </div>
 
         <div class="tel_fax">
-          <p>Tel<input type="text" name="tel1" class="short_text">(<input type="text" name="tel2" class="short_text">)<input type="text" name="tel3" class="short_text"></p>
+          <lavel>Tel</lavel>
+          <input type="text" name="tel1" class="short_text">
+          (<input type="text" name="tel2" class="short_text">)
+          <input type="text" name="tel3" class="short_text">
           <br>
-          <p>Fax<input type="text" name="fax1" class="short_text">(<input type="text" name="fax2" class="short_text">)<input type="text" name="fax3" class="short_text"></p>
+          <label>Fax</label>
+          <input type="text" name="fax1" class="short_text">
+          (<input type="text" name="fax2" class="short_text">)
+          <input type="text" name="fax3" class="short_text">
         </div>
       </div>
 
@@ -131,33 +132,29 @@
           <input type="radio" name="nintei_sougou" value="要介5">要介5
           <br>
           <label>有効期限：</label>
-          <p>
-            <input type="radio" name="gengou_hr_1" value="H">H
-            <input type="radio" name="gengou_hr_1" value="R">R
-            <input type="text" name="year" class="short_text">年
-            <input type="text" name="month" class="short_text">月
-            <input type="text" name="day" class="short_text">日
-            ～
-            <input type="radio" name="gengou_hr_2" value="H">H
-            <input type="radio" name="gengou_hr_2" value="R">R
-            <input type="text" name="year" class="short_text">年
-            <input type="text" name="month" class="short_text">月
-            <input type="text" name="day" class="short_text">日
-            (前回の介護度<input type="text" name="zenkai">)
-          </p>
+          <input type="radio" name="gengou_hr_1" value="H">H
+          <input type="radio" name="gengou_hr_1" value="R">R
+          <input type="text" name="year" class="short_text">年
+          <input type="text" name="month" class="short_text">月
+          <input type="text" name="day" class="short_text">日
+          ～
+          <input type="radio" name="gengou_hr_2" value="H">H
+          <input type="radio" name="gengou_hr_2" value="R">R
+          <input type="text" name="year" class="short_text">年
+          <input type="text" name="month" class="short_text">月
+          <input type="text" name="day" class="short_text">日
+          (前回の介護度<input type="text" name="zenkai">)
           <br>
           <label>基本チェックリスト記入結果：</label>
           <input type="radio" name="jigyou" value="事業対象者の該当あり">事業対象者の該当あり
           <input type="radio" name="jiygou" value="事業対象者の該当なし">事業対象者の該当なし
           <br>
           <label>基本チェックリスト記入日：</label>
-          <p>
-            <input type="radio" name="gengou_hr_3" value="H">H
-            <input type="radio" name="gengou_hr_3" value="R">R
-            <input type="text" name="year" class="short_text">年
-            <input type="text" name="month" class="short_text">月
-            <input type="text" name="day" class="short_text">日
-          </p>
+          <input type="radio" name="gengou_hr_3" value="H">H
+          <input type="radio" name="gengou_hr_3" value="R">R
+          <input type="text" name="year" class="short_text">年
+          <input type="text" name="month" class="short_text">月
+          <input type="text" name="day" class="short_text">日
         </div>
       </div>
 
@@ -195,6 +192,126 @@
           <input type="checkbox" name="keizai_joukyou" value="障害年金">障害年金
           <input type="checkbox" name="keizai_joukyou" value="生活保護">生活保護
         </div>
+      </div>
+
+      <div class="raishosha_part">
+        <h4>来所者 (相談者)</h4>
+        <div class="raishosha">
+          <label>氏名</label>
+          <input type="text" name="raihousha_name">
+        </div>
+
+        <div class="raihousha_address">
+          <label>住所</label>
+          <input type="text" name="raihousha_address">
+        </div>
+
+         <div class="raihousha_tel_fax">
+          <lavel>Tel</lavel>
+          <input type="text" name="r_tel1" class="short_text">
+          (<input type="text" name="r_tel2" class="short_text">)
+          <input type="text" name="r_tel3" class="short_text">
+          <br>
+          <label>Fax</label>
+          <input type="text" name="r_fax1" class="short_text">
+          (<input type="text" name="r_fax2" class="short_text">)
+          <input type="text" name="r_fax3" class="short_text">
+        </div>
+
+        <div class="tsuzukigara">
+          <label>続柄</label>
+          <input type="text" name="tsuzukigara">
+        </div>
+      </div>
+
+      <div class="kazoku_kousei_part">
+        <h4>家族構成</h4>
+        <div class="kazoku_koisei">
+          <label>家族構成</label>
+          <input type="text" name="kazoku_koisei">
+          <br>
+          <label>家族関係等の状況</label>
+          <input type="text" name="kazoku_kankei_joukyou">
+        </div>
+      </div> 
+
+      <div class="kinkyuu_renrakusaki_part">
+        <h4>緊急連絡先</h4>
+        <div class="kinkyuu_renrakusaki">
+          <table>
+            <tr>
+              <th>氏名</th>
+              <th>続柄</th>
+              <th>住所</th>
+              <th>連絡先</th>
+            </tr>
+            <tr>
+              <td><input type="text" name="kr_name"></td>
+              <td><input type="text" name="kr_tsuzukigara"></td>
+              <td><input type="text" name="kr_address"></td>
+              <td>
+                <lavel>Tel</lavel>
+                <input type="text" name="kr_tel1" class="short_text">
+                (<input type="text" name="kr_tel2" class="short_text">)
+                <input type="text" name="kr_tel3" class="short_text">
+                <br>
+                <label>Fax</label>
+                <input type="text" name="kr_fax1" class="short_text">
+                (<input type="text" name="kr_fax2" class="short_text">)
+                <input type="text" name="kr_fax3" class="short_text">
+              </td>
+            </tr>
+             <tr>
+              <td><input type="text" name="kr_name"></td>
+              <td><input type="text" name="kr_tsuzukigara"></td>
+              <td><input type="text" name="kr_address"></td>
+              <td>
+                <lavel>Tel</lavel>
+                <input type="text" name="kr_tel1" class="short_text">
+                (<input type="text" name="kr_tel2" class="short_text">)
+                <input type="text" name="kr_tel3" class="short_text">
+                <br>
+                <label>Fax</label>
+                <input type="text" name="kr_fax1" class="short_text">
+                (<input type="text" name="kr_fax2" class="short_text">)
+                <input type="text" name="kr_fax3" class="short_text">
+              </td>
+            </tr>
+             <tr>
+              <td><input type="text" name="kr_name"></td>
+              <td><input type="text" name="kr_tsuzukigara"></td>
+              <td><input type="text" name="kr_address"></td>
+              <td>
+                <lavel>Tel</lavel>
+                <input type="text" name="kr_tel1" class="short_text">
+                (<input type="text" name="kr_tel2" class="short_text">)
+                <input type="text" name="kr_tel3" class="short_text">
+                <br>
+                <label>Fax</label>
+                <input type="text" name="kr_fax1" class="short_text">
+                (<input type="text" name="kr_fax2" class="short_text">)
+                <input type="text" name="kr_fax3" class="short_text">
+              </td>
+            </tr>
+             <tr>
+              <td><input type="text" name="kr_name"></td>
+              <td><input type="text" name="kr_tsuzukigara"></td>
+              <td><input type="text" name="kr_address"></td>
+              <td>
+                <lavel>Tel</lavel>
+                <input type="text" name="kr_tel1" class="short_text">
+                (<input type="text" name="kr_tel2" class="short_text">)
+                <input type="text" name="kr_tel3" class="short_text">
+                <br>
+                <label>Fax</label>
+                <input type="text" name="kr_fax1" class="short_text">
+                (<input type="text" name="kr_fax2" class="short_text">)
+                <input type="text" name="kr_fax3" class="short_text">
+              </td>
+            </tr>
+          </table>
+        </div>
+        
       </div>
     </div>
   </div>
