@@ -2,6 +2,42 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
+  <title>身体状況チェック表</title>
+  <link rel="stylesheet" href="../static/css/sintai.css">
+</head>
+<body>
+  <header>
+    <h1>身体状況チェック表</h1>
+  </header>
+
+  <div class="visit-info">
+    <div class="visit-date">
+      <label>訪問年月</label>
+      <input type="number" placeholder="年" style="width:70px;"> 年
+      <input type="number" placeholder="月" style="width:50px;"> 月
+      <input type="number" placeholder="日" style="width:50px;"> 日（ ）
+    </div>
+    <div class="visit-time">
+      <label>訪問時間</label>
+      <input type="number" placeholder="時" style="width:50px;"> :
+      <input type="number" placeholder="分" style="width:50px;"> ～ 
+      <input type="number" placeholder="時" style="width:50px;"> :
+      <input type="number" placeholder="分" style="width:50px;"> （ ）時間
+    </div>
+  </div>
+
+  <table class="check-table title-row">
+    <tr>
+      <th style="width:15%;">標準項目</th>
+      <th style="width:65%;">チェック項目</th>
+      <th style="width:20%;">備考</th>
+    </tr>
+  </table>
+
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
   <title>対象者詳細</title>
   <link rel="stylesheet" type="text/css" href="../static/css/sintai.css">
 </head>
@@ -152,4 +188,84 @@
               <label><input type="checkbox">自立</label>
               <label><input type="checkbox">支障あり</label>
               <label><input type="checkbox">失禁</label>
-              <la
+              <label><input type="checkbox">おむつ使用</label>
+            </div>
+
+            <strong>排便の状況</strong>
+            <div>
+              <label><input type="checkbox">便秘</label>
+              <label><input type="checkbox">下痢</label>
+              <label><input type="checkbox">下剤使用</label>
+            </div>
+          </div>
+        </td>
+        <td><textarea placeholder="備考を入力"></textarea></td>
+      </tr>
+    </table>
+
+    <!-- 睡眠状態 -->
+    <table class="check-table">
+      <tr>
+        <th>睡眠状態</th>
+        <td>
+          <div class="check-group">
+            <strong>睡眠は良好か</strong>
+            <div>
+              <label><input type="radio" name="sleep1">はい</label>
+              <label><input type="radio" name="sleep1">いいえ</label>
+            </div>
+
+            <strong>就床時間／起床時間</strong>
+            <div>
+              <input type="time"> ～ <input type="time">
+            </div>
+          </div>
+        </td>
+        <td><textarea placeholder="備考を入力"></textarea></td>
+      </tr>
+    </table>
+
+    <!-- その他 -->
+    <table class="check-table">
+      <tr>
+        <th>その他</th>
+        <td>
+          <div class="check-group">
+            <strong>居住環境の問題</strong>
+            <div>
+              <label><input type="radio" name="other1">なし</label>
+              <label><input type="radio" name="other1">あり</label>
+            </div>
+
+            <strong>家族の支援力</strong>
+            <div>
+              <label><input type="checkbox">十分</label>
+              <label><input type="checkbox">不足</label>
+            </div>
+
+            <strong>SOS発信</strong>
+            <div>
+              <label><input type="radio" name="other2">できる</label>
+              <label><input type="radio" name="other2">できない</label>
+            </div>
+          </div>
+        </td>
+        <td><textarea placeholder="備考を入力"></textarea></td>
+      </tr>
+    </table>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+</body>
+</html>
+
+  
+  <div class="button-area">
+    <button>保存</button>
+    <button>Excelファイルに出力</button>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+</body>
+</html>
