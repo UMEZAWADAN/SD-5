@@ -314,6 +314,44 @@
         
       </div>
     </div>
+
+    <div class="kaigoyobou">
+      <h3>《介護予防に関する事項》</h3>
+      <div class="imamade__seikatsu_part">
+        <h4>今までの生活</h4>
+        <div class="imamade_seikatsu">
+          <label>今までの生活</label>
+          <input type="text" name="imamade_seikatsu">
+        </div>
+      </div>
+
+      <div class="genzai_seikatsu_part">
+        <h4>現在の生活状況 (どんな暮らしを送っているか)</h4>
+        <div class="genzai_seikatsu">
+          <label>1日の生活・すごし方</label>
+          <input type="text" name="sugoshikata">
+          <br>
+          <label>時間</label>
+          <input type="text" name="sugoshikata_time">
+          <br>
+          <label>本人</label>
+          <input type="text" name="sugoshikata_honnin">
+          <br>
+          <label>介護者・家族</label>
+          <input type="text" name="sugoshikata_kaigosha">
+          <br>
+          <label>趣味・楽しみ・特技</label>
+          <input type="text" name="sugoshikata_hobby">
+          <br>
+          <label>友人・地域との関係</label>
+          <input type="text" name="sugoshikata_relation">
+        </div>
+      </div>
+    </div>
+
+    <div class="byouki_log">
+      <h3>《現病歴・既住歴と経過》</h3>
+    </div>
   </div>
 
 <script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
