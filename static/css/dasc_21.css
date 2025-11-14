@@ -18,12 +18,14 @@ main {
   text-align: center;
   margin-bottom: 25px;
 }
-.selection-title {
-    font-size: 14px;
-    font-weight: bold;
-    padding-left: 10px;
-    border-left: 5px solid #007bff;
-    margin: 20px 0 10px;
+
+.section-title {margin-bottom
+  font: size 7px;
+  font-weight: bold;
+  background: #e8f0ff;
+  padding: 8px 12px;
+  border-left: 4px solid #4a6cd8;
+  margin-bottom: 15px;
 }
 
 
