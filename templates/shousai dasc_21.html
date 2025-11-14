@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DASC-21</title>
   <link rel="stylesheet" href="../static/css/dasc_21.css">
+   <style>
+    .score-radio {
+      transform: scale(1.6);
+      margin: 5px;
+    }
+  </style>
 </head>
 <body>
 
@@ -78,18 +84,13 @@
             <td>導入質問（採点せず）</td>
             <td><textarea class="remarks"></textarea></td>
           </tr>
-          .score-radio {
-    transform: scale(1.6); 
-    margin: 5px;            
-}
-
           <tr>
             <td>B</td>
             <td>１年前と比べて、もの忘れが増えたと感じますか </td>
-            <td><input type="radio" name="qB" value="0"></td>
-            <td><input type="radio" name="qB" value="0"></td>
-            <td><input type="radio" name="qB" value="0"></td>
-            <td><input type="radio" name="qB" value="0"></td>
+            <td><input type="radio" name="qB" value="0" class="score-radio"></td>
+            <td><input type="radio" name="qB" value="0" class="score-radio"></td>
+            <td><input type="radio" name="qB" value="0" class="score-radio"></td>
+            <td><input type="radio" name="qB" value="0" class="score-radio"></td>
             <td>導入質問（採点せず）</td>
             <td><textarea class="remarks"></textarea></td>
           </tr>
@@ -214,7 +215,7 @@
       <div class="button-area">
         <button type="button" onclick="calcScore()">結果を計算</button>
         <button type="button">保存</button>
-        <button type="button" class="btn-row">Excelに出力</button>
+        <button type="button">Excelに出力</button>
       </div>
     </form>
   </main>
