@@ -28,14 +28,14 @@ main {
 }
 
 
-h2 {
-  border-left: 6px solid #004c97;
-  padding-left: 10px;
-  color: #004c97;
-  margin-top: 40px;
-  margin-bottom: 10px;
-  font-size: 20px;
+.section-class {
+  font-weight: bold;
+  background: #e8f0ff;
+  padding: 8px 12px;
+  border-left: 4px solid #4a6cd8;
+  margin-bottom: 15px;
 }
+
 
 .info-grid {
   display: grid;
