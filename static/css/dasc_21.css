@@ -20,6 +20,7 @@ main {
 }
 
 .section-title {
+  font-size:14pw;
   font-weight: bold;
   background: #e8f0ff;
   padding: 8px 12px;
