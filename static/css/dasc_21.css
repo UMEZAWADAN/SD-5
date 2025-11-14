@@ -28,15 +28,6 @@ main {
 }
 
 
-.section-class {
-  font-weight: bold;
-  background: #e8f0ff;
-  padding: 8px 12px;
-  border-left: 4px solid #4a6cd8;
-  margin-bottom: 15px;
-}
-
-
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
