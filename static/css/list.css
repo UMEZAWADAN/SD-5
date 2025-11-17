@@ -11,25 +11,25 @@ body {
   margin: 40px auto;
   background: #fff;
   border-radius: 10px;
-  padding-bottom: 30px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: none;
+  padding: 0 30px 40px;
 }
 
 .header {
   background: #e8f0ff;
-  padding: 18px 25px;
+  padding: 20px 25px;
   border-radius: 10px 10px 0 0;
   border-bottom: 3px solid #4a6cd8;
+  margin: 0 -30px 30px;
 }
 
 .header h1 {
   margin: 0;
-  font-size: 1.6em;
+  font-size: 1.7em;
   color: #333;
 }
 
-.search-section h2 {
+.section-title {
   font-size: 14px;
   font-weight: bold;
   background: #e8f0ff;
@@ -43,7 +43,7 @@ body {
   padding: 25px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
 .form-row {
@@ -78,6 +78,7 @@ select {
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
+  margin-top: 10px;
 }
 
 .search-button:hover {
@@ -87,7 +88,7 @@ select {
 .result-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 15px;
   border-radius: 8px;
   overflow: hidden;
 }
