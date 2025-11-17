@@ -133,3 +133,11 @@ table {
 .num {
   width: 60px;
 }
+.hantei_block {
+    margin-top: 20px;
+}
+
+.hantei_box {
+    width: 100%;
+    height: 140px;
+}
