@@ -1,0 +1,124 @@
+/* top.css */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+body{
+    margin:0;
+    font-family: "Noto Sans JP", sans-serif;
+    background:#e6e6e6;
+}
+
+/* ─────────────── */
+/* ヘッダー */
+/* ─────────────── */
+.header{
+    background:#6fa4d4;
+    height:120px;
+    width:100%;
+    display:flex;
+    align-items:flex-start;
+    padding:10px 20px;
+    position:relative;
+    border-bottom:2px solid #0002;
+}
+
+.header .title-small{
+    font-size:28px;
+    font-weight:700;
+    padding-left:10px;
+    padding-top:10px;
+}
+
+.header .title-main{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    top:35px;
+    font-size:40px;
+    font-weight:900;
+}
+
+.header .back-btn{
+    position:absolute;
+    right:40px;
+    top:20px;
+    background:#ffffff;
+    padding:18px 26px;
+    font-size:24px;
+    font-weight:700;
+    border-radius:18px;
+    text-align:center;
+    line-height:1.2;
+    border:3px solid #0003;
+    box-shadow:0 2px 2px #0002, inset 0 -3px 6px #0001;
+}
+
+/* ─────────────── */
+/* メイン */
+/* ─────────────── */
+
+.main-area{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    padding-top:40px;
+}
+
+.form-container{
+    width:950px;
+}
+
+.row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:45px 0;
+}
+
+/* ラベル（左側） */
+.row label{
+    width:240px;
+    text-align:center;
+    font-size:34px;
+    font-weight:700;
+}
+
+/* 2行ラベル */
+.row .label-two{
+    font-size:28px;
+    line-height:1.2;
+}
+
+/* 入力欄 */
+.input-box{
+    width:500px;
+    height:60px;
+    border-radius:14px;
+    border:3px solid #0002;
+    background:#fff;
+    box-shadow:0 2px 3px #0002 inset;
+    font-size:22px;
+    padding:10px 16px;
+}
+
+/* ─────────────── */
+/* 新規登録ボタン */
+/* ─────────────── */
+
+.submit-wrap{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    margin-top:30px;
+}
+
+.submit-btn{
+    width:320px;
+    height:130px;
+    border-radius:24px;
+    background:#d3d3d3;
+    border:3px solid #0002;
+    font-size:36px;
+    font-weight:900;
+    box-shadow:0 6px 4px #0002, inset 0 -5px 10px #fff4;
+    cursor:pointer;
+}

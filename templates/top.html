@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>トップページ（SD-02）</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/top.css') }}">
+    <meta charset="UTF-8">
+    <title>トップページ</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <header>
-    <div class="header-left">TOP</div>
-    <div class="header-center">{{ username or "（ユーザー名）" }}</div>
-    <button class="logout-btn" >ログアウト</button>
-  </header>
-  
-  <main>
-    <button class="menu-btn" onclick="location.href='{{ url_for('list') }}'">対象者一覧</button>
-    <button class="menu-btn" onclick="location.href='{{ url_for('shousai') }}'">対象者詳細登録</button>
-  </main>
+    <header>
+        <div class="title-main">認知症初期支援業務管理システム</div>
+        <div class="title-sub">トップページ</div>
+    </header>
 
-  <footer>
-    <p>© 認知症初期集中支援チーム支援システム</p>
-  </footer>
+    <main>
+        <div class="search-title">対象者の検索</div>
 
+        <div class="search-area">
+            <input type="text" class="search-input" placeholder="対象者IDを入力">
+            <button class="search-btn">検索</button>
+        </div>
+
+        <button class="register-btn">対象者新規登録</button>
+    </main>
+
+</body>
+</html>
 </body>
 </html>
