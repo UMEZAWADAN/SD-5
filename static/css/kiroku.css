@@ -127,3 +127,6 @@ table {
 .plan-table td input[type="text"] {
   width: 95%;
 }
+.num {
+  width: 60px;
+}
