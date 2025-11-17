@@ -1,72 +1,101 @@
+/* 全体のフォントと背景 */
 body {
-    font-family: "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif;
-    margin: 0;
-    background-color: #fff;
-    color: #111;
-  }
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  background-color: #f5f7fb;
+  margin: 0;
+  color: #333;
+}
 
-  /* --- ヘッダー --- */
-  header {
-    background-color: #e5e5e5;
-    border: 1px solid #aaa;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-  }
+/* ヘッダー */
+.header {
+  background: #e8f0ff;
+  padding: 20px 30px;
+  border-bottom: 3px solid #4a6cd8;
+  border-radius: 0 0 10px 10px;
+}
 
-  .header-left {
-    font-size: 28px;
-    font-weight: bold;
-  }
+.header h1.system-title {
+  margin: 0;
+  font-size: 1.6em;
+  color: #333;
+}
 
-  .header-center {
-    flex: 1;
-    text-align: center;
-    font-size: 28px;
-    font-weight: bold;
-  }
+.header h2.page-title {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: #555;
+}
 
-  .logout-btn {
-    background-color: #fff;
-    border: 1px solid #aaa;
-    padding: 6px 16px;
-    border-radius: 3px;
-    cursor: pointer;
-  }
+/* メインエリア */
+.main-area {
+  max-width: 950px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-  .logout-btn:hover {
-    background-color: #f2f2f2;
-  }
+/* 検索ブロック */
+.search-block {
+  margin-bottom: 30px;
+}
 
-  /* --- メイン --- */
-  main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 100px;
-    gap: 50px;
-  }
+.search-title {
+  font-size: 14px;
+  font-weight: bold;
+  background: #e8f0ff;
+  padding: 8px 12px;
+  border-left: 4px solid #4a6cd8;
+  margin-bottom: 15px;
+}
 
-  .menu-btn {
-    width: 360px;
-    height: 84px;
-    background-color: #e5e5e5;
-    border: 1px solid #999;
-    font-size: 26px;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+/* 検索行 */
+.search-row {
+  display: flex;
+  gap: 10px;
+}
 
-  .menu-btn:hover {
-    background-color: #dcdcdc;
-  }
+.search-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
 
-  /* --- フッター（任意） --- */
-  footer {
-    margin-top: 80px;
-    text-align: center;
-    color: #777;
-    font-size: 12px;
-  }
+.search-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-btn:hover {
+  background-color: #0056b3;
+}
+
+/* 新規登録ボタン */
+.new-btn-area {
+  text-align: center;
+}
+
+.new-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.new-btn:hover {
+  background-color: #1e7e34;
+}
+
