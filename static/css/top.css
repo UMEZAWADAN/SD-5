@@ -1,4 +1,3 @@
-/* 全体のフォントと背景 */
 body {
   font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
   background-color: #f5f7fb;
@@ -6,12 +5,21 @@ body {
   color: #333;
 }
 
-/* ヘッダー */
+main {
+  max-width: 950px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
 .header {
   background: #e8f0ff;
   padding: 20px 30px;
   border-bottom: 3px solid #4a6cd8;
   border-radius: 0 0 10px 10px;
+  margin-bottom: 30px;
 }
 
 .header h1.system-title {
@@ -26,22 +34,13 @@ body {
   color: #555;
 }
 
-/* メインエリア */
-.main-area {
-  max-width: 950px;
-  margin: 40px auto;
-  background: #fff;
-  padding: 40px 50px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+.form-title {
+  text-align: center;
+  margin-bottom: 25px;
 }
 
-/* 検索ブロック */
-.search-block {
-  margin-bottom: 30px;
-}
-
-.search-title {
+.section-title, .search-title {
   font-size: 14px;
   font-weight: bold;
   background: #e8f0ff;
@@ -50,18 +49,41 @@ body {
   margin-bottom: 15px;
 }
 
-/* 検索行 */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 30px;
+}
+
+.birth-row {
+  grid-column: 1 / span 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.birth-input, .age-input, input[type="text"], .search-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 14px;
+}
+
+.birth-input { width: 60px; }
+.age-input { width: 50px; }
+
+textarea {
+  resize: vertical;
+  height: 50px;
+}
+
+.search-block {
+  margin-bottom: 30px;
+}
+
 .search-row {
   display: flex;
   gap: 10px;
-}
-
-.search-input {
-  flex: 1;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
 }
 
 .search-btn {
@@ -79,23 +101,62 @@ body {
   background-color: #0056b3;
 }
 
-/* 新規登録ボタン */
-.new-btn-area {
-  text-align: center;
+.dasc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
 }
 
-.new-btn {
-  background-color: #28a745;
+.dasc-table th, .dasc-table td {
+  border: 1px solid #ccc;
+  text-align: center;
+  padding: 10px;
+}
+
+.dasc-table th {
+  background-color: #e9f0f7;
+}
+
+.result-section {
+  background: #f8f8f8;
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-top: 30px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.button-area, .new-btn-area {
+  text-align: center;
+  margin-top: 30px;
+}
+
+button, .new-btn {
+  background-color: #007bff;
   color: white;
   border: none;
   padding: 10px 25px;
+  margin: 5px;
   font-size: 16px;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
 }
 
+button:hover, .new-btn:hover {
+  background-color: #0056b3;
+}
+
+.new-btn {
+  background-color: #28a745;
+}
+
 .new-btn:hover {
   background-color: #1e7e34;
+}
+
+.btn-row {
+  background: #2ea44f;
 }
 
