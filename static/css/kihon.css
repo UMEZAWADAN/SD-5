@@ -79,3 +79,24 @@ textarea {
     background: #fff;
     box-sizing: border-box;
 }
+
+h4 ~ div{
+    margin-left: 20px;
+}
+
+/*h4 ~ div *{
+    display: inline;
+}*/
+
+.short_text{
+    width: 30px;
+}
+
+.long_text{
+    width: 1000px;
+}
+
+table, th, td{
+    border: 1px solid;
+    border-collapse: collapse;
+}

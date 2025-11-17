@@ -4,16 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>認知症初期集中支援 訪問記録票（初回・継続）</title>
-
   <link rel="stylesheet" href="../static/css/kiroku.css">
 </head>
-<body>
 
+<body>
   <div class="container">
 
     <div class="header-row">
-      <h3>認知症初期集中支援 訪問記録票</h3>
-
+      <h3>認知症初期集中支援 訪問記録票（初回・継続）</h3>
       <div class="right-options">
         <label><input type="radio" name="visit_type" value="初回"> 初回</label>
         <label><input type="radio" name="visit_type" value="継続"> 継続</label>
@@ -26,44 +24,41 @@
       <div class="form-section">
         <div class="section-title">基本情報</div>
 
-        <div class="row">
-          <div class="col">
-            <label>対象者名</label>
-            <input type="text">
-          </div>
+        <table class="info-table">
+          <tr>
+            <th>対象者名</th>
+            <td><input type="text"></td>
 
-          <div class="col">
-            <label>生年月日</label>
-            <div class="input-group">
-              <span>T・S</span><input type="text" placeholder="年">
-              <span>年</span><input type="text" placeholder="月">
-              <span>月</span><input type="text" placeholder="日">
-              <span>日</span><input type="text" placeholder="歳">
-              <span>歳</span>
-            </div>
-          </div>
-        </div>
+            <th>生年月日</th>
+            <td>
+              <div class="input-group">
+                <span>T・S</span>
+                <input type="text" class="num"> 年
+                <input type="text" class="num"> 月
+                <input type="text" class="num"> 日
+                <input type="text" class="num"> 歳
+              </div>
+            </td>
+          </tr>
 
-        <div class="row">
-          <div class="col">
-            <label>訪問年月日</label>
-            <div class="input-group">
-              <input type="text" placeholder="年"><span>年</span>
-              <input type="text" placeholder="月"><span>月</span>
-              <input type="text" placeholder="日"><span>日</span>
-            </div>
-          </div>
+          <tr>
+            <th>訪問年月日</th>
+            <td>
+              <div class="input-group">
+                <input type="text" class="num"> 年
+                <input type="text" class="num"> 月
+                <input type="text" class="num"> 日
+              </div>
+            </td>
 
-          <div class="col">
-            <label>訪問時間</label>
-            <div class="input-group">
-              <input type="time">
-              <span>〜</span>
-              <input type="time">
-              <span>（）時間</span>
-            </div>
-          </div>
-        </div>
+            <th>訪問時間</th>
+            <td>
+              <div class="input-group">
+                <input type="time"> 〜 <input type="time"> （ ）時間
+              </div>
+            </td>
+          </tr>
+        </table>
 
         <label>訪問目的</label>
         <textarea></textarea>
@@ -72,50 +67,75 @@
       <div class="form-section">
         <div class="section-title">訪問時の状況</div>
 
-        <label>[訪問に対する本人の反応・理解]</label>
-        <textarea></textarea>
+        <table class="three-col-table">
+          <tr>
+            <th>訪問に対する本人の反応・理解</th>
+            <th>アセスメントシート</th>
+            <th>本人の意向・希望</th>
+          </tr>
 
-        <label>[アセスメントシート]</label>
-        <div class="input-group">
-          <span>DASC-21</span>
-          <input type="number"><span>点</span>
-          <span>DBD13</span>
-          <input type="number"><span>点</span>
-        </div>
+          <tr>
+            <td><textarea></textarea></td>
 
-        <label>[判断]</label>
-        <textarea></textarea>
+            <td class="assessment-block">
+              <div>DASC-21 <input type="number" class="score"> 点</div>
+              <div>DBD13 <input type="number" class="score"> 点</div>
+              <div>J-ZBI_8 <input type="number" class="score"> 点</div>
+              <div class="sub">〔判明〕</div>
+            </td>
 
-        <label>[認知機能]</label>
-        <textarea></textarea>
+            <td><textarea></textarea></td>
+          </tr>
 
-        <label>[精神症状・行動症状]</label>
-        <textarea></textarea>
+          <tr>
+            <th>認知機能（※認知症日常生活自立度）</th>
+            <th>介護者の意向・希望</th>
+            <th>その他</th>
+          </tr>
 
-        <label>[身体状況]</label>
-        <textarea></textarea>
+          <tr>
+            <td><textarea></textarea></td>
+            <td><textarea></textarea></td>
+            <td><textarea></textarea></td>
+          </tr>
 
-        <label>[生活状況]</label>
-        <textarea></textarea>
+          <tr>
+            <th>精神症状・行動症状</th>
+            <th colspan="2">身体状況（※高齢者の日常生活自立度）</th>
+          </tr>
+
+          <tr>
+            <td><textarea></textarea></td>
+            <td colspan="2"><textarea></textarea></td>
+          </tr>
+
+          <tr>
+            <th>生活状況</th>
+            <th colspan="2">（※別添：身体状況チェック票参照）</th>
+          </tr>
+
+          <tr>
+            <td><textarea></textarea></td>
+            <td colspan="2"><textarea></textarea></td>
+          </tr>
+        </table>
       </div>
 
       <div class="form-section">
         <div class="section-title">今後の方針</div>
 
-        <label class="check-group">
-          <input type="checkbox"> 継続訪問
-          <input type="date">
-        </label>
+        <table class="plan-table">
+          <tr>
+            <th>継続訪問</th>
+            <td><input type="checkbox"> 年<input type="text" class="num"> 月<input type="text" class="num"> 日</td>
 
-        <label class="check-group">
-          <input type="checkbox"> チーム員会議
-          <input type="date">
-        </label>
+            <th>チーム員会議</th>
+            <td><input type="checkbox"> 年<input type="text" class="num"> 月<input type="text" class="num"> 日</td>
 
-        <label class="check-group">
-          <input type="checkbox"> その他
-          <input type="text" placeholder="内容を入力">
-        </label>
+            <th>その他</th>
+            <td><input type="checkbox"> <input type="text" placeholder="内容"></td>
+          </tr>
+        </table>
       </div>
 
       <div class="btn-row">
@@ -126,6 +146,5 @@
 
     </form>
   </div>
-
 </body>
 </html>
