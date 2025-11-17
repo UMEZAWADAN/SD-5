@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/template.css') }}">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h2>{% block header_system_name %}{% endblock %}</h2>
+        <h1>{% block header_page_name %}{% endblock %}</h1>
+    </header>
+
+    <footer>
+        <h2>{% block footer_sd5 %}{% endblock %}</h2>
+    </footer>
+</body>
+</html>

@@ -9,6 +9,16 @@ app = Flask(__name__)
 # ================================
 #  1. ルーティング
 # ================================
+
+#テンプレート　ヘッダー・フッター
+@app.route("/")
+def index():
+    obj = {
+        "header_system_name":"認知症初期支援業務管理システム",
+        "header_page_name":"テンプレート",
+        "footer_sd5":"プロジェクト演習  SD-5"}
+    return(render_template("template.html", d=obj))
+
 @app.route("/top")
 def top():
     return render_template("top.html")
