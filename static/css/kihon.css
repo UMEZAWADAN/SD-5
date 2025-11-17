@@ -1,26 +1,92 @@
-body{
-    background-color: #EEF3F8;
+body {
+    background-color: #f5f7fb;
+    font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 30px 0;
 }
 
+<<<<<<< HEAD
 .riyousha_kihon_jouhou{
     background-color: white;
     padding: 10px;
     width: 1250px;
+=======
+.riyousha_kihon_jouhou {
+    background-color: #fff;
+    padding: 25px 30px;
+    width: 1000px;
+>>>>>>> fad0656e4f15bc4ab7248663fb2f0c6a460ed56e
     margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
-/*.soudan_date_part *, .genkyou_part *, .honnin_name_part *, .address_part *{
-    display: inline;
+h2 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
 
-}*/
+h3.sakusei_name {
+    text-align: right;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
 
-h2{
+h4 {
+    font-size: 15px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    background: #e8f0ff;
+    padding: 6px 10px;
+    border-left: 4px solid #4a6cd8;
+    border-radius: 4px;
+}
+
+h4 ~ div {
+    margin-left: 18px;
+    margin-bottom: 15px;
+}
+
+.short_text {
+    width: 40px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    border: 1px solid #d3d8e0;
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+table th {
+    background: #e9f0f7;
+    font-weight: bold;
     text-align: center;
 }
 
-h3.sakusei_name{
-    text-align: right;
+input[type="text"],
+input[type="number"],
+textarea {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #fff;
+    box-sizing: border-box;
 }
+<<<<<<< HEAD
 
 h4 ~ div{
     margin-left: 20px;
@@ -42,3 +108,5 @@ table, th, td{
     border: 1px solid;
     border-collapse: collapse;
 }
+=======
+>>>>>>> fad0656e4f15bc4ab7248663fb2f0c6a460ed56e

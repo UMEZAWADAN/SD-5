@@ -1,43 +1,64 @@
 body {
-  font-family: "Meiryo", sans-serif;
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  background-color: #f5f7fb;
+  margin: 0;
   text-align: center;
-  background-color: #fff;
+  color: #333;
 }
 
 .header {
-  background: #e6e6e6;
+  background: #e8f0ff;
   padding: 20px;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
-  border-bottom: 1px solid #aaa;
+  border-bottom: 3px solid #4a6cd8;
+  color: #333;
 }
 
 .login-box {
   display: inline-block;
-  background: #eee;
-  border: 1px solid #aaa;
-  padding: 40px;
-  margin-top: 60px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 40px 50px;
+  margin-top: 80px;
   text-align: left;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border: none;
+  width: 350px;
 }
 
 label {
   display: block;
-  margin-top: 20px;
-  font-size: 20px;
+  margin-top: 22px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
 }
 
 input {
   width: 100%;
-  padding: 8px;
-  font-size: 18px;
-  margin-top: 5px;
+  padding: 10px 12px;
+  font-size: 15px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
   box-sizing: border-box;
+  background: #fff;
 }
 
 button {
   display: block;
-  margin: 30px auto 0;
+  margin: 35px auto 0;
   padding: 10px 40px;
-  font-size: 20px;
+  font-size: 17px;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
