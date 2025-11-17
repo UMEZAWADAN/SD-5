@@ -18,103 +18,31 @@
       color: #fff;
     }
 
-    main, .container {
-      max-width: 900px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+    main, .container, main {
+  max-width: 950px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 30px 40px;  /* 余白調整 */
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
-    .visit-info {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
+.check-table {
+  width: 100%;           /* テーブル幅100％ */
+  border-collapse: collapse;
+  margin-bottom: 25px;   /* テーブル間余白 */
+}
 
-    .visit-info label {
-      font-weight: bold;
-      margin-right: 6px;
-    }
+.check-table th, .check-table td {
+  border: 1px solid #ccc;
+  padding: 10px;         /* セル余白 */
+  text-align: left;
+  vertical-align: top;
+}
 
-    .check-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 25px;
-    }
-
-    .check-table th, .check-table td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    .check-table th {
-      background-color: #e9f0f7;
-    }
-
-    .check-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .check-group strong {
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    input[type="text"], input[type="number"], textarea {
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 4px 6px;
-      font-size: 14px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 50px;
-      resize: vertical;
-    }
-
-    input[type="radio"], input[type="checkbox"] {
-      transform: scale(1.4);
-      margin-right: 5px;
-      cursor: pointer;
-    }
-
-    .button-area {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 25px;
-      margin: 5px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    .btn.success {
-      background-color: #2ea44f;
-    }
-
-    .btn.success:hover {
-      background-color: #22863a;
-    }
+.check-table th {
+  background-color: #e9f0f7; /* DBD13風の薄い青 */
+}
   </style>
 </head>
 <body>
