@@ -118,9 +118,12 @@ table {
   color: #fff;
 }
 
-.btn-row {
+.btn-row.center{
+  justify-content: center;
   margin-top: 25px;
   display: flex;
   gap: 20px;
 }
-
+.plan-table td input[type="text"] {
+  width: 95%;
+}
