@@ -1,162 +1,72 @@
 body {
-  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-  background-color: #f5f7fb;
-  margin: 0;
-  color: #333;
+    margin: 0;
+    background-color: #eeeeee;
+    font-family: "Yu Gothic", sans-serif;
+}
+
+header {
+    background-color: #5a9bd5;
+    padding: 20px 20px;
+    color: #000;
+}
+
+.title-main {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.title-sub {
+    font-size: 36px;
+    font-weight: bold;
 }
 
 main {
-  max-width: 950px;
-  margin: 40px auto;
-  background: #fff;
-  padding: 40px 50px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-top: 120px;
 }
 
-.header {
-  background: #e8f0ff;
-  padding: 20px 30px;
-  border-bottom: 3px solid #4a6cd8;
-  border-radius: 0 0 10px 10px;
-  margin-bottom: 30px;
+.search-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 40px;
 }
 
-.header h1.system-title {
-  margin: 0;
-  font-size: 1.6em;
-  color: #333;
+.search-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
 }
 
-.header h2.page-title {
-  margin: 5px 0 0 0;
-  font-size: 14px;
-  color: #555;
-}
-
-
-.form-title {
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-.section-title, .search-title {
-  font-size: 14px;
-  font-weight: bold;
-  background: #e8f0ff;
-  padding: 8px 12px;
-  border-left: 4px solid #4a6cd8;
-  margin-bottom: 15px;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px 30px;
-}
-
-.birth-row {
-  grid-column: 1 / span 2;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.birth-input, .age-input, input[type="text"], .search-input {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 4px 6px;
-  font-size: 14px;
-}
-
-.birth-input { width: 60px; }
-.age-input { width: 50px; }
-
-textarea {
-  resize: vertical;
-  height: 50px;
-}
-
-.search-block {
-  margin-bottom: 30px;
-}
-
-.search-row {
-  display: flex;
-  gap: 10px;
+.search-input {
+    width: 420px;
+    height: 48px;
+    font-size: 20px;
+    padding-left: 10px;
+    border: 1.5px solid #8895a7;
+    border-radius: 6px;
+    background-color: #fff;
 }
 
 .search-btn {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 8px 20px;
-  font-size: 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
+    width: 110px;
+    height: 48px;
+    font-size: 22px;
+    background-color: #fff;
+    border: 1.5px solid #8895a7;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
-.search-btn:hover {
-  background-color: #0056b3;
+.register-btn {
+    margin-top: 130px;
+    width: 500px;
+    height: 140px;
+    background-color: #ccc;
+    border: none;
+    border-radius: 30px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
 }
-
-.dasc-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-.dasc-table th, .dasc-table td {
-  border: 1px solid #ccc;
-  text-align: center;
-  padding: 10px;
-}
-
-.dasc-table th {
-  background-color: #e9f0f7;
-}
-
-.result-section {
-  background: #f8f8f8;
-  border: 1px solid #ccc;
-  padding: 15px;
-  margin-top: 30px;
-  border-radius: 5px;
-  text-align: center;
-  font-size: 18px;
-}
-
-.button-area, .new-btn-area {
-  text-align: center;
-  margin-top: 30px;
-}
-
-button, .new-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 25px;
-  margin: 5px;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-button:hover, .new-btn:hover {
-  background-color: #0056b3;
-}
-
-.new-btn {
-  background-color: #28a745;
-}
-
-.new-btn:hover {
-  background-color: #1e7e34;
-}
-
-.btn-row {
-  background: #2ea44f;
-}
-

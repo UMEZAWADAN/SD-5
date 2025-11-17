@@ -1,0 +1,23 @@
+header, footer{
+    background-color: #4A90E2;
+    padding: 10px;
+}
+
+
+footer {
+    position: fixed;
+    width: 100%;
+    text-align: right;
+}
+
+body{
+    margin: 0px;
+}
+
+header h2{
+    margin-top: 0px;
+}
+
+footer h2{
+    margin-bottom: 0px;
+}
