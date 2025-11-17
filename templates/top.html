@@ -1,34 +1,26 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>認知症初期支援業務管理システム</title>
-  <link rel="stylesheet" href="top.css">
+    <meta charset="UTF-8">
+    <title>認知症初期支援業務管理システム</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header class="header">
-  <h1 class="system-title">認知症初期支援業務管理システム</h1>
-  <h2 class="page-title">トップページ</h2>
+<header>
+    <h1>認知症初期支援業務管理システム</h1>
+    <h2>トップページ</h2>
 </header>
 
-<main class="main-area">
+<div class="container">
+    <div class="title">対象者の検索</div>
 
-  <div class="search-block">
-    <h3 class="search-title">対象者の検索</h3>
+    <input type="text" class="input-box" placeholder="対象者IDを入力">
+    <button class="search-btn">検索</button>
 
-    <div class="search-row">
-      <input type="text" placeholder="対象者IDを入力" class="search-input">
-      <button class="search-btn">検索</button>
-    </div>
-  </div>
-
-  <div class="new-btn-area">
-    <button class="new-btn">対象者新規登録</button>
-  </div>
-
-</main>
+    <button class="register-btn">対象者新規登録</button>
+</div>
 
 </body>
 </html>
