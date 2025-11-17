@@ -1,271 +1,257 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>身体状況チェック表</title>
-  <link rel="stylesheet" href="../static/css/sintai.css">
+  <style>
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      background-color: #f5f7fb;
+      margin: 0;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px 0;
+      background: #4a6cd8;
+      color: #fff;
+    }
+
+    main, .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .visit-info {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .visit-info label {
+      font-weight: bold;
+      margin-right: 6px;
+    }
+
+    .check-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 25px;
+    }
+
+    .check-table th, .check-table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .check-table th {
+      background-color: #e9f0f7;
+    }
+
+    .check-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .check-group strong {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"], input[type="number"], textarea {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 4px 6px;
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 50px;
+      resize: vertical;
+    }
+
+    input[type="radio"], input[type="checkbox"] {
+      transform: scale(1.4);
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .button-area {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .btn.success {
+      background-color: #2ea44f;
+    }
+
+    .btn.success:hover {
+      background-color: #22863a;
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1>身体状況チェック表</h1>
   </header>
 
-  <div class="visit-info">
-    <div class="visit-date">
-      <label>訪問年月</label>
-      <input type="number" placeholder="年" style="width:70px;"> 年
-      <input type="number" placeholder="月" style="width:50px;"> 月
-      <input type="number" placeholder="日" style="width:50px;"> 日（ ）
-    </div>
-    <div class="visit-time">
-      <label>訪問時間</label>
-      <input type="number" placeholder="時" style="width:50px;"> :
-      <input type="number" placeholder="分" style="width:50px;"> ～ 
-      <input type="number" placeholder="時" style="width:50px;"> :
-      <input type="number" placeholder="分" style="width:50px;"> （ ）時間
-    </div>
-  </div>
+  <main>
+    <div class="container">
+      <div class="visit-info">
+        <div>
+          <label>訪問年月</label>
+          <input type="number" placeholder="年" style="width:70px;"> 年
+          <input type="number" placeholder="月" style="width:50px;"> 月
+          <input type="number" placeholder="日" style="width:50px;"> 日
+        </div>
+        <div>
+          <label>訪問時間</label>
+          <input type="number" placeholder="時" style="width:50px;"> :
+          <input type="number" placeholder="分" style="width:50px;"> ～ 
+          <input type="number" placeholder="時" style="width:50px;"> :
+          <input type="number" placeholder="分" style="width:50px;">
+        </div>
+      </div>
 
-  <table class="check-table title-row">
-    <tr>
-      <th style="width:15%;">標準項目</th>
-      <th style="width:65%;">チェック項目</th>
-      <th style="width:20%;">備考</th>
-    </tr>
-  </table>
-
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8">
-  <title>対象者詳細</title>
-  <link rel="stylesheet" type="text/css" href="../static/css/sintai.css">
-</head>
-<body>
-  <header>
-    <h1>認知症初期集中支援チーム支援システム</h1>
-  </header>
-
-  <div class="container">
-
-    <!-- 運動・移動 -->
-    <table class="check-table">
-      <tr>
-        <th>運動・移動</th>
-        <td>
-          <div class="check-group">
-            <strong>運動機能（支えの必要性）</strong>
-            <div>
+      <!-- 運動・移動 -->
+      <table class="check-table">
+        <tr>
+          <th>運動・移動</th>
+          <td>
+            <div class="check-group">
+              <strong>運動機能（支えの必要性）</strong>
               <label><input type="radio" name="undo1">なし</label>
               <label><input type="radio" name="undo1">あり</label>
-            </div>
 
-            <strong>歩行状況（歩行レベル）</strong>
-            <div>
+              <strong>歩行状況（歩行レベル）</strong>
               <label><input type="checkbox">室内（自立）</label>
               <label><input type="checkbox">一部介助</label>
               <label><input type="checkbox">全介助</label>
               <label><input type="checkbox">歩行車</label>
               <label><input type="checkbox">車いす</label>
-            </div>
 
-            <strong>移動範囲</strong>
-            <div>
+              <strong>移動範囲</strong>
               <label><input type="checkbox">公共交通機関</label>
               <label><input type="checkbox">タクシー</label>
               <label><input type="checkbox">自転車</label>
               <label><input type="checkbox">徒歩</label>
             </div>
-          </div>
-        </td>
-        <td><textarea placeholder="備考を入力"></textarea></td>
-      </tr>
-    </table>
+          </td>
+          <td><textarea placeholder="備考を入力"></textarea></td>
+        </tr>
+      </table>
 
-    <!-- コミュニケーション -->
-    <table class="check-table">
-      <tr>
-        <th>コミュニケーション</th>
-        <td>
-          <div class="check-group">
-            <strong>聞き取りや意思疎通ができるか</strong>
-            <div>
+      <!-- コミュニケーション -->
+      <table class="check-table">
+        <tr>
+          <th>コミュニケーション</th>
+          <td>
+            <div class="check-group">
+              <strong>聞き取りや意思疎通ができるか</strong>
               <label><input type="radio" name="com1">できる</label>
               <label><input type="radio" name="com1">できない</label>
-            </div>
 
-            <strong>指示への反応</strong>
-            <div>
+              <strong>指示への反応</strong>
               <label><input type="radio" name="com2">できる</label>
               <label><input type="radio" name="com2">ややできる</label>
               <label><input type="radio" name="com2">できない</label>
-            </div>
 
-            <strong>日常の意思決定</strong>
-            <div>
+              <strong>日常の意思決定</strong>
               <label><input type="radio" name="com3">できる</label>
               <label><input type="radio" name="com3">ややできる</label>
               <label><input type="radio" name="com3">できない</label>
-            </div>
 
-            <strong>目が見えているか</strong>
-            <div>
+              <strong>目が見えているか</strong>
               <label><input type="radio" name="com4">はい</label>
               <label><input type="radio" name="com4">いいえ</label>
               <label><input type="radio" name="com4">不明</label>
-            </div>
 
-            <strong>耳が聞こえているか</strong>
-            <div>
+              <strong>耳が聞こえているか</strong>
               <label><input type="radio" name="com5">はい</label>
               <label><input type="radio" name="com5">いいえ</label>
               <label><input type="radio" name="com5">不明</label>
             </div>
-          </div>
-        </td>
-        <td><textarea placeholder="備考を入力"></textarea></td>
-      </tr>
-    </table>
+          </td>
+          <td><textarea placeholder="備考を入力"></textarea></td>
+        </tr>
+      </table>
 
-    <!-- 衛生状態 -->
-    <table class="check-table">
-      <tr>
-        <th>衛生状態</th>
-        <td>
-          <div class="check-group">
-            <strong>入浴の状況（清潔さの確認）</strong>
-            <div>
+      <!-- 衛生状態 -->
+      <table class="check-table">
+        <tr>
+          <th>衛生状態</th>
+          <td>
+            <div class="check-group">
+              <strong>入浴の状況（清潔さの確認）</strong>
               <label><input type="checkbox">入浴</label>
               <label><input type="checkbox">シャワー</label>
               <label><input type="checkbox">清拭</label>
               <label><input type="checkbox">自立</label>
               <label><input type="checkbox">一部介助</label>
               <label><input type="checkbox">全介助</label>
-            </div>
 
-            <strong>衣類は清潔か</strong>
-            <div>
+              <strong>衣類は清潔か</strong>
               <label><input type="radio" name="eisei1">はい</label>
               <label><input type="radio" name="eisei1">いいえ</label>
             </div>
-          </div>
-        </td>
-        <td><textarea placeholder="備考を入力"></textarea></td>
-      </tr>
-    </table>
+          </td>
+          <td><textarea placeholder="備考を入力"></textarea></td>
+        </tr>
+      </table>
 
-    <!-- 栄養状態 -->
-    <table class="check-table">
-      <tr>
-        <th>栄養状態</th>
-        <td>
-          <div class="check-group">
-            <strong>痩せている／肥満している</strong>
-            <div>
+      <!-- 栄養状態 -->
+      <table class="check-table">
+        <tr>
+          <th>栄養状態</th>
+          <td>
+            <div class="check-group">
+              <strong>痩せている／肥満している</strong>
               <label><input type="radio" name="nutrition1">痩せ</label>
               <label><input type="radio" name="nutrition1">普通</label>
               <label><input type="radio" name="nutrition1">肥満</label>
-            </div>
-            <strong>むくみがあるか</strong>
-            <div>
+
+              <strong>むくみがあるか</strong>
               <label><input type="radio" name="nutrition2">はい</label>
               <label><input type="radio" name="nutrition2">いいえ</label>
             </div>
-          </div>
-        </td>
-        <td><textarea placeholder="備考を入力"></textarea></td>
-      </tr>
-    </table>
+          </td>
+          <td><textarea placeholder="備考を入力"></textarea></td>
+        </tr>
+      </table>
 
-    <!-- 排泄状態 -->
-    <table class="check-table">
-      <tr>
-        <th>排泄状態</th>
-        <td>
-          <div class="check-group">
-            <strong>排尿の状況</strong>
-            <div>
-              <label><input type="checkbox">自立</label>
-              <label><input type="checkbox">支障あり</label>
-              <label><input type="checkbox">失禁</label>
-              <label><input type="checkbox">おむつ使用</label>
-            </div>
-
-            <strong>排便の状況</strong>
-            <div>
-              <label><input type="checkbox">便秘</label>
-              <label><input type="checkbox">下痢</label>
-              <label><input type="checkbox">下剤使用</label>
-            </div>
-          </div>
-        </td>
-        <td><textarea placeholder="備考を入力"></textarea></td>
-      </tr>
-    </table>
-
-    <!-- 睡眠状態 -->
-    <table class="check-table">
-      <tr>
-        <th>睡眠状態</th>
-        <td>
-          <div class="check-group">
-            <strong>睡眠は良好か</strong>
-            <div>
-              <label><input type="radio" name="sleep1">はい</label>
-              <label><input type="radio" name="sleep1">いいえ</label>
-            </div>
-
-            <strong>就床時間／起床時間</strong>
-            <div>
-              <input type="time"> ～ <input type="time">
-            </div>
-          </div>
-        </td>
-        <td><textarea placeholder="備考を入力"></textarea></td>
-      </tr>
-    </table>
-
-    <!-- その他 -->
-    <table class="check-table">
-      <tr>
-        <th>その他</th>
-        <td>
-          <div class="check-group">
-            <strong>居住環境の問題</strong>
-            <div>
-              <label><input type="radio" name="other1">なし</label>
-              <label><input type="radio" name="other1">あり</label>
-            </div>
-
-            <strong>家族の支援力</strong>
-            <div>
-              <label><input type="checkbox">十分</label>
-              <label><input type="checkbox">不足</label>
-            </div>
-
-            <strong>SOS発信</strong>
-            <div>
-              <label><input type="radio" name="other2">できる</label>
-              <label><input type="radio" name="other2">できない</label>
-            </div>
-          </div>
-        </td>
-        <td><textarea placeholder="備考を入力"></textarea></td>
-      </tr>
-    </table>
-
-  </div>
-
-  <script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
-</body>
-</html>
-
-  
-  <div class="button-area">
-    <button>保存</button>
-    <button type="button" class="btn success">Excelファイルに出力</button>
-  </div>
-
-  <script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+      <!-- ボタン -->
+      <div class="button-area">
+        <button type="button">保存</button>
+        <button type="button" class="btn success">Excelに出力</button>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
