@@ -11,7 +11,10 @@ body {
   background: #fff;
   box-sizing: border-box;
 }
-
+.three-col-table textarea {
+  height: 180px;   
+  resize: vertical;
+}
 .header-row {
   display: flex;
   justify-content: space-between;
