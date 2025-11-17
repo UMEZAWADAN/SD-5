@@ -5,7 +5,7 @@ body{
 .riyousha_kihon_jouhou{
     background-color: white;
     padding: 10px;
-    width: 1000px;
+    width: 1250px;
     margin: auto;
 }
 
@@ -32,6 +32,10 @@ h4 ~ div{
 
 .short_text{
     width: 30px;
+}
+
+.long_text{
+    width: 1000px;
 }
 
 table, th, td{
