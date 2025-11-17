@@ -6,17 +6,10 @@ body {
     padding: 30px 0;
 }
 
-<<<<<<< HEAD
-.riyousha_kihon_jouhou{
-    background-color: white;
-    padding: 10px;
-    width: 1250px;
-=======
 .riyousha_kihon_jouhou {
     background-color: #fff;
     padding: 25px 30px;
     width: 1000px;
->>>>>>> fad0656e4f15bc4ab7248663fb2f0c6a460ed56e
     margin: auto;
     border-radius: 10px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
@@ -86,7 +79,6 @@ textarea {
     background: #fff;
     box-sizing: border-box;
 }
-<<<<<<< HEAD
 
 h4 ~ div{
     margin-left: 20px;
@@ -108,5 +100,3 @@ table, th, td{
     border: 1px solid;
     border-collapse: collapse;
 }
-=======
->>>>>>> fad0656e4f15bc4ab7248663fb2f0c6a460ed56e
