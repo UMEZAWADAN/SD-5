@@ -1,51 +1,50 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>アカウント新規登録ページ</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-left">
-      <div class="subtitle">認知症初期支援業務管理システム</div>
-      <div class="title">アカウント新規登録ページ</div>
-    </div>
-    <a class="to-login" href="#">ログインページに戻る</a>
+  <header class="header">
+    <div class="site-title">認知症初期支援業務管理システム</div>
+    <h1 class="page-title">アカウント新規登録ページ</h1>
+    <a class="back-btn" href="#">ログインページに<br>戻る</a>
   </header>
 
-  <main class="container">
+  <main class="main">
     <div class="form-wrap">
-      <form class="register" action="#" method="post">
+      <form class="form" action="#" method="post" autocomplete="off">
         <div class="row">
-          <div class="field-label">ID</div>
-        </div>
-        <div class="input-col">
-          <input type="text" name="userid" placeholder="">
-        </div>
-
-        <div class="row">
-          <div class="field-label">パスワード</div>
-        </div>
-        <div class="input-col">
-          <input type="password" name="password" placeholder="">
+          <label for="userid">ID</label>
+          <div class="input">
+            <input type="text" id="userid" name="userid" placeholder="">
+          </div>
         </div>
 
         <div class="row">
-          <div class="field-label two-line">もう一度<br>パスワードを入力</div>
-        </div>
-        <div class="input-col">
-          <input type="password" name="password2" placeholder="">
+          <label for="password">パスワード</label>
+          <div class="input">
+            <input type="password" id="password" name="password" placeholder="">
+          </div>
         </div>
 
-        <div class="spacer"></div>
+        <div class="row">
+          <div class="small-label">
+            もう一度<br>パスワードを入力
+          </div>
+          <div class="input">
+            <input type="password" id="confirm" name="confirm" placeholder="">
+          </div>
+        </div>
 
-        <div class="submit-wrap">
-          <button class="btn-submit" type="submit">新規登録</button>
+        <div class="btn-area">
+          <button class="register-btn" type="submit">新規登録</button>
         </div>
       </form>
     </div>
   </main>
 </body>
 </html>
+
