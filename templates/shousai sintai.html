@@ -5,43 +5,98 @@
   <title>身体状況チェック表</title>
   <style>
     body {
-      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-      background-color: #f5f7fb;
-      margin: 0;
-      color: #333;
-    }
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  background-color: #f5f7fb;
+  margin: 0;
+  color: #333;
+}
 
-    header {
-      text-align: center;
-      padding: 20px 0;
-      background: #4a6cd8;
-      color: #fff;
-    }
+header h1 {
+  text-align: center;
+  background: #e8f0ff;
+  border-left: 4px solid #4a6cd8;
+  padding: 12px 0;
+  margin-bottom: 30px;
+  font-size: 20px;
+}
 
-    main, .container, main {
+.container {
   max-width: 950px;
-  margin: 30px auto;
+  margin: 0 auto 40px;
+  padding: 30px 40px;
   background: #fff;
-  padding: 30px 40px;  /* 余白調整 */
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .check-table {
-  width: 100%;           /* テーブル幅100％ */
+  width: 100%;
   border-collapse: collapse;
-  margin-bottom: 25px;   /* テーブル間余白 */
+  margin-bottom: 25px;
 }
 
 .check-table th, .check-table td {
   border: 1px solid #ccc;
-  padding: 10px;         /* セル余白 */
+  padding: 10px;
   text-align: left;
   vertical-align: top;
 }
 
 .check-table th {
-  background-color: #e9f0f7; /* DBD13風の薄い青 */
+  background-color: #e9f0f7;
+}
+
+.check-group strong {
+  display: block;
+  margin: 8px 0 4px;
+}
+
+.check-group label {
+  margin-right: 15px;
+}
+
+input[type="radio"], input[type="checkbox"] {
+  transform: scale(1.4);
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  height: 50px;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.button-area {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.button-area button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  margin: 5px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button-area button:hover {
+  background-color: #0056b3;
+}
+
+.button-area .btn.success {
+  background-color: #2ea44f;
+}
+
+.button-area .btn.success:hover {
+  background-color: #1c7c31;
 }
   </style>
 </head>
