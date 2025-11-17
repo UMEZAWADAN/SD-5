@@ -7,28 +7,78 @@
 <style>
   body {
     font-family: "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif;
-    margin: 20px;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 30px;
   }
-  textarea {
-    width: 95%;
+
+  h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  }
+
+  h3 {
+    color: #3b4b5a;
     margin-bottom: 10px;
-    font-size: 16px;
+    border-left: 4px solid #2980b9;
+    padding-left: 10px;
   }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    background: #fcfcfc;
+  }
+
   button {
-    padding: 8px 20px;
+    padding: 10px 22px;
     margin-right: 10px;
     font-size: 16px;
     cursor: pointer;
-    background: #e5e5e5;
-    border: 1px solid #888;
-    border-radius: 4px;
+    border-radius: 6px;
+    border: none;
   }
+
+  .btn-primary {
+    background: #3498db;
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #2980b9;
+  }
+
+  .btn-secondary {
+    background: #95a5a6;
+    color: white;
+  }
+  .btn-secondary:hover {
+    background: #7f8c8d;
+  }
+
   .case-box {
-    background: #fafafa;
-    border: 1px solid #ccc;
-    padding: 12px;
-    margin-top: 15px;
-    border-radius: 8px;
+    background: #eef4fb;
+    border-left: 4px solid #3498db;
+    padding: 12px 16px;
+    margin-top: 12px;
+    border-radius: 6px;
+  }
+
+  .case-title {
+    font-weight: bold;
+    margin-bottom: 5px;
   }
 </style>
 </head>
@@ -37,8 +87,66 @@
 
 <h1>類似支援事例検索（テキストマイニング）</h1>
 
-<h3>◆ 対象者の訪問記録（文章）</h3>
-<textarea id="visit" rows="5"
-  placeholder="例：最近転倒が増え、内服が自己管理できない状況..."></textarea>
+<!-- 入力部分 -->
+<div class="card">
+  <h3>◆ 対象者の訪問記録（文章）</h3>
+  <textarea id="visit" rows="5"
+    placeholder="例：最近転倒が増え、内服が自己管理できない状況である。徘徊傾向も見られ..."></textarea>
 
-<h3>◆ 支援方針（
+  <br><br>
+
+  <button class="btn-primary" onclick="searchCases()">類似事例を検索</button>
+  <button class="btn-secondary" onclick="clearForm()">クリア</button>
+</div>
+
+<!-- 結果表示カード -->
+<div class="card">
+  <h3>◆ 類似事例の結果</h3>
+  <div id="resultArea">
+    <p style="color:#888;">（検索結果がここに表示されます）</p>
+  </div>
+</div>
+
+<script>
+function searchCases() {
+  let inputText = document.getElementById("visit").value;
+
+  if (!inputText.trim()) {
+    alert("訪問記録を入力してください。");
+    return;
+  }
+
+  // Flaskへ送信する処理は app.py に記載
+  fetch("/search", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ text: inputText })
+  })
+  .then(res => res.json())
+  .then(data => {
+    let resultDiv = document.getElementById("resultArea");
+    resultDiv.innerHTML = "";
+
+    data.results.forEach((item, i) => {
+      let box = document.createElement("div");
+      box.className = "case-box";
+
+      box.innerHTML =
+        `<div class="case-title">【類似度 ${item.similarity}%】事例 ${i+1}</div>
+         <div><strong>記録：</strong>${item.text}</div>
+         <div><strong>支援方針：</strong>${item.policy}</div>`;
+
+      resultDiv.appendChild(box);
+    });
+  });
+}
+
+function clearForm() {
+  document.getElementById("visit").value = "";
+  document.getElementById("resultArea").innerHTML =
+    "<p style='color:#888;'>(検索結果がここに表示されます)</p>";
+}
+</script>
+
+</body>
+</html>
