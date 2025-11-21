@@ -1,120 +1,210 @@
+/* ================================
+   ■ ベース設定
+================================ */
+:root {
+  --bg: #f5f7fb;
+  --panel: #ffffff;
+  --border: #cfd6e2;
+  --accent: #4a6cd8;
+  --text: #333;
+  --muted: #666;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-  background-color: #f5f6fa;
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Meiryo", sans-serif;
+  background: var(--bg);
   margin: 0;
-  padding: 0;
+  padding: 30px 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-header {
-  background-color: #3f72af;
-  color: #fff;
-  padding: 10px 20px;
-}
-
-header h1 {
-  font-size: 1.2rem;
-  margin: 0;
-}
-
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: 20px auto;
-}
-
-.card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+/* ================================
+   ■ タイトル系
+================================ */
+h1, .header-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 24px;
   margin-bottom: 20px;
-  padding: 15px 20px;
 }
 
 h2 {
-  font-size: 1rem;
-  color: #333;
-  margin-top: 0;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
-.table {
+.section-title, h4 {
+  font-size: 15px;
+  font-weight: bold;
+  background: #e8f0ff;
+  padding: 8px 12px;
+  border-left: 4px solid var(--accent);
+  margin: 25px 0 15px;
+}
+
+/* ================================
+   ■ コンテナ / カード
+================================ */
+.container, main, .riyousha_kihon_jouhou {
+  max-width: 1000px;
+  margin: auto;
+  background: var(--panel);
+  padding: 25px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* ================================
+   ■ フォーム要素
+================================ */
+textarea,
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"] {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.short_text { width: 50px; }
+.num { width: 60px; }
+.long_text { width: 100%; }
+
+/* ================================
+   ■ ボタン
+================================ */
+button, .btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.btn.primary, button.primary { background: var(--accent); color: #fff; }
+.btn.success { background: #2ea44f; color: #fff; }
+.export-btn {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* ================================
+   ■ テーブル
+================================ */
+table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 15px 0;
 }
 
-.table th, .table td {
-  border: 1px solid #ccc;
-  padding: 6px;
-  text-align: left;
+table th, table td {
+  border: 1px solid var(--border);
+  padding: 10px;
+  font-size: 14px;
+  vertical-align: top;
 }
 
-.table th {
-  background-color: #e6ebf0;
+table th {
+  background: #e9f0f7;
+  font-weight: bold;
+  text-align: center;
 }
 
-.input-group {
+/* ================================
+   ■ グリッド・レイアウト調整
+================================ */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 30px;
+}
+
+.birth-row {
+  grid-column: 1 / span 2;
   display: flex;
-  flex-direction: column;
-  margin-bottom: 8px;
+  gap: 6px;
 }
 
-label {
-  font-size: 0.9rem;
-  margin-bottom: 3px;
-  color: #333;
+/* ================================
+   ■ DBD表
+================================ */
+.dbd-header, .dbd-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(5, 100px);
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #f0f3f5;
+  padding: 12px 6px;
 }
 
-input, select, textarea, button {
-  padding: 6px;
-  font-size: 0.9rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+.radio-cell { display: flex; justify-content: center; }
 
-textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-button {
-  cursor: pointer;
-}
-
-button.primary {
-  background-color: #3f72af;
-  color: #fff;
-  border: none;
-}
-
-button.secondary {
-  background-color: #e6ebf0;
-  border: 1px solid #ccc;
-}
-
-button.success {
-  background-color: #4caf50;
-  color: #fff;
-  border: none;
-}
-
-.flex-row {
+/* ================================
+   ■ タブメニュー（統合画面用）
+================================ */
+.tab-menu {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  background: #ddd;
+  border-bottom: 2px solid #aaa;
 }
 
-.flex-col {
+.tab-menu button {
   flex: 1;
-  min-width: 320px;
+  padding: 12px;
+  background: #e5e5e5;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  border-right: 1px solid #bbb;
 }
 
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  color: #fff;
+.tab-menu button.active {
+  background: #fff;
+  font-weight: bold;
 }
 
-.badge.info { background-color: #00a8cc; }
-.badge.primary { background-color: #3f72af; }
+.tab-content {
+  display: none;
+  padding: 20px;
+  background: #fff;
+  min-height: 600px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ================================
+   ■ レスポンシブ
+================================ */
+@media (max-width: 900px) {
+  .dbd-header, .dbd-row {
+    grid-template-columns: 1fr repeat(5, 56px);
+  }
+}

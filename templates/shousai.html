@@ -1,60 +1,114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <title>対象者詳細</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
+<meta charset="UTF-8">
+<title>詳細画面（統合フォーム）</title>
+
+<style>
+  body {
+    font-family: "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f8f8f8;
+  }
+
+  /* ====== タブメニュー ====== */
+  .tab-menu {
+    display: flex;
+    background: #ddd;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid #aaa;
+  }
+
+  .tab-menu button {
+    flex: 1;
+    padding: 12px;
+    background: #e5e5e5;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    border-right: 1px solid #bbb;
+  }
+
+  .tab-menu button.active {
+    background: white;
+    font-weight: bold;
+    border-bottom: 2px solid white;
+  }
+
+  /* ===== コンテンツ領域 ===== */
+  .tab-content {
+    display: none;
+    padding: 20px;
+    background: white;
+    min-height: 600px;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  /* ---- 仮デザイン ---- */
+  h2 {
+    margin-top: 0;
+  }
+
+</style>
 </head>
+
 <body>
-  <header>
-    <h1>認知症初期集中支援チーム支援システム</h1>
-  </header>
 
-  <div class="container">
+<!-- タブメニュー -->
+<div class="tab-menu">
+  <button class="active" onclick="showTab('basic')">基本情報</button>
+  <button onclick="showTab('visit')">訪問記録表</button>
+  <button onclick="showTab('dasc')">DASC-21</button>
+  <button onclick="showTab('dbd')">DBD-13</button>
+  <button onclick="showTab('check')">身体状況チェック</button>
+</div>
 
-    <div class="card">
-      <h2>対象者情報</h2>
-      <p><strong>氏名:</strong> <span id="pName"></span></p>
-      <p><strong>生年月日:</strong> <span id="pBday"></span></p>
-      <p><strong>性別:</strong> <span id="pSex"></span></p>
-      <p><strong>住所:</strong> <span id="pAddress"></span></p>
-    </div>
+<!-- 各フォーム領域 -->
+<div id="basic" class="tab-content active">
+  <h2>基本情報</h2>
+  <!-- ★ここに shousai_kihon.html の内容をコピペして入れる -->
+</div>
 
-    <div class="flex-row">
-      <div class="card flex-col">
-        <h2>DASC-21評価</h2>
-        <div id="dascList"></div>
-        <p><strong>合計点:</strong> <span id="dascTotal" class="badge primary">0</span>
-           <strong>判定:</strong> <span id="dascJudge" class="badge info">未実施</span></p>
-        <button id="downloadDascCsv" class="success">DASC結果を出力</button>
-      </div>
+<div id="visit" class="tab-content">
+  <h2>訪問記録表</h2>
+  <!-- ★ここに 訪問記録表.html の内容を入れる -->
+</div>
 
-      <div class="card flex-col">
-        <h2>訪問記録</h2>
-        <table class="table">
-          <thead><tr><th>日付</th><th>担当者</th><th>種類</th><th>要点</th></tr></thead>
-          <tbody id="visitBody"></tbody>
-        </table>
-        <form id="visitForm">
-          <div class="input-group"><label>訪問日</label><input type="date" id="visitDate"></div>
-          <div class="input-group"><label>担当者</label><input type="text" id="visitStaff"></div>
-          <div class="input-group"><label>種類</label>
-            <select id="visitType">
-              <option>訪問</option>
-              <option>電話</option>
-              <option>会議</option>
-            </select>
-          </div>
-          <div class="input-group"><label>要点</label><textarea id="visitNote"></textarea></div>
-          <button type="button" id="addVisitBtn" class="primary">追加</button>
-        </form>
-        <button id="downloadVisitCsv" class="success">訪問記録を出力</button>
-      </div>
-    </div>
+<div id="dasc" class="tab-content">
+  <h2>DASC-21</h2>
+  <!-- ★ここにDASC-21フォームを挿入 -->
+</div>
 
-  </div>
+<div id="dbd" class="tab-content">
+  <h2>DBD-13</h2>
+  <!-- ★ここにDBDフォームを挿入 -->
+</div>
 
-<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+<div id="check" class="tab-content">
+  <h2>身体状況チェック</h2>
+  <!-- ★ここに身体状況チェック表を挿入 -->
+</div>
+
+<script>
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(div => {
+    div.classList.remove('active');
+  });
+
+  document.getElementById(tabId).classList.add('active');
+
+  document.querySelectorAll('.tab-menu button').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  event.target.classList.add('active');
+}
+</script>
 
 </body>
 </html>
