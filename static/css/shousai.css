@@ -1,210 +1,46 @@
-/* ================================
-   ■ ベース設定
-================================ */
-:root {
-  --bg: #f5f7fb;
-  --panel: #ffffff;
-  --border: #cfd6e2;
-  --accent: #4a6cd8;
-  --text: #333;
-  --muted: #666;
-}
-
-* {
-  box-sizing: border-box;
-}
-
 body {
-  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Meiryo", sans-serif;
-  background: var(--bg);
+  font-family: "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif;
+  background-color: #f5f7fb;
   margin: 0;
-  padding: 30px 0;
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.6;
+  padding: 0;
 }
 
-/* ================================
-   ■ タイトル系
-================================ */
-h1, .header-title {
-  text-align: center;
-  font-weight: bold;
-  font-size: 24px;
+/* 全体コンテナ */
+.page-container {
+  max-width: 1100px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+/* タブメニュー */
+.tab-menu {
+  display: flex;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
-h2 {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.section-title, h4 {
-  font-size: 15px;
-  font-weight: bold;
-  background: #e8f0ff;
-  padding: 8px 12px;
-  border-left: 4px solid var(--accent);
-  margin: 25px 0 15px;
-}
-
-/* ================================
-   ■ コンテナ / カード
-================================ */
-.container, main, .riyousha_kihon_jouhou {
-  max-width: 1000px;
-  margin: auto;
-  background: var(--panel);
-  padding: 25px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-}
-
-/* ================================
-   ■ フォーム要素
-================================ */
-textarea,
-input[type="text"],
-input[type="number"],
-input[type="date"],
-input[type="time"] {
-  width: 100%;
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 6px;
-  background: #fff;
-  border: 1px solid var(--border);
-  box-sizing: border-box;
-  resize: vertical;
-}
-
-.short_text { width: 50px; }
-.num { width: 60px; }
-.long_text { width: 100%; }
-
-/* ================================
-   ■ ボタン
-================================ */
-button, .btn {
-  padding: 10px 20px;
-  font-size: 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: none;
-  transition: background 0.2s, transform 0.1s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-.btn.primary, button.primary { background: var(--accent); color: #fff; }
-.btn.success { background: #2ea44f; color: #fff; }
-.export-btn {
-  background: #fff;
-  border: 1px solid var(--border);
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-/* ================================
-   ■ テーブル
-================================ */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 15px 0;
-}
-
-table th, table td {
-  border: 1px solid var(--border);
-  padding: 10px;
-  font-size: 14px;
-  vertical-align: top;
-}
-
-table th {
+.tab-btn {
   background: #e9f0f7;
-  font-weight: bold;
-  text-align: center;
-}
-
-/* ================================
-   ■ グリッド・レイアウト調整
-================================ */
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px 30px;
-}
-
-.birth-row {
-  grid-column: 1 / span 2;
-  display: flex;
-  gap: 6px;
-}
-
-/* ================================
-   ■ DBD表
-================================ */
-.dbd-header, .dbd-row {
-  display: grid;
-  grid-template-columns: 1fr repeat(5, 100px);
-  align-items: center;
-  gap: 8px;
-  border-bottom: 1px solid #f0f3f5;
-  padding: 12px 6px;
-}
-
-.radio-cell { display: flex; justify-content: center; }
-
-/* ================================
-   ■ タブメニュー（統合画面用）
-================================ */
-.tab-menu {
-  display: flex;
-  background: #ddd;
-  border-bottom: 2px solid #aaa;
-}
-
-.tab-menu button {
-  flex: 1;
-  padding: 12px;
-  background: #e5e5e5;
-  border: none;
+  border: 1px solid #cfd6e2;
+  padding: 10px 18px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 18px;
-  border-right: 1px solid #bbb;
-}
-
-.tab-menu button.active {
-  background: #fff;
   font-weight: bold;
 }
 
+.tab-btn.active {
+  background: #4a6cd8;
+  color: #fff;
+  border-color: #4a6cd8;
+}
+
+/* タブコンテンツ */
 .tab-content {
   display: none;
-  padding: 20px;
-  background: #fff;
-  min-height: 600px;
 }
-
 .tab-content.active {
   display: block;
-}
-
-/* ================================
-   ■ レスポンシブ
-================================ */
-@media (max-width: 900px) {
-  .dbd-header, .dbd-row {
-    grid-template-columns: 1fr repeat(5, 56px);
-  }
 }

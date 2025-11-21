@@ -1,0 +1,148 @@
+<div class="section">
+
+  <h3 class="section-title">身体状況チェック表</h3>
+
+  <!-- 基本情報 -->
+  <table class="info-table">
+    <tr>
+      <th>訪問年月日</th>
+      <td>
+        <div class="input-group">
+          <input type="text" class="num"> 年
+          <input type="text" class="num"> 月
+          <input type="text" class="num"> 日
+        </div>
+      </td>
+
+      <th>訪問時間</th>
+      <td>
+        <div class="input-group">
+          <input type="time"> 〜 <input type="time">
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- 運動・移動 -->
+  <div class="sub-section">
+    <table class="three-col-table">
+      <tr>
+        <th>運動・移動</th>
+        <td>
+          <div class="check-block">
+            <div class="item-title">運動機能（支えの必要性）</div>
+            <label><input type="radio" name="undo1"> なし</label>
+            <label><input type="radio" name="undo1"> あり</label>
+
+            <div class="item-title mt10">歩行状況（歩行レベル）</div>
+            <label><input type="checkbox"> 室内自立</label>
+            <label><input type="checkbox"> 一部介助</label>
+            <label><input type="checkbox"> 全介助</label>
+            <label><input type="checkbox"> 歩行車</label>
+            <label><input type="checkbox"> 車椅子</label>
+
+            <div class="item-title mt10">移動範囲</div>
+            <label><input type="checkbox"> 公共交通機関</label>
+            <label><input type="checkbox"> タクシー</label>
+            <label><input type="checkbox"> 自転車</label>
+            <label><input type="checkbox"> 徒歩</label>
+          </div>
+        </td>
+        <td><textarea></textarea></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- コミュニケーション -->
+  <div class="sub-section">
+    <table class="three-col-table">
+      <tr>
+        <th>コミュニケーション</th>
+        <td>
+          <div class="check-block">
+            <div class="item-title">聞き取りや意思疎通</div>
+            <label><input type="radio" name="com1"> できる</label>
+            <label><input type="radio" name="com1"> できない</label>
+
+            <div class="item-title mt10">指示への反応</div>
+            <label><input type="radio" name="com2"> できる</label>
+            <label><input type="radio" name="com2"> ややできる</label>
+            <label><input type="radio" name="com2"> できない</label>
+
+            <div class="item-title mt10">意思決定</div>
+            <label><input type="radio" name="com3"> できる</label>
+            <label><input type="radio" name="com3"> ややできる</label>
+            <label><input type="radio" name="com3"> できない</label>
+
+            <div class="item-title mt10">視覚</div>
+            <label><input type="radio" name="com4"> 見える</label>
+            <label><input type="radio" name="com4"> 見えない</label>
+            <label><input type="radio" name="com4"> 不明</label>
+
+            <div class="item-title mt10">聴覚</div>
+            <label><input type="radio" name="com5"> 聞こえる</label>
+            <label><input type="radio" name="com5"> 聞こえない</label>
+            <label><input type="radio" name="com5"> 不明</label>
+          </div>
+        </td>
+        <td><textarea></textarea></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 衛生状態 -->
+  <div class="sub-section">
+    <table class="three-col-table">
+      <tr>
+        <th>衛生状態</th>
+        <td>
+          <div class="check-block">
+            <div class="item-title">入浴状況</div>
+            <label><input type="checkbox"> 入浴</label>
+            <label><input type="checkbox"> シャワー</label>
+            <label><input type="checkbox"> 清拭</label>
+
+            <div class="item-title mt10">入浴介助</div>
+            <label><input type="checkbox"> 自立</label>
+            <label><input type="checkbox"> 一部介助</label>
+            <label><input type="checkbox"> 全介助</label>
+
+            <div class="item-title mt10">衣類の清潔</div>
+            <label><input type="radio" name="eisei1"> はい</label>
+            <label><input type="radio" name="eisei1"> いいえ</label>
+          </div>
+        </td>
+        <td><textarea></textarea></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- 栄養状態 -->
+  <div class="sub-section">
+    <table class="three-col-table">
+      <tr>
+        <th>栄養状態</th>
+        <td>
+          <div class="check-block">
+            <div class="item-title">体型</div>
+            <label><input type="radio" name="nutrition1"> 痩せ</label>
+            <label><input type="radio" name="nutrition1"> 普通</label>
+            <label><input type="radio" name="nutrition1"> 肥満</label>
+
+            <div class="item-title mt10">むくみ</div>
+            <label><input type="radio" name="nutrition2"> あり</label>
+            <label><input type="radio" name="nutrition2"> なし</label>
+          </div>
+        </td>
+        <td><textarea></textarea></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ボタン -->
+  <div class="btn-row center">
+    <button type="button" class="btn primary">保存</button>
+    <button type="button" class="btn success">Excel出力</button>
+  </div>
+
+</div>
