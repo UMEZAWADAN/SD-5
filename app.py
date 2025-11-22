@@ -3,11 +3,8 @@ import numpy as np
 from numpy.linalg import norm
 import pickle
 import os
-<<<<<<< HEAD
 from flask_sqlalchemy import SQLAlchemy
-=======
 import pymysql
->>>>>>> 29ee8e78880374a650534513a978536466470a41
 
 app = Flask(__name__)
 
