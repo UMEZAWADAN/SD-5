@@ -3,8 +3,22 @@ import numpy as np
 from numpy.linalg import norm
 import pickle
 import os
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
+#データベーステスト　ターミナルで「pip install flask」「pip install sqlclient」「pip install Flask-SQLAlchemy」を入力
+db = SQLAlchemy()
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+db.init_app(app)
+
+class 授業(db.Model):
+    __tablename__ = "授業"
+    授業id = db.Column(db.Integer, primary_key = True)
+    授業名 = db.Column(db.String(20))
+    教員 = db.Column(db.String(10))
+    曜日 = db.Column(db.String(1))
+    時間 = db.Column(db.Integer)
 
 # ================================
 #  1. ルーティング
@@ -18,6 +32,12 @@ def index():
         "header_page_name":"テンプレート",
         "footer_sd5":"プロジェクト演習  SD-5"}
     return(render_template("template.html", d=obj))
+
+#データベーステストページ
+@app.route("/database")
+def database():
+    d = db.session.query(授業.授業名, 授業.教員, 授業.曜日, 授業.時間).all()
+    return(render_template("database.html", d=d))
 
 @app.route("/top")
 def top():

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <title>春学期の授業</title>
+</head>
+
+<body>
+    <h1>データベース</h1>
+    <table>
+        <tr>
+            <th>授業名</th>
+            <th>教員</th>
+            <th>曜日</th>
+            <th>時間</th>
+        </tr>
+        {% for i in d %}
+            <tr>
+                <td>{{i.授業名}}</td>
+                <td>{{i.教員}}</td>
+                <td>{{i.曜日}}</td>
+                <td>{{i.時間}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
