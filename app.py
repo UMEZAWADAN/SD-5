@@ -3,37 +3,59 @@ import numpy as np
 from numpy.linalg import norm
 import pickle
 import os
+import pymysql
 
 app = Flask(__name__)
+
+# ================================
+#  DB 接続設定（必要に応じて変更）
+# ================================
+DB_CONFIG = {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "care_system",
+    "cursorclass": pymysql.cursors.DictCursor
+}
+
+
+def get_connection():
+    return pymysql.connect(**DB_CONFIG)
+
 
 # ================================
 #  1. ルーティング
 # ================================
 
-#テンプレート　ヘッダー・フッター
 @app.route("/")
 def index():
     obj = {
-        "header_system_name":"認知症初期支援業務管理システム",
-        "header_page_name":"テンプレート",
-        "footer_sd5":"プロジェクト演習  SD-5"}
-    return(render_template("template.html", d=obj))
+        "header_system_name": "認知症初期支援業務管理システム",
+        "header_page_name": "テンプレート",
+        "footer_sd5": "プロジェクト演習  SD-5"
+    }
+    return render_template("template.html", d=obj)
+
 
 @app.route("/top")
 def top():
     return render_template("top.html")
 
+
 @app.route("/list")
 def list():
     return render_template("list.html")
+
 
 @app.route("/shousai")
 def shousai():
     return render_template("shousai.html")
 
+
 @app.route("/text")
 def text():
     return render_template("text.html")
+
 
 # ================================
 #  2. テキストマイニング機能
@@ -42,7 +64,6 @@ DATA_FILE = "cases.pkl"
 
 
 def load_cases():
-    """過去事例を読み込む"""
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "rb") as f:
             return pickle.load(f)
@@ -50,27 +71,21 @@ def load_cases():
 
 
 def save_cases(cases):
-    """過去事例を保存"""
     with open(DATA_FILE, "wb") as f:
         pickle.dump(cases, f)
 
 
 def fake_embedding(text: str):
-    """
-    ダミーの埋め込み生成
-    （同じ文章なら同じベクトルになるよう seed を固定）
-    """
-    np.random.seed(abs(hash(text)) % (10**7))
+    np.random.seed(abs(hash(text)) % (10 ** 7))
     return np.random.rand(128)
 
 
 def cosine_sim(a, b):
-    """コサイン類似度"""
     return float(np.dot(a, b) / (norm(a) * norm(b)))
 
 
 # --------------------
-# ■事例登録API
+# ■ 事例登録API
 # --------------------
 @app.route("/api/register_case", methods=["POST"])
 def register_case():
@@ -93,7 +108,7 @@ def register_case():
 
 
 # --------------------
-# ■類似事例検索API
+# ■ 類似事例検索API
 # --------------------
 @app.route("/api/similar_cases", methods=["POST"])
 def similar_cases():
@@ -104,22 +119,72 @@ def similar_cases():
     results = []
 
     for case in cases:
-        sim = cosine_sim(
-            np.array(input_emb),
-            np.array(case["embedding"])
-        )
+        sim = cosine_sim(np.array(input_emb), np.array(case["embedding"]))
         results.append({
             "similarity": round(sim, 3),
             "visit_text": case["visit_text"],
             "support_plan": case["support_plan"]
         })
 
-    # 類似度順に並べる
     results = sorted(results, key=lambda x: x["similarity"], reverse=True)
-
-    # 上位３件のみ返す
     return jsonify(results[:3])
 
+
+# ================================
+#  3. DB 保存 API
+# ================================
+
+# ✅ 訪問記録を保存
+@app.route("/api/save_visit_record", methods=["POST"])
+def save_visit_record():
+    data = request.json
+
+    sql = """
+        INSERT INTO visit_record (
+            client_id, visit_datetime, visit_purpose,
+            visit_content, support_decision, future_plan
+        ) VALUES (%s, %s, %s, %s, %s, %s)
+    """
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (
+                data["client_id"],
+                data["visit_datetime"],
+                data["visit_purpose"],
+                data["visit_content"],
+                data["support_decision"],
+                data["future_plan"]
+            ))
+        conn.commit()
+
+    return jsonify({"status": "saved"})
+
+
+# ✅ 支援内容（support_plan）保存
+@app.route("/api/save_support_plan", methods=["POST"])
+def save_support_plan():
+    data = request.json
+
+    sql = """
+        INSERT INTO support_plan (
+            client_id, visit_record_id, keyword, support_decision
+        ) VALUES (%s, %s, %s, %s)
+    """
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (
+                data["client_id"],
+                data["visit_record_id"],
+                data["keyword"],
+                data["support_decision"]
+            ))
+        conn.commit()
+
+    return jsonify({"status": "saved"})
 
 
 # ================================
