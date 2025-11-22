@@ -1,60 +1,90 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <title>対象者詳細</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
+  <meta charset="UTF-8">
+  <title>対象者詳細（アセスメント統合）</title>
+
+  <!-- 統一デザインCSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/unified.css') }}">
+
+  <style>
+    /* タブデザイン */
+    .tab-menu {
+      display: flex;
+      border-bottom: 2px solid #ccc;
+      margin-bottom: 20px;
+    }
+    .tab-menu div {
+      padding: 12px 22px;
+      cursor: pointer;
+      background: #eee;
+      border-right: 1px solid #ccc;
+      font-weight: bold;
+    }
+    .tab-menu div.active {
+      background: #fff;
+      border-bottom: 2px solid #fff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
 </head>
+
 <body>
-  <header>
-    <h1>認知症初期集中支援チーム支援システム</h1>
-  </header>
 
   <div class="container">
 
-    <div class="card">
-      <h2>対象者情報</h2>
-      <p><strong>氏名:</strong> <span id="pName"></span></p>
-      <p><strong>生年月日:</strong> <span id="pBday"></span></p>
-      <p><strong>性別:</strong> <span id="pSex"></span></p>
-      <p><strong>住所:</strong> <span id="pAddress"></span></p>
+    <h2 class="title-main">対象者詳細（アセスメント統合画面）</h2>
+
+    <!-- ▼ タブメニュー -->
+    <div class="tab-menu">
+      <div class="active" data-tab="kihon">基本情報</div>
+      <div data-tab="kiroku">訪問記録表</div>
+      <div data-tab="dasc">DASC-21</div>
+      <div data-tab="dbd">DBD-13</div>
+      <div data-tab="shintai">身体状況チェック表</div>
     </div>
 
-    <div class="flex-row">
-      <div class="card flex-col">
-        <h2>DASC-21評価</h2>
-        <div id="dascList"></div>
-        <p><strong>合計点:</strong> <span id="dascTotal" class="badge primary">0</span>
-           <strong>判定:</strong> <span id="dascJudge" class="badge info">未実施</span></p>
-        <button id="downloadDascCsv" class="success">DASC結果を出力</button>
-      </div>
+    <!-- ▼ タブ内容 -->
+    <div id="kihon" class="tab-content active">
+      {% include "kihon.html" %}
+    </div>
 
-      <div class="card flex-col">
-        <h2>訪問記録</h2>
-        <table class="table">
-          <thead><tr><th>日付</th><th>担当者</th><th>種類</th><th>要点</th></tr></thead>
-          <tbody id="visitBody"></tbody>
-        </table>
-        <form id="visitForm">
-          <div class="input-group"><label>訪問日</label><input type="date" id="visitDate"></div>
-          <div class="input-group"><label>担当者</label><input type="text" id="visitStaff"></div>
-          <div class="input-group"><label>種類</label>
-            <select id="visitType">
-              <option>訪問</option>
-              <option>電話</option>
-              <option>会議</option>
-            </select>
-          </div>
-          <div class="input-group"><label>要点</label><textarea id="visitNote"></textarea></div>
-          <button type="button" id="addVisitBtn" class="primary">追加</button>
-        </form>
-        <button id="downloadVisitCsv" class="success">訪問記録を出力</button>
-      </div>
+    <div id="kiroku" class="tab-content">
+      {% include "kiroku.html" %}
+    </div>
+
+    <div id="dasc" class="tab-content">
+      {% include "dasc_21.html" %}
+    </div>
+
+    <div id="dbd" class="tab-content">
+      {% include "dbd13.html" %}
+    </div>
+
+    <div id="shintai" class="tab-content">
+      {% include "sintai.html" %}
     </div>
 
   </div>
 
-<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+<script>
+  // タブ切り替えスクリプト
+  document.querySelectorAll(".tab-menu div").forEach(tab => {
+    tab.addEventListener("click", () => {
+
+      document.querySelectorAll(".tab-menu div").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.tab).classList.add("active");
+    });
+  });
+</script>
 
 </body>
 </html>

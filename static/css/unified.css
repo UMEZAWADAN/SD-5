@@ -1,0 +1,136 @@
+/* =========================================
+   全ページ共通デザイン（unified.css）
+   ========================================= */
+
+/* --- 基本色定義 --- */
+:root {
+    --bg: #f5f7fb;
+    --panel: #ffffff;
+    --border: #d2d7e0;
+    --accent: #4a6cd8;
+    --accent-light: #e8f0ff;
+    --text-main: #333;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* --- ページ背景・基本文字 --- */
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-main);
+    font-family: "Hiragino Kaku Gothic ProN","Meiryo","Noto Sans JP",sans-serif;
+    padding: 25px 0;
+}
+
+/* --- コンテナ --- */
+.container,
+main,
+.riyousha_kihon_jouhou {
+    max-width: 960px;
+    margin: auto;
+    background: var(--panel);
+    padding: 35px 45px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+/* --- タイトル --- */
+h1, .header-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+/* --- セクションタイトル --- */
+.section-title,
+h3 {
+    font-size: 16px;
+    font-weight: bold;
+    background: var(--accent-light);
+    padding: 8px 12px;
+    border-left: 4px solid var(--accent);
+    margin: 25px 0 15px;
+    border-radius: 4px;
+}
+
+/* --- テーブル --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+table th, table td {
+    border: 1px solid var(--border);
+    padding: 10px;
+    vertical-align: top;
+    font-size: 14px;
+}
+
+table th {
+    background: #e9f0f7;
+    font-weight: bold;
+}
+
+/* --- 入力系 --- */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+textarea {
+    width: 100%;
+    padding: 7px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* --- ラジオ・チェックボックス --- */
+input[type="radio"],
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 4px;
+}
+
+/* --- ボタン類 --- */
+button,
+.btn {
+    background: #007bff;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+button:hover,
+.btn:hover {
+    background: #0056b3;
+}
+
+.btn.success {
+    background: #2ea44f;
+}
+.btn.success:hover {
+    background: #1c7c31;
+}
+
+/* ボタン行中央寄せ */
+.button-area,
+.btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
