@@ -1,90 +1,56 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>対象者詳細（アセスメント統合）</title>
-
-  <!-- 統一デザインCSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/unified.css') }}">
-
-  <style>
-    /* タブデザイン */
-    .tab-menu {
-      display: flex;
-      border-bottom: 2px solid #ccc;
-      margin-bottom: 20px;
-    }
-    .tab-menu div {
-      padding: 12px 22px;
-      cursor: pointer;
-      background: #eee;
-      border-right: 1px solid #ccc;
-      font-weight: bold;
-    }
-    .tab-menu div.active {
-      background: #fff;
-      border-bottom: 2px solid #fff;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>支援記録入力</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
 </head>
 
 <body>
 
-  <div class="container">
+<div class="page-container">
 
-    <h2 class="title-main">対象者詳細（アセスメント統合画面）</h2>
+    <h2>支援記録入力（統合画面）</h2>
 
-    <!-- ▼ タブメニュー -->
+    <!-- ===== タブメニュー ===== -->
     <div class="tab-menu">
-      <div class="active" data-tab="kihon">基本情報</div>
-      <div data-tab="kiroku">訪問記録表</div>
-      <div data-tab="dasc">DASC-21</div>
-      <div data-tab="dbd">DBD-13</div>
-      <div data-tab="shintai">身体状況チェック表</div>
+        <button class="tab-btn active" data-tab="tab1">基本情報</button>
+        <button class="tab-btn" data-tab="tab2">訪問記録</button>
+        <button class="tab-btn" data-tab="tab3">身体状況チェック</button>
+        <button class="tab-btn" data-tab="tab4">DASC-21</button>
+        <button class="tab-btn" data-tab="tab5">DBD-13</button>
     </div>
 
-    <!-- ▼ タブ内容 -->
-    <div id="kihon" class="tab-content active">
-      {% include "kihon.html" %}
+    <!-- ===== タブ内容 ===== -->
+
+    <div id="tab1" class="tab-content active">
+        {% include 'kihon.html' %}
     </div>
 
-    <div id="kiroku" class="tab-content">
-      {% include "kiroku.html" %}
+    <div id="tab2" class="tab-content">
+        {% include 'kiroku.html' %}
     </div>
 
-    <div id="dasc" class="tab-content">
-      {% include "dasc_21.html" %}
+    <div id="tab3" class="tab-content">
+        {% include 'shintai.html' %}
     </div>
 
-    <div id="dbd" class="tab-content">
-      {% include "dbd13.html" %}
+    <div id="tab4" class="tab-content">
+        {% include 'dasc_21.html' %}
     </div>
 
-    <div id="shintai" class="tab-content">
-      {% include "sintai.html" %}
+    <div id="tab5" class="tab-content">
+        {% include 'dbd13.html' %}
     </div>
 
-  </div>
+    <!-- ✅ まとめて保存ボタン（方式B） -->
+    <div class="save-area">
+        <button id="saveAllBtn" class="save-btn">すべて保存する</button>
+    </div>
 
-<script>
-  // タブ切り替えスクリプト
-  document.querySelectorAll(".tab-menu div").forEach(tab => {
-    tab.addEventListener("click", () => {
+</div>
 
-      document.querySelectorAll(".tab-menu div").forEach(t => t.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.tab).classList.add("active");
-    });
-  });
-</script>
+<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
 
 </body>
 </html>

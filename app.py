@@ -1,14 +1,11 @@
 from flask import Flask, render_template, request, jsonify
-import numpy as np
-from numpy.linalg import norm
-import pickle
-import os
 import pymysql
+from datetime import datetime
 
 app = Flask(__name__)
 
 # ================================
-# ✅ DB接続設定
+# ✅ DB接続設定（あなたの環境に合わせ済み）
 # ================================
 DB_CONFIG = {
     "host": "localhost",
@@ -21,118 +18,51 @@ DB_CONFIG = {
 def get_connection():
     return pymysql.connect(**DB_CONFIG)
 
-
 # ================================
-# ✅ ルーティング
+# ✅ ページ表示ルーティング
 # ================================
 @app.route("/")
 def index():
-    obj = {
-        "header_system_name": "認知症初期支援業務管理システム",
-        "header_page_name": "テンプレート",
-        "footer_sd5": "プロジェクト演習  SD-5"
-    }
-    return render_template("template.html", d=obj)
-
-
-@app.route("/top")
-def top():
     return render_template("top.html")
-
-
-@app.route("/list")
-def list_page():
-    return render_template("list.html")
-
 
 @app.route("/shousai")
 def shousai():
     return render_template("shousai.html")
 
 
-@app.route("/text")
-def text():
-    return render_template("text.html")
-
-
-# ================================
-# ✅ テキストマイニング機能
-# ================================
-DATA_FILE = "cases.pkl"
-
-
-def load_cases():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "rb") as f:
-            return pickle.load(f)
-    return []
-
-
-def save_cases(cases):
-    with open(DATA_FILE, "wb") as f:
-        pickle.dump(cases, f)
-
-
-def fake_embedding(text: str):
-    np.random.seed(abs(hash(text)) % (10 ** 7))
-    return np.random.rand(128)
-
-
-def cosine_sim(a, b):
-    return float(np.dot(a, b) / (norm(a) * norm(b)))
-
-
-# --------------------
-# ✅ 事例登録API
-# --------------------
-@app.route("/api/register_case", methods=["POST"])
-def register_case():
+# =====================================================
+# ✅ 1) 利用者基本情報（client）保存 API
+# =====================================================
+@app.route("/api/save_client", methods=["POST"])
+def save_client():
     data = request.json
-    visit_text = data["visit_text"]
-    support_plan = data["support_plan"]
 
-    cases = load_cases()
+    sql = """
+        INSERT INTO client (
+            writer_name, consultation_date, current_status,
+            resident_name, gender, phone_number
+        ) VALUES (%s, %s, %s, %s, %s, %s)
+    """
 
-    new_case = {
-        "visit_text": visit_text,
-        "support_plan": support_plan,
-        "embedding": fake_embedding(visit_text).tolist()
-    }
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (
+                data["writer_name"],
+                data["consultation_date"],
+                data["current_status"],
+                data["resident_name"],
+                data["gender"],
+                data["phone_number"]
+            ))
+        conn.commit()
 
-    cases.append(new_case)
-    save_cases(cases)
-
-    return jsonify({"status": "ok"})
-
-
-# --------------------
-# ✅ 類似事例検索API
-# --------------------
-@app.route("/api/similar_cases", methods=["POST"])
-def similar_cases():
-    input_text = request.json["visit_text"]
-    input_emb = fake_embedding(input_text)
-
-    cases = load_cases()
-    results = []
-
-    for case in cases:
-        sim = cosine_sim(np.array(input_emb), np.array(case["embedding"]))
-        results.append({
-            "similarity": round(sim, 3),
-            "visit_text": case["visit_text"],
-            "support_plan": case["support_plan"]
-        })
-
-    results = sorted(results, key=lambda x: x["similarity"], reverse=True)
-    return jsonify(results[:3])
+    return jsonify({"status": "saved"})
 
 
-# ================================
-# ✅ DB保存API
-# ================================
-
-# ✅ 訪問記録保存
+# =====================================================
+# ✅ 2) 訪問記録（visit_record）保存 API
+# =====================================================
 @app.route("/api/save_visit_record", methods=["POST"])
 def save_visit_record():
     data = request.json
@@ -160,15 +90,17 @@ def save_visit_record():
     return jsonify({"status": "saved"})
 
 
-# ✅ 支援内容保存
-@app.route("/api/save_support_plan", methods=["POST"])
-def save_support_plan():
+# =====================================================
+# ✅ 3) 身体状況チェック（physical_status）保存 API
+# =====================================================
+@app.route("/api/save_physical_status", methods=["POST"])
+def save_physical_status():
     data = request.json
 
     sql = """
-        INSERT INTO support_plan (
-            client_id, visit_record_id, keyword, support_decision
-        ) VALUES (%s, %s, %s, %s)
+        INSERT INTO physical_status (
+            client_id, check_item
+        ) VALUES (%s, %s)
     """
 
     conn = get_connection()
@@ -176,9 +108,65 @@ def save_support_plan():
         with conn.cursor() as cur:
             cur.execute(sql, (
                 data["client_id"],
-                data["visit_record_id"],
-                data["keyword"],
-                data["support_decision"]
+                data["check_item"]
+            ))
+        conn.commit()
+
+    return jsonify({"status": "saved"})
+
+
+# =====================================================
+# ✅ 4) DASC-21 保存 API
+# =====================================================
+@app.route("/api/save_dasc21", methods=["POST"])
+def save_dasc21():
+    data = request.json
+
+    sql = """
+        INSERT INTO dasc21 (
+            client_id, respondent_name, evaluator_name,
+            assessment_date, total_score
+        ) VALUES (%s, %s, %s, %s, %s)
+    """
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (
+                data["client_id"],
+                data["respondent_name"],
+                data["evaluator_name"],
+                data["assessment_date"],
+                data["total_score"]
+            ))
+        conn.commit()
+
+    return jsonify({"status": "saved"})
+
+
+# =====================================================
+# ✅ 5) DBD-13 保存 API
+# =====================================================
+@app.route("/api/save_dbd13", methods=["POST"])
+def save_dbd13():
+    data = request.json
+
+    sql = """
+        INSERT INTO dbd13 (
+            client_id, respondent_name, evaluator_name,
+            assessment_date, total_score
+        ) VALUES (%s, %s, %s, %s, %s)
+    """
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, (
+                data["client_id"],
+                data["respondent_name"],
+                data["evaluator_name"],
+                data["assessment_date"],
+                data["total_score"]
             ))
         conn.commit()
 
@@ -186,7 +174,7 @@ def save_support_plan():
 
 
 # ================================
-# ✅ 実行
+# ✅ Flask 実行
 # ================================
 if __name__ == "__main__":
     app.run(debug=True)
