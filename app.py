@@ -7,6 +7,32 @@ import pymysql
 
 app = Flask(__name__)
 
+<<<<<<< HEAD
+=======
+#データベーステスト　ターミナルで「pip install flask」「pip install sqlclient」「pip install Flask-SQLAlchemy」を入力
+#xamppを起動して、データベース「wp」を作成して、テーブル「wp.sql」をインポート
+#以下を参考にユーザー権限を作成
+#app.pyを起動してURL欄に/databaseを追加
+db = SQLAlchemy()
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+    "{db}://{user}:{password}@{host}/{dbName}?charset=utf8".format(
+        db = "mysql",
+        user = "wp",
+        password = "wp",
+        host = "localhost",
+        dbName = "wp"
+    )
+db.init_app(app)
+
+class 授業(db.Model):
+    __tablename__ = "授業"
+    授業id = db.Column(db.Integer, primary_key = True)
+    授業名 = db.Column(db.String(20))
+    教員 = db.Column(db.String(10))
+    曜日 = db.Column(db.String(1))
+    時間 = db.Column(db.Integer)
+
+>>>>>>> e02e274268bc8caa40957d5dae7c4d5490f13cfb
 # ================================
 # ✅ DB接続設定
 # ================================
