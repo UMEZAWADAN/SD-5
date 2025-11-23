@@ -1,56 +1,250 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>支援記録入力</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
+  <meta charset="UTF-8">
+  <title>対象者詳細</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/unified.css') }}">
+
+  <style>
+    .tab-menu {
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid #ddd;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      padding: 10px 18px;
+      background: #e9f0f7;
+      border: 1px solid #cdd6e4;
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      font-weight: 600;
+    }
+    .tab-btn.active {
+      background: #fff;
+      border-bottom: 2px solid #fff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .save-row {
+      text-align: center;
+      margin-top: 25px;
+    }
+    .save-btn {
+      padding: 10px 24px;
+      border-radius: 6px;
+      border: none;
+      background: #4a6cd8;
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+    }
+  </style>
 </head>
 
 <body>
+<main>
 
-<div class="page-container">
+  <h1 class="form-title">対象者詳細（SHOUSAI）</h1>
 
-    <h2>支援記録入力（統合画面）</h2>
+  <!-- ✅ client_id をページ間で共有する -->
+  <input type="hidden" id="client_id">
 
-    <!-- ===== タブメニュー ===== -->
-    <div class="tab-menu">
-        <button class="tab-btn active" data-tab="tab1">基本情報</button>
-        <button class="tab-btn" data-tab="tab2">訪問記録</button>
-        <button class="tab-btn" data-tab="tab3">身体状況チェック</button>
-        <button class="tab-btn" data-tab="tab4">DASC-21</button>
-        <button class="tab-btn" data-tab="tab5">DBD-13</button>
+  <!-- ✅ タブメニュー -->
+  <div class="tab-menu">
+    <button class="tab-btn active" data-tab="client">基本情報</button>
+    <button class="tab-btn" data-tab="visit">訪問記録</button>
+    <button class="tab-btn" data-tab="physical">身体状況</button>
+    <button class="tab-btn" data-tab="dasc21">DASC-21</button>
+    <button class="tab-btn" data-tab="dbd13">DBD13</button>
+  </div>
+
+  <!-- ✅ 基本情報フォーム -->
+  <section id="client" class="tab-content active">
+    <h2 class="section-title">利用者基本情報</h2>
+
+    <label>氏名：<input type="text" id="client_name"></label><br><br>
+    <label>性別：
+      <select id="gender">
+        <option></option>
+        <option>男</option>
+        <option>女</option>
+      </select>
+    </label><br><br>
+    <label>生年月日：<input type="date" id="birth_date"></label><br><br>
+    <label>住所：<input type="text" id="address"></label><br><br>
+
+    <div class="save-row">
+      <button class="save-btn" onclick="saveClient()">保存</button>
     </div>
+  </section>
 
-    <!-- ===== タブ内容 ===== -->
+  <!-- ✅ 訪問記録 -->
+  <section id="visit" class="tab-content">
+    <h2 class="section-title">訪問記録</h2>
 
-    <div id="tab1" class="tab-content active">
-        {% include 'kihon.html' %}
+    <label>訪問日時：<input type="datetime-local" id="visit_datetime"></label><br><br>
+    <label>訪問目的：<input type="text" id="visit_purpose"></label><br><br>
+    <label>訪問内容：</label><br>
+    <textarea id="visit_condition" rows="5"></textarea><br>
+
+    <div class="save-row">
+      <button class="save-btn" onclick="saveVisit()">保存</button>
     </div>
+  </section>
 
-    <div id="tab2" class="tab-content">
-        {% include 'kiroku.html' %}
+  <!-- ✅ 身体状況 -->
+  <section id="physical" class="tab-content">
+    <h2 class="section-title">身体状況チェック表</h2>
+
+    <textarea id="physical_check" rows="7"
+      placeholder="チェック内容をテキストまたは JSON 形式で保存します"></textarea>
+
+    <div class="save-row">
+      <button class="save-btn" onclick="savePhysical()">保存</button>
     </div>
+  </section>
 
-    <div id="tab3" class="tab-content">
-        {% include 'shintai.html' %}
+  <!-- ✅ DASC-21 -->
+  <section id="dasc21" class="tab-content">
+    <h2 class="section-title">DASC-21</h2>
+
+    <label>評価者：<input type="text" id="dasc_eval"></label><br><br>
+    <label>合計点：<input type="number" id="dasc_total"></label><br><br>
+
+    <textarea id="dasc_items" rows="6"
+      placeholder="評価項目（JSONまたはテキスト）"></textarea>
+
+    <div class="save-row">
+      <button class="save-btn" onclick="saveDASC()">保存</button>
     </div>
+  </section>
 
-    <div id="tab4" class="tab-content">
-        {% include 'dasc_21.html' %}
+  <!-- ✅ DBD-13 -->
+  <section id="dbd13" class="tab-content">
+    <h2 class="section-title">DBD-13</h2>
+
+    <label>評価者：<input type="text" id="dbd_eval"></label><br><br>
+    <label>合計点：<input type="number" id="dbd_total"></label><br><br>
+
+    <textarea id="dbd_items" rows="6"
+      placeholder="評価項目（JSONまたはテキスト）"></textarea>
+
+    <div class="save-row">
+      <button class="save-btn" onclick="saveDBD()">保存</button>
     </div>
+  </section>
 
-    <div id="tab5" class="tab-content">
-        {% include 'dbd13.html' %}
-    </div>
+</main>
 
-    <!-- ✅ まとめて保存ボタン（方式B） -->
-    <div class="save-area">
-        <button id="saveAllBtn" class="save-btn">すべて保存する</button>
-    </div>
+<script>
+  // ✅ タブ切り替え処理 + 保存状態を保持
+  const tabs = document.querySelectorAll(".tab-btn");
+  const contents = document.querySelectorAll(".tab-content");
 
-</div>
+  tabs.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.tab;
 
-<script src="{{ url_for('static', filename='js/shousai.js') }}"></script>
+      localStorage.setItem("activeTab", target);
+
+      tabs.forEach(b => b.classList.remove("active"));
+      contents.forEach(c => c.classList.remove("active"));
+
+      btn.classList.add("active");
+      document.getElementById(target).classList.add("active");
+    });
+  });
+
+  // ✅ 前回開いていたタブを復元
+  const savedTab = localStorage.getItem("activeTab");
+  if (savedTab) {
+    document.querySelector(`[data-tab="${savedTab}"]`).click();
+  }
+
+  // ✅ 保存処理（API 呼び出し）
+  async function saveClient() {
+    const payload = {
+      client_id: document.getElementById("client_id").value || null,
+      client_name: document.getElementById("client_name").value,
+      gender: document.getElementById("gender").value,
+      birth_date: document.getElementById("birth_date").value,
+      address: document.getElementById("address").value
+    };
+
+    const res = await fetch("/api/save_client", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    const json = await res.json();
+    document.getElementById("client_id").value = json.client_id;
+    alert("保存しました");
+  }
+
+  async function saveVisit() {
+    const payload = {
+      client_id: document.getElementById("client_id").value,
+      visit_datetime: document.getElementById("visit_datetime").value,
+      visit_purpose: document.getElementById("visit_purpose").value,
+      visit_condition: document.getElementById("visit_condition").value
+    };
+
+    await fetch("/api/save_visit_record", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    alert("保存しました");
+  }
+
+  async function savePhysical() {
+    await fetch("/api/save_physical_status", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        client_id: document.getElementById("client_id").value,
+        check_item: document.getElementById("physical_check").value
+      })
+    });
+
+    alert("保存しました");
+  }
+
+  async function saveDASC() {
+    await fetch("/api/save_dasc21", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        client_id: document.getElementById("client_id").value,
+        evaluator_name: document.getElementById("dasc_eval").value,
+        total_score: document.getElementById("dasc_total").value,
+        assessment_item: document.getElementById("dasc_items").value
+      })
+    });
+    alert("保存しました");
+  }
+
+  async function saveDBD() {
+    await fetch("/api/save_dbd13", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        client_id: document.getElementById("client_id").value,
+        evaluator_name: document.getElementById("dbd_eval").value,
+        total_score: document.getElementById("dbd_total").value,
+        assessment_item: document.getElementById("dbd_items").value
+      })
+    });
+    alert("保存しました");
+  }
+</script>
 
 </body>
 </html>
