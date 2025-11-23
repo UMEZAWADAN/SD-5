@@ -3,26 +3,12 @@ import numpy as np
 from numpy.linalg import norm
 import pickle
 import os
-from flask_sqlalchemy import SQLAlchemy
 import pymysql
 
 app = Flask(__name__)
 
-#データベーステスト　ターミナルで「pip install flask」「pip install sqlclient」「pip install Flask-SQLAlchemy」を入力
-db = SQLAlchemy()
-app.config['SQLALCHEMY_DATABASE_URI'] = \
-db.init_app(app)
-
-class 授業(db.Model):
-    __tablename__ = "授業"
-    授業id = db.Column(db.Integer, primary_key = True)
-    授業名 = db.Column(db.String(20))
-    教員 = db.Column(db.String(10))
-    曜日 = db.Column(db.String(1))
-    時間 = db.Column(db.Integer)
-
 # ================================
-#  DB 接続設定（必要に応じて変更）
+# ✅ DB接続設定
 # ================================
 DB_CONFIG = {
     "host": "localhost",
@@ -32,15 +18,13 @@ DB_CONFIG = {
     "cursorclass": pymysql.cursors.DictCursor
 }
 
-
 def get_connection():
     return pymysql.connect(**DB_CONFIG)
 
 
 # ================================
-#  1. ルーティング
+# ✅ ルーティング
 # ================================
-
 @app.route("/")
 def index():
     obj = {
@@ -51,19 +35,13 @@ def index():
     return render_template("template.html", d=obj)
 
 
-#データベーステストページ
-@app.route("/database")
-def database():
-    d = db.session.query(授業.授業名, 授業.教員, 授業.曜日, 授業.時間).all()
-    return(render_template("database.html", d=d))
-
 @app.route("/top")
 def top():
     return render_template("top.html")
 
 
 @app.route("/list")
-def list():
+def list_page():
     return render_template("list.html")
 
 
@@ -78,7 +56,7 @@ def text():
 
 
 # ================================
-#  2. テキストマイニング機能
+# ✅ テキストマイニング機能
 # ================================
 DATA_FILE = "cases.pkl"
 
@@ -105,7 +83,7 @@ def cosine_sim(a, b):
 
 
 # --------------------
-# ■ 事例登録API
+# ✅ 事例登録API
 # --------------------
 @app.route("/api/register_case", methods=["POST"])
 def register_case():
@@ -128,7 +106,7 @@ def register_case():
 
 
 # --------------------
-# ■ 類似事例検索API
+# ✅ 類似事例検索API
 # --------------------
 @app.route("/api/similar_cases", methods=["POST"])
 def similar_cases():
@@ -151,10 +129,10 @@ def similar_cases():
 
 
 # ================================
-#  3. DB 保存 API
+# ✅ DB保存API
 # ================================
 
-# ✅ 訪問記録を保存
+# ✅ 訪問記録保存
 @app.route("/api/save_visit_record", methods=["POST"])
 def save_visit_record():
     data = request.json
@@ -182,7 +160,7 @@ def save_visit_record():
     return jsonify({"status": "saved"})
 
 
-# ✅ 支援内容（support_plan）保存
+# ✅ 支援内容保存
 @app.route("/api/save_support_plan", methods=["POST"])
 def save_support_plan():
     data = request.json
@@ -208,7 +186,7 @@ def save_support_plan():
 
 
 # ================================
-#  Flask 実行
+# ✅ 実行
 # ================================
 if __name__ == "__main__":
     app.run(debug=True)
