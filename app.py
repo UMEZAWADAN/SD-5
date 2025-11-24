@@ -3,18 +3,17 @@ import numpy as np
 from numpy.linalg import norm
 import pickle
 import os
-import json
 import pymysql
 
 app = Flask(__name__)
 
 # ================================
-#  DB 接続設定（スクショどおり）
+#  DB 接続設定
 # ================================
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "",           # パスワードなし
+    "password": "",           # 必要に応じて変更
     "database": "care_system",
     "cursorclass": pymysql.cursors.DictCursor,
     "charset": "utf8mb4"
@@ -28,15 +27,16 @@ def get_connection():
 # ================================
 #  1. 画面ルーティング
 # ================================
+
 @app.route("/")
 def index():
+    # ここは自由に変えてOK（トップ or テンプレートなど）
     obj = {
-        "header_system_name": "認知症初期集中支援 業務支援システム",
-        "header_page_name": "トップ",
-        "footer_sd5": "プロジェクト演習 SD-5",
+        "header_system_name": "認知症初期支援業務管理システム",
+        "header_page_name": "テンプレート",
+        "footer_sd5": "プロジェクト演習  SD-5"
     }
-    # ここはお好きなトップテンプレートに合わせて変えてOK
-    return render_template("top.html", d=obj)
+    return render_template("template.html", d=obj)
 
 
 @app.route("/top")
@@ -46,33 +46,28 @@ def top():
 
 @app.route("/list")
 def list_page():
-    # 利用者一覧などを出したい場合はここで SELECT
     return render_template("list.html")
 
 
 @app.route("/shousai")
 def shousai():
-    """
-    5つのアセスメントシート（client / visit_record / physical_status / DASC21 / DBD13）
-    をタブ切り替えで表示する詳細画面。
-    """
+    # ?client_id=1 などのクエリは JS 側で拾って使う
     return render_template("shousai.html")
 
 
 @app.route("/text")
 def text():
-    # 類似ケース検索用の画面など
     return render_template("text.html")
 
 
 # ================================
-#  2. テキストマイニング機能
+#  2. テキストマイニング機能（既存）
 # ================================
 DATA_FILE = "cases.pkl"
 
 
 def load_cases():
-    """過去事例を読み込む（pickle）"""
+    """過去事例を読み込む（ローカル pickle）"""
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "rb") as f:
             return pickle.load(f)
@@ -80,14 +75,17 @@ def load_cases():
 
 
 def save_cases(cases):
-    """過去事例を保存（pickle）"""
+    """過去事例を保存"""
     with open(DATA_FILE, "wb") as f:
         pickle.dump(cases, f)
 
 
 def fake_embedding(text: str):
-    """ダミーの埋め込みベクトル（同じテキスト→同じベクトル）"""
-    np.random.seed(abs(hash(text)) % (10**7))
+    """
+    ダミーの埋め込み生成
+    （同じ文章なら同じベクトルになるよう seed を固定）
+    """
+    np.random.seed(abs(hash(text)) % (10 ** 7))
     return np.random.rand(128)
 
 
@@ -98,31 +96,28 @@ def cosine_sim(a, b):
 
 @app.route("/api/register_case", methods=["POST"])
 def register_case():
-    """
-    （既存）事例登録 API
-    body: { "visit_text": "...", "support_plan": "..." }
-    """
+    """事例登録API（ローカル pickle 保存）"""
     data = request.json
     visit_text = data.get("visit_text", "")
     support_plan = data.get("support_plan", "")
 
     cases = load_cases()
+
     new_case = {
         "visit_text": visit_text,
         "support_plan": support_plan,
         "embedding": fake_embedding(visit_text).tolist()
     }
+
     cases.append(new_case)
     save_cases(cases)
+
     return jsonify({"status": "ok"})
 
 
 @app.route("/api/similar_cases", methods=["POST"])
 def similar_cases():
-    """
-    （既存）類似事例検索 API
-    body: { "visit_text": "..." }
-    """
+    """類似事例検索API"""
     input_text = request.json.get("visit_text", "")
     input_emb = fake_embedding(input_text)
 
@@ -145,539 +140,451 @@ def similar_cases():
 
 
 # ================================
-#  3. アセスメントシート DB 保存用 API
+#  3. アセスメントシート DB API
 # ================================
-# 仕様：
-# ・すべて「上書き保存」
-# ・client_id 単位で 5テーブルとも 1レコードを持つ想定
-# ・レコードが無ければ INSERT / あれば UPDATE（＝実質上書き）
+
+# ------- 共通ユーティリティ -------
+
+def to_int_or_none(value):
+    try:
+        if value is None or value == "":
+            return None
+        return int(value)
+    except (ValueError, TypeError):
+        return None
 
 
-# ------ 3-1. 利用者基本情報（client） ------
-CLIENT_COLUMNS = [
-    # client_id は別扱い（主キーではないがキーとして扱う）
-    "writer_name",
-    "consultation_date",
-    "current_status",
-    "client_name",
-    "gender",
-    "birth_date",
-    "address",
-    "phone_number",
-    "disability_adl_level",
-    "dementia_adl_level",
-    "certification_info",
-    "disability_certification",
-    "living_environment",
-    "economic_status",
-    "visitor_name",
-    "visitor_contact",
-    "relation_to_client",
-    "family_composition",
-    "emergency_contact_name",
-    "emergency_relation",
-    "emergency_contact_info",
-    "life_history",
-    "daily_life_pattern",
-    "time_of_day",
-    "person_content",
-    "caregiver_content",
-    "hobbies",
-    "social_connections",
-    "disease_onset_date",
-    "disease_name",
-    "medical_institution",
-    "medical_history",
-    "current_condition",
-    "public_services",
-    "private_services",
-]
+def to_date_or_none(value):
+    """
+    <input type="date"> は 'YYYY-MM-DD' または '' が来る想定。
+    空なら None を返す（NOT NULL の項目はフロント側で入力を必須にする想定）
+    """
+    if not value:
+        return None
+    return value  # そのまま渡す（MySQLが解釈できる形式前提）
 
+
+def to_datetime_or_none(value):
+    """
+    datetime-local -> 'YYYY-MM-DDTHH:MM'
+    MySQL DATETIME 用に 'YYYY-MM-DD HH:MM:00' に変換
+    """
+    if not value:
+        return None
+    v = value.replace("T", " ")
+    if len(v) == 16:
+        v = v + ":00"
+    return v
+
+
+# ------- client：利用者基本情報 -------
 
 @app.route("/api/save_client", methods=["POST"])
 def save_client():
-    """
-    利用者基本情報を保存（client テーブル）
-    body: {
-       "client_id": "ABC001",
-       "writer_name": "...",
-       "consultation_date": "...",
-       ...
-       "private_services": "..."
-    }
-    """
     data = request.json or {}
-    client_id = data.get("client_id")
-    if not client_id:
-        return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
-    # カラム順に値を並べる（存在しないキーは None）
-    values = [data.get(col) for col in CLIENT_COLUMNS]
+    client_id = to_int_or_none(data.get("client_id"))
+
+    writer_name = data.get("writer_name", "")
+    consultation_date = to_date_or_none(data.get("consultation_date"))
+    current_status = data.get("current_status", "")
+    client_name = data.get("client_name", "")
+    gender = data.get("gender", "")
+    birth_date = to_date_or_none(data.get("birth_date"))
+    address = data.get("address", "")
+    phone_number = data.get("phone_number", "")
+    disability_adl_level = data.get("disability_adl_level", "")
+    dementia_adl_level = data.get("dementia_adl_level", "")
+    certification_info = data.get("certification_info", "")
+    disability_certification = data.get("disability_certification", "")
+    living_environment = data.get("living_environment", "")
+    economic_status = data.get("economic_status", "")
+    visitor_name = data.get("visitor_name", "")
+    visitor_contact = data.get("visitor_contact", "")
+    relation_to_client = data.get("relation_to_client", "")
+    family_composition = data.get("family_composition", "")
+    emergency_contact_name = data.get("emergency_contact_name", "")
+    emergency_relation = data.get("emergency_relation", "")
+    emergency_contact_info = data.get("emergency_contact_info", "")
+    life_history = data.get("life_history", "")
+    daily_life_pattern = data.get("daily_life_pattern", "")
+    time_of_day = data.get("time_of_day", "")
+    person_content = data.get("person_content", "")
+    caregiver_content = data.get("caregiver_content", "")
+    hobbies = data.get("hobbies", "")
+    social_connections = data.get("social_connections", "")
+    disease_onset_date = to_date_or_none(data.get("disease_onset_date"))
+    disease_name = data.get("disease_name", "")
+    medical_institution = data.get("medical_institution", "")
+    medical_history = data.get("medical_history", "")
+    current_condition = data.get("current_condition", "")
+    public_services = data.get("public_services", "")
+    private_services = data.get("private_services", "")
 
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            # すでにその client_id のレコードがあるか確認
-            cur.execute("SELECT client_id FROM client WHERE client_id = %s", (client_id,))
-            row = cur.fetchone()
+            if client_id is not None:
+                # 既存かチェック
+                cur.execute(
+                    "SELECT client_id FROM client WHERE client_id = %s",
+                    (client_id,)
+                )
+                row = cur.fetchone()
+            else:
+                row = None
 
             if row:
-                # UPDATE（上書き）
-                set_clause = ", ".join([f"{col}=%s" for col in CLIENT_COLUMNS])
-                sql = f"""
+                # UPDATE
+                sql = """
                     UPDATE client
-                    SET {set_clause}
-                    WHERE client_id = %s
+                       SET writer_name=%s,
+                           consultation_date=%s,
+                           current_status=%s,
+                           client_name=%s,
+                           gender=%s,
+                           birth_date=%s,
+                           address=%s,
+                           phone_number=%s,
+                           disability_adl_level=%s,
+                           dementia_adl_level=%s,
+                           certification_info=%s,
+                           disability_certification=%s,
+                           living_environment=%s,
+                           economic_status=%s,
+                           visitor_name=%s,
+                           visitor_contact=%s,
+                           relation_to_client=%s,
+                           family_composition=%s,
+                           emergency_contact_name=%s,
+                           emergency_relation=%s,
+                           emergency_contact_info=%s,
+                           life_history=%s,
+                           daily_life_pattern=%s,
+                           time_of_day=%s,
+                           person_content=%s,
+                           caregiver_content=%s,
+                           hobbies=%s,
+                           social_connections=%s,
+                           disease_onset_date=%s,
+                           disease_name=%s,
+                           medical_institution=%s,
+                           medical_history=%s,
+                           current_condition=%s,
+                           public_services=%s,
+                           private_services=%s
+                     WHERE client_id=%s
                 """
-                cur.execute(sql, values + [client_id])
+                cur.execute(sql, (
+                    writer_name, consultation_date, current_status,
+                    client_name, gender, birth_date, address, phone_number,
+                    disability_adl_level, dementia_adl_level,
+                    certification_info, disability_certification,
+                    living_environment, economic_status,
+                    visitor_name, visitor_contact, relation_to_client,
+                    family_composition, emergency_contact_name,
+                    emergency_relation, emergency_contact_info,
+                    life_history, daily_life_pattern, time_of_day,
+                    person_content, caregiver_content, hobbies,
+                    social_connections, disease_onset_date, disease_name,
+                    medical_institution, medical_history,
+                    current_condition, public_services, private_services,
+                    client_id
+                ))
             else:
-                # INSERT（新規）
-                cols = ", ".join(["client_id"] + CLIENT_COLUMNS)
-                placeholders = ", ".join(["%s"] * (1 + len(CLIENT_COLUMNS)))
-                sql = f"""
-                    INSERT INTO client ({cols})
-                    VALUES ({placeholders})
+                # INSERT
+                sql = """
+                    INSERT INTO client (
+                        writer_name, consultation_date, current_status,
+                        client_name, gender, birth_date, address, phone_number,
+                        disability_adl_level, dementia_adl_level,
+                        certification_info, disability_certification,
+                        living_environment, economic_status,
+                        visitor_name, visitor_contact, relation_to_client,
+                        family_composition, emergency_contact_name,
+                        emergency_relation, emergency_contact_info,
+                        life_history, daily_life_pattern, time_of_day,
+                        person_content, caregiver_content, hobbies,
+                        social_connections, disease_onset_date, disease_name,
+                        medical_institution, medical_history,
+                        current_condition, public_services, private_services
+                    )
+                    VALUES (
+                        %s,%s,%s,
+                        %s,%s,%s,%s,%s,
+                        %s,%s,
+                        %s,%s,
+                        %s,%s,
+                        %s,%s,%s,
+                        %s,%s,
+                        %s,%s,
+                        %s,%s,%s,
+                        %s,%s,%s,
+                        %s,%s,%s,
+                        %s,%s,
+                        %s,%s,%s
+                    )
                 """
-                cur.execute(sql, [client_id] + values)
+                cur.execute(sql, (
+                    writer_name, consultation_date, current_status,
+                    client_name, gender, birth_date, address, phone_number,
+                    disability_adl_level, dementia_adl_level,
+                    certification_info, disability_certification,
+                    living_environment, economic_status,
+                    visitor_name, visitor_contact, relation_to_client,
+                    family_composition, emergency_contact_name,
+                    emergency_relation, emergency_contact_info,
+                    life_history, daily_life_pattern, time_of_day,
+                    person_content, caregiver_content, hobbies,
+                    social_connections, disease_onset_date, disease_name,
+                    medical_institution, medical_history,
+                    current_condition, public_services, private_services
+                ))
+                client_id = cur.lastrowid
 
         conn.commit()
 
-    return jsonify({"status": "ok", "message": "保存しました"})
+    return jsonify({"status": "saved", "client_id": client_id})
 
 
-# ------ 3-2. 訪問記録表（visit_record） ------
-VISIT_COLUMNS = [
-    # visit_record_id は自動採番想定（あれば使ってもOK）
-    # "visit_record_id",
-    "client_id",
-    "physical_status_id",   # 身体状況チェック表への FK（今は None でもOK）
-    "visit_datetime",
-    "visitor_name",
-    "visit_purpose",
-    "visit_condition",
-    "support_decision",
-    "future_plan",
-]
-
+# ------- visit_record：訪問記録（1クライアント1件を上書き） -------
 
 @app.route("/api/save_visit_record", methods=["POST"])
 def save_visit_record():
-    """
-    訪問記録を保存（visit_record テーブル）
-    body: {
-       "client_id": "ABC001",
-       "physical_status_id": 1 or null,
-       "visit_datetime": "2025-11-24 14:00",
-       "visitor_name": "...",
-       "visit_purpose": "...",
-       "visit_condition": "...",
-       "support_decision": "...",
-       "future_plan": "..."
-    }
-    ・client_id で 1レコードを管理（既存あれば UPDATE）
-    """
     data = request.json or {}
-    client_id = data.get("client_id")
-    if not client_id:
+
+    client_id = to_int_or_none(data.get("client_id"))
+    if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
-    # 既存レコードを取得（client_id で 1件想定）
+    physical_status_id = to_int_or_none(data.get("physical_status_id"))
+    visit_datetime = to_datetime_or_none(data.get("visit_datetime"))
+    visitor_name = data.get("visitor_name", "")
+    visit_purpose = data.get("visit_purpose", "")
+    visit_condition = data.get("visit_condition", "")
+    support_decision = data.get("support_decision", "")
+    future_plan = data.get("future_plan", "")
+
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT visit_record_id
-                  FROM visit_record
-                 WHERE client_id = %s
-                 ORDER BY visit_record_id ASC
-                 LIMIT 1
-            """, (client_id,))
+            # 1クライアントにつき 1件だけ保持（上書き）
+            cur.execute(
+                "SELECT visit_record_id FROM visit_record WHERE client_id=%s ORDER BY visit_record_id DESC LIMIT 1",
+                (client_id,)
+            )
             row = cur.fetchone()
 
-            values = [data.get(col) for col in VISIT_COLUMNS]  # client_id も含む
-
             if row:
-                # UPDATE
-                visit_record_id = row["visit_record_id"]
-                set_clause = ", ".join([f"{col}=%s" for col in VISIT_COLUMNS])
-                sql = f"""
+                sql = """
                     UPDATE visit_record
-                       SET {set_clause}
-                     WHERE visit_record_id = %s
+                       SET physical_status_id=%s,
+                           visit_datetime=%s,
+                           visitor_name=%s,
+                           visit_purpose=%s,
+                           visit_condition=%s,
+                           support_decision=%s,
+                           future_plan=%s
+                     WHERE visit_record_id=%s
                 """
-                cur.execute(sql, values + [visit_record_id])
+                cur.execute(sql, (
+                    physical_status_id, visit_datetime, visitor_name,
+                    visit_purpose, visit_condition, support_decision,
+                    future_plan, row["visit_record_id"]
+                ))
+                visit_record_id = row["visit_record_id"]
             else:
-                # INSERT
-                cols = ", ".join(VISIT_COLUMNS)
-                placeholders = ", ".join(["%s"] * len(VISIT_COLUMNS))
-                sql = f"""
-                    INSERT INTO visit_record ({cols})
-                    VALUES ({placeholders})
+                sql = """
+                    INSERT INTO visit_record (
+                        client_id, physical_status_id, visit_datetime,
+                        visitor_name, visit_purpose, visit_condition,
+                        support_decision, future_plan
+                    )
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
                 """
-                cur.execute(sql, values)
+                cur.execute(sql, (
+                    client_id, physical_status_id, visit_datetime,
+                    visitor_name, visit_purpose, visit_condition,
+                    support_decision, future_plan
+                ))
+                visit_record_id = cur.lastrowid
 
         conn.commit()
 
-    return jsonify({"status": "ok", "message": "保存しました"})
+    return jsonify({"status": "saved", "visit_record_id": visit_record_id})
 
 
-# ------ 3-3. 身体状況チェック表（physical_status） ------
-PHYSICAL_COLUMNS = [
-    "client_id",
-    "check_item",   # JSON 文字列でフォーム全部突っ込む想定
-]
-
+# ------- physical_status：身体状況チェック（1クライアント1件上書き） -------
 
 @app.route("/api/save_physical_status", methods=["POST"])
 def save_physical_status():
-    """
-    身体状況チェック表を保存（physical_status）
-    body: {
-       "client_id": "ABC001",
-       "check_item": {... 画面上の入力全部を入れたオブジェクト ...}
-    }
-    check_item は JSON 文字列として保存
-    """
     data = request.json or {}
-    client_id = data.get("client_id")
-    if not client_id:
+
+    client_id = to_int_or_none(data.get("client_id"))
+    if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
-    raw_check = data.get("check_item", {})
-    # dict や list が来た場合は JSON 文字列にする
-    if isinstance(raw_check, (dict, list)):
-        check_item_str = json.dumps(raw_check, ensure_ascii=False)
-    else:
-        check_item_str = str(raw_check) if raw_check is not None else None
+    check_item = data.get("check_item", "")
 
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT physical_status_id
-                  FROM physical_status
-                 WHERE client_id = %s
-                 ORDER BY physical_status_id ASC
-                 LIMIT 1
-            """, (client_id,))
+            cur.execute(
+                "SELECT physical_status_id FROM physical_status WHERE client_id=%s LIMIT 1",
+                (client_id,)
+            )
             row = cur.fetchone()
 
             if row:
-                # UPDATE
-                physical_status_id = row["physical_status_id"]
                 sql = """
                     UPDATE physical_status
-                       SET check_item = %s
-                     WHERE physical_status_id = %s
+                       SET check_item=%s
+                     WHERE physical_status_id=%s
                 """
-                cur.execute(sql, (check_item_str, physical_status_id))
+                cur.execute(sql, (check_item, row["physical_status_id"]))
+                physical_status_id = row["physical_status_id"]
             else:
-                # INSERT
                 sql = """
                     INSERT INTO physical_status (client_id, check_item)
                     VALUES (%s, %s)
                 """
-                cur.execute(sql, (client_id, check_item_str))
+                cur.execute(sql, (client_id, check_item))
+                physical_status_id = cur.lastrowid
 
         conn.commit()
 
-    return jsonify({"status": "ok", "message": "保存しました"})
+    return jsonify({"status": "saved", "physical_status_id": physical_status_id})
 
 
-# ------ 3-4. DASC-21（dasc21） ------
-DASC_COLUMNS = [
-    "client_id",
-    "informant_name",
-    "evaluator_name",
-    "assessment_item",  # 質問ごとの回答を JSON で保存
-    "remarks",          # 備考も JSON で保存
-    "total_score",
-]
-
+# ------- dasc21：DASC-21（B：毎回追加） -------
 
 @app.route("/api/save_dasc21", methods=["POST"])
 def save_dasc21():
-    """
-    DASC-21 を保存
-    body: {
-      "client_id": "ABC001",
-      "informant_name": "...",
-      "evaluator_name": "...",
-      "assessment_item": { "q1": 2, "q2": 3, ... },
-      "remarks": { "q1": "メモ", ... },
-      "total_score": 42
-    }
-    """
     data = request.json or {}
-    client_id = data.get("client_id")
-    if not client_id:
+
+    client_id = to_int_or_none(data.get("client_id"))
+    if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
-    def to_json_str(v):
-        if isinstance(v, (dict, list)):
-            return json.dumps(v, ensure_ascii=False)
-        return str(v) if v is not None else None
-
-    assessment_str = to_json_str(data.get("assessment_item"))
-    remarks_str = to_json_str(data.get("remarks"))
-    total_score = data.get("total_score")
+    informant_name = data.get("informant_name", "")
+    evaluator_name = data.get("evaluator_name", "")
+    assessment_item = data.get("assessment_item", "")
+    remarks = data.get("remarks", "")
+    total_score = to_int_or_none(data.get("total_score")) or 0
 
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT dasc_id
-                  FROM dasc21
-                 WHERE client_id = %s
-                 ORDER BY dasc_id ASC
-                 LIMIT 1
-            """, (client_id,))
-            row = cur.fetchone()
-
-            if row:
-                # UPDATE
-                dasc_id = row["dasc_id"]
-                sql = """
-                    UPDATE dasc21
-                       SET informant_name = %s,
-                           evaluator_name = %s,
-                           assessment_item = %s,
-                           remarks = %s,
-                           total_score = %s
-                     WHERE dasc_id = %s
-                """
-                cur.execute(sql, (
-                    data.get("informant_name"),
-                    data.get("evaluator_name"),
-                    assessment_str,
-                    remarks_str,
-                    total_score,
-                    dasc_id
-                ))
-            else:
-                # INSERT
-                sql = """
-                    INSERT INTO dasc21 (
-                        client_id, informant_name, evaluator_name,
-                        assessment_item, remarks, total_score
-                    ) VALUES (%s, %s, %s, %s, %s, %s)
-                """
-                cur.execute(sql, (
-                    client_id,
-                    data.get("informant_name"),
-                    data.get("evaluator_name"),
-                    assessment_str,
-                    remarks_str,
-                    total_score
-                ))
-
+            sql = """
+                INSERT INTO dasc21 (
+                    client_id, informant_name, evaluator_name,
+                    assessment_item, remarks, total_score
+                )
+                VALUES (%s,%s,%s,%s,%s,%s)
+            """
+            cur.execute(sql, (
+                client_id, informant_name, evaluator_name,
+                assessment_item, remarks, total_score
+            ))
+            dasc_id = cur.lastrowid
         conn.commit()
 
-    return jsonify({"status": "ok", "message": "保存しました"})
+    return jsonify({"status": "saved", "dasc_id": dasc_id})
 
 
-# ------ 3-5. DBD-13（dbd13） ------
-DBD_COLUMNS = [
-    "client_id",
-    "respondent_name",
-    "evaluator_name",
-    "entry_date",
-    "assessment_item",    # JSON
-    "remarks",            # JSON
-    "subtotal_score",
-    "total_score",
-]
-
+# ------- dbd13：DBD-13（B：毎回追加） -------
 
 @app.route("/api/save_dbd13", methods=["POST"])
 def save_dbd13():
-    """
-    DBD-13 を保存
-    body: {
-      "client_id": "ABC001",
-      "respondent_name": "...",
-      "evaluator_name": "...",
-      "entry_date": "2025-11-24",
-      "assessment_item": { "q1": 3, ... },
-      "remarks": { "q1": "メモ", ... },
-      "subtotal_score": 20,
-      "total_score": 45
-    }
-    """
     data = request.json or {}
-    client_id = data.get("client_id")
-    if not client_id:
+
+    client_id = to_int_or_none(data.get("client_id"))
+    if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
-    def to_json_str(v):
-        if isinstance(v, (dict, list)):
-            return json.dumps(v, ensure_ascii=False)
-        return str(v) if v is not None else None
-
-    assessment_str = to_json_str(data.get("assessment_item"))
-    remarks_str = to_json_str(data.get("remarks"))
+    respondent_name = data.get("respondent_name", "")
+    evaluator_name = data.get("evaluator_name", "")
+    entry_date = to_date_or_none(data.get("entry_date"))
+    assessment_item = data.get("assessment_item", "")
+    remarks = data.get("remarks", "")
+    subtotal_score = to_int_or_none(data.get("subtotal_score")) or 0
+    total_score = to_int_or_none(data.get("total_score")) or 0
 
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT dbd_id
-                  FROM dbd13
-                 WHERE client_id = %s
-                 ORDER BY dbd_id ASC
-                 LIMIT 1
-            """, (client_id,))
-            row = cur.fetchone()
-
-            if row:
-                # UPDATE
-                dbd_id = row["dbd_id"]
-                sql = """
-                    UPDATE dbd13
-                       SET respondent_name = %s,
-                           evaluator_name = %s,
-                           entry_date = %s,
-                           assessment_item = %s,
-                           remarks = %s,
-                           subtotal_score = %s,
-                           total_score = %s
-                     WHERE dbd_id = %s
-                """
-                cur.execute(sql, (
-                    data.get("respondent_name"),
-                    data.get("evaluator_name"),
-                    data.get("entry_date"),
-                    assessment_str,
-                    remarks_str,
-                    data.get("subtotal_score"),
-                    data.get("total_score"),
-                    dbd_id
-                ))
-            else:
-                # INSERT
-                sql = """
-                    INSERT INTO dbd13 (
-                        client_id, respondent_name, evaluator_name,
-                        entry_date, assessment_item, remarks,
-                        subtotal_score, total_score
-                    ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-                """
-                cur.execute(sql, (
-                    client_id,
-                    data.get("respondent_name"),
-                    data.get("evaluator_name"),
-                    data.get("entry_date"),
-                    assessment_str,
-                    remarks_str,
-                    data.get("subtotal_score"),
-                    data.get("total_score"),
-                ))
-
+            sql = """
+                INSERT INTO dbd13 (
+                    client_id, respondent_name, evaluator_name, entry_date,
+                    assessment_item, remarks, subtotal_score, total_score
+                )
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+            """
+            cur.execute(sql, (
+                client_id, respondent_name, evaluator_name, entry_date,
+                assessment_item, remarks, subtotal_score, total_score
+            ))
+            dbd_id = cur.lastrowid
         conn.commit()
 
-    return jsonify({"status": "ok", "message": "保存しました"})
+    return jsonify({"status": "saved", "dbd_id": dbd_id})
 
 
-# ================================
-#  4. 全シート一括取得 API（B-2 用）
-# ================================
+# ------- shousai 画面用：一括取得API -------
+
 @app.route("/api/get_all_data")
 def get_all_data():
-    """
-    クライアントID で 5つのシートのデータをまとめて取得
-    GET /api/get_all_data?client_id=ABC001
-    戻り値:
-    {
-      "client": {...} or null,
-      "visit_record": {...} or null,
-      "physical_status": {...} or null,
-      "dasc21": {...} or null,
-      "dbd13": {...} or null
-    }
-    """
-    client_id = request.args.get("client_id")
-    if not client_id:
+    client_id = to_int_or_none(request.args.get("client_id"))
+    if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
-
-    result = {
-        "client": None,
-        "visit_record": None,
-        "physical_status": None,
-        "dasc21": None,
-        "dbd13": None,
-    }
 
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
             # client
-            cur.execute("SELECT * FROM client WHERE client_id = %s LIMIT 1", (client_id,))
-            result["client"] = cur.fetchone()
+            cur.execute("SELECT * FROM client WHERE client_id=%s", (client_id,))
+            client = cur.fetchone()
 
-            # visit_record
-            cur.execute("""
-                SELECT * FROM visit_record
-                 WHERE client_id = %s
-                 ORDER BY visit_record_id ASC
-                 LIMIT 1
-            """, (client_id,))
-            result["visit_record"] = cur.fetchone()
+            # visit_record（最新1件）
+            cur.execute(
+                "SELECT * FROM visit_record WHERE client_id=%s ORDER BY visit_record_id DESC LIMIT 1",
+                (client_id,)
+            )
+            visit_record = cur.fetchone()
 
-            # physical_status
-            cur.execute("""
-                SELECT * FROM physical_status
-                 WHERE client_id = %s
-                 ORDER BY physical_status_id ASC
-                 LIMIT 1
-            """, (client_id,))
-            row = cur.fetchone()
-            if row and row.get("check_item"):
-                # JSON を dict に戻して渡す
-                try:
-                    row["check_item"] = json.loads(row["check_item"])
-                except Exception:
-                    pass
-            result["physical_status"] = row
+            # physical_status（1件）
+            cur.execute(
+                "SELECT * FROM physical_status WHERE client_id=%s ORDER BY physical_status_id DESC LIMIT 1",
+                (client_id,)
+            )
+            physical_status = cur.fetchone()
 
-            # dasc21
-            cur.execute("""
-                SELECT * FROM dasc21
-                 WHERE client_id = %s
-                 ORDER BY dasc_id ASC
-                 LIMIT 1
-            """, (client_id,))
-            row = cur.fetchone()
-            if row:
-                for key in ("assessment_item", "remarks"):
-                    if row.get(key):
-                        try:
-                            row[key] = json.loads(row[key])
-                        except Exception:
-                            pass
-            result["dasc21"] = row
+            # dasc21（最新1件）
+            cur.execute(
+                "SELECT * FROM dasc21 WHERE client_id=%s ORDER BY dasc_id DESC LIMIT 1",
+                (client_id,)
+            )
+            dasc21_row = cur.fetchone()
 
-            # dbd13
-            cur.execute("""
-                SELECT * FROM dbd13
-                 WHERE client_id = %s
-                 ORDER BY dbd_id ASC
-                 LIMIT 1
-            """, (client_id,))
-            row = cur.fetchone()
-            if row:
-                for key in ("assessment_item", "remarks"):
-                    if row.get(key):
-                        try:
-                            row[key] = json.loads(row[key])
-                        except Exception:
-                            pass
-            result["dbd13"] = row
+            # dbd13（最新1件）
+            cur.execute(
+                "SELECT * FROM dbd13 WHERE client_id=%s ORDER BY dbd_id DESC LIMIT 1",
+                (client_id,)
+            )
+            dbd13_row = cur.fetchone()
 
-    return jsonify(result)
+    return jsonify({
+        "status": "ok",
+        "client": client,
+        "visit_record": visit_record,
+        "physical_status": physical_status,
+        "dasc21": dasc21_row,
+        "dbd13": dbd13_row
+    })
 
 
 # ================================
-#  実行
+#  Flask 実行
 # ================================
 if __name__ == "__main__":
     app.run(debug=True)
