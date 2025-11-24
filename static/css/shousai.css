@@ -115,6 +115,18 @@ input, textarea, select {
   background: #fff;
 }
 
+.form-grid input[type="radio"] {
+  width: 22px;
+  height: 22px;
+  transform: scale(1.4);
+  margin: 6px;
+  cursor: pointer;
+}
+
+.form-grid label {
+  font-size: 1.05rem;
+}
+
 /* textarea height default */
 textarea {
   resize: vertical;
@@ -142,6 +154,19 @@ button.save-btn {
 button.save-btn:hover {
   background: #3454b5;
 }
+
+input[type="radio"],
+input[type="checkbox"] {
+  transform: scale(1.4);
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.assessment-table input[type="radio"],
+.assessment-table input[type="checkbox"] {
+  margin-inline: 8px;
+}
+
 
 /* ===== スマホ対応 ===== */
 @media (max-width: 768px) {

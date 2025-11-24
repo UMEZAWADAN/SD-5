@@ -227,7 +227,6 @@
         <h2>② 訪問記録表（visit_record）</h2>
         <form id="form-visit" class="form-section">
           <input type="hidden" name="client_id" class="client-id-field" />
-          <input type="hidden" name="physical_status_id" />
 
           <div class="form-grid">
             <div class="form-item">
@@ -261,6 +260,81 @@
             </div>
           </div>
 
+          <hr class="section-divider">
+
+          <!-- ★ 厚労省様式に合わせた詳細項目（details_json で保存） -->
+          <div class="form-grid">
+            <div class="form-item full">
+              <label>［訪問に対する本人の反応・理解］（reaction_understanding）</label>
+              <textarea name="reaction_understanding"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>［認知機能］（cognitive_function）</label>
+              <textarea name="cognitive_function"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>認知症日常生活自立度（cognitive_adl_level）</label>
+              <input type="text" name="cognitive_adl_level" placeholder="例：IIa, IIIb など">
+            </div>
+
+            <div class="form-item full">
+              <label>［精神症状・行動症状］（mental_symptoms）</label>
+              <textarea name="mental_symptoms"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>［身体状況］（physical_status_summary）</label>
+              <textarea name="physical_status_summary" placeholder="身体状況チェック票の要約など"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>障害高齢者の日常生活自立度（physical_adl_level）</label>
+              <input type="text" name="physical_adl_level" placeholder="例：J1, A2 など">
+            </div>
+
+            <div class="form-item full">
+              <label>［生活状況］（life_status）</label>
+              <textarea name="life_status"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>DASC-21 点（dasc21_score）</label>
+              <input type="number" name="dasc21_score" min="0" max="84">
+            </div>
+
+            <div class="form-item">
+              <label>DBD-13 点（dbd13_score）</label>
+              <input type="number" name="dbd13_score" min="0">
+            </div>
+
+            <div class="form-item">
+              <label>J-ZBI_8 点（jzbi8_score）</label>
+              <input type="number" name="jzbi8_score" min="0">
+            </div>
+
+            <div class="form-item full">
+              <label>【判断】（judgement）</label>
+              <textarea name="judgement"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>［本人の意向・希望］（client_intention）</label>
+              <textarea name="client_intention"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>［介護者の意向・希望］（caregiver_intention）</label>
+              <textarea name="caregiver_intention"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>［その他］（other_notes）</label>
+              <textarea name="other_notes"></textarea>
+            </div>
+          </div>
+
           <div class="form-actions right">
             <button type="button" onclick="saveVisit()">保存</button>
           </div>
@@ -274,10 +348,357 @@
           <input type="hidden" name="client_id" class="client-id-field" />
           <input type="hidden" name="physical_status_id">
 
-          <div class="form-item">
+          <!-- ざっくりまとめ（既存の check_item） -->
+          <div class="form-item full">
             <label>身体状況・運動機能・栄養・衛生などのまとめ（check_item）</label>
-            <textarea name="check_item" rows="10"
-              placeholder="運動・移動状況、コミュニケーション、衛生状態、栄養状態などを自由記載（またはチェック内容をここに集約）"></textarea>
+            <textarea name="check_item" rows="4"
+              placeholder="全体の要約や気になる点を記載"></textarea>
+          </div>
+
+          <hr class="section-divider">
+
+          <!-- ★ ここから詳細項目（details_json に入る） -->
+
+          <h3 class="subsection-title">運動機能・移動</h3>
+          <div class="form-grid">
+            <div class="form-item">
+              <label>立ち上がり（standup_support）</label>
+              <select name="standup_support">
+                <option value="">選択してください</option>
+                <option value="なし">なし</option>
+                <option value="あり">あり</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>室内歩行レベル（indoor_walking_level）</label>
+              <select name="indoor_walking_level">
+                <option value="">選択してください</option>
+                <option value="自立">自立</option>
+                <option value="介助">介助</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>屋外歩行レベル（outdoor_walking_level）</label>
+              <select name="outdoor_walking_level">
+                <option value="">選択してください</option>
+                <option value="自立">自立</option>
+                <option value="介助">介助</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>歩行方法（walking_method）</label>
+              <select name="walking_method">
+                <option value="">選択してください</option>
+                <option value="独歩">独歩</option>
+                <option value="杖">杖</option>
+                <option value="歩行車">歩行車</option>
+                <option value="車いす">車いす</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>転倒傾向（fall_tendency）</label>
+              <select name="fall_tendency">
+                <option value="">選択してください</option>
+                <option value="あり">あり</option>
+                <option value="なし">なし</option>
+              </select>
+            </div>
+
+            <div class="form-item full">
+              <label>日常的に行っている移動方法・範囲（mobility_methods）</label>
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="mobility_methods" value="公共交通機関">公共交通機関</label>
+                <label><input type="checkbox" name="mobility_methods" value="タクシー">タクシー</label>
+                <label><input type="checkbox" name="mobility_methods" value="車_運転">車（運転）</label>
+                <label><input type="checkbox" name="mobility_methods" value="車_同乗">車（同乗）</label>
+                <label><input type="checkbox" name="mobility_methods" value="自転車">自転車</label>
+                <label><input type="checkbox" name="mobility_methods" value="徒歩">徒歩</label>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">コミュニケーション・意思決定</h3>
+          <div class="form-grid">
+            <div class="form-item">
+              <label>訪問者との意思疎通（communication_possible）</label>
+              <select name="communication_possible">
+                <option value="">選択してください</option>
+                <option value="できる">できる</option>
+                <option value="できない">できない</option>
+              </select>
+            </div>
+
+            <div class="form-item full">
+              <label>意思疎通に関する特記事項（communication_notes）</label>
+              <textarea name="communication_notes"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>指示への反応（instruction_response）</label>
+              <select name="instruction_response">
+                <option value="">選択してください</option>
+                <option value="できる">できる</option>
+                <option value="ややできる">ややできる</option>
+                <option value="できない">できない</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>日常の意思決定（decision_making）</label>
+              <select name="decision_making">
+                <option value="">選択してください</option>
+                <option value="できる">できる</option>
+                <option value="ややできる">ややできる</option>
+                <option value="できない">できない</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">感覚（視覚・聴覚）</h3>
+          <div class="form-grid">
+            <div class="form-item">
+              <label>目が見えにくいか（poor_vision）</label>
+              <select name="poor_vision">
+                <option value="">選択してください</option>
+                <option value="はい">はい</option>
+                <option value="いいえ">いいえ</option>
+                <option value="不明">不明</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>耳が聞こえにくいか（hearing_difficulty）</label>
+              <select name="hearing_difficulty">
+                <option value="">選択してください</option>
+                <option value="はい">はい</option>
+                <option value="いいえ">いいえ</option>
+                <option value="不明">不明</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>補聴器の使用（hearing_aid_use）</label>
+              <select name="hearing_aid_use">
+                <option value="">選択してください</option>
+                <option value="使用あり">使用あり</option>
+                <option value="使用なし">使用なし</option>
+                <option value="不明">不明</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">清潔・栄養・体重</h3>
+          <div class="form-grid">
+            <div class="form-item">
+              <label>入浴頻度（bathing_frequency）</label>
+              <input type="text" name="bathing_frequency" placeholder="例：2回/週">
+            </div>
+
+            <div class="form-item">
+              <label>入浴方法（bathing_method）</label>
+              <select name="bathing_method">
+                <option value="">選択してください</option>
+                <option value="入浴">入浴</option>
+                <option value="シャワー">シャワー</option>
+                <option value="清拭等">清拭等</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>入浴時の介助（bathing_assist）</label>
+              <select name="bathing_assist">
+                <option value="">選択してください</option>
+                <option value="自立">自立</option>
+                <option value="一部介助">一部介助</option>
+                <option value="全介助">全介助</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>衣類は清潔か（clothes_clean）</label>
+              <select name="clothes_clean">
+                <option value="">選択してください</option>
+                <option value="はい">はい</option>
+                <option value="いいえ">いいえ</option>
+              </select>
+            </div>
+
+            <div class="form-item full">
+              <label>衣類に関する特記事項（clothes_notes）</label>
+              <textarea name="clothes_notes"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>家屋・室内の清潔さ（house_clean）</label>
+              <select name="house_clean">
+                <option value="">選択してください</option>
+                <option value="はい">はい</option>
+                <option value="いいえ">いいえ</option>
+              </select>
+            </div>
+
+            <div class="form-item full">
+              <label>家屋に関する特記事項（house_notes）</label>
+              <textarea name="house_notes"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>極度なやせ/肥満（thin_or_obese）</label>
+              <select name="thin_or_obese">
+                <option value="">選択してください</option>
+                <option value="はい">はい</option>
+                <option value="いいえ">いいえ</option>
+              </select>
+            </div>
+
+            <div class="form-item full">
+              <label>体重・身長など特記事項（thin_obese_notes）</label>
+              <textarea name="thin_obese_notes" placeholder="身長・体重・増減など"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>むくみ（edema）</label>
+              <select name="edema">
+                <option value="">選択してください</option>
+                <option value="はい">はい</option>
+                <option value="いいえ">いいえ</option>
+                <option value="不明">不明</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>むくみ部位（edema_part）</label>
+              <input type="text" name="edema_part">
+            </div>
+          </div>
+
+          <!-- 食事・排泄・睡眠なども同じ要領で増やしたいけど、
+              長くなりすぎるのでここでは代表項目だけにしています。
+              必要ならこのブロックを増量していけばOKです◎ -->
+
+          <h3 class="subsection-title">食事・水分</h3>
+          <div class="form-grid">
+            <div class="form-item">
+              <label>食事回数（meal_times_per_day）</label>
+              <input type="number" name="meal_times_per_day" min="0">
+            </div>
+
+            <div class="form-item">
+              <label>食事のバランス（meal_balance）</label>
+              <select name="meal_balance">
+                <option value="">選択してください</option>
+                <option value="バランス良い">バランス良い</option>
+                <option value="偏っている">偏っている</option>
+                <option value="食事量減少">食事量減少</option>
+                <option value="関心がない">関心がない</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>過食/異食の有無（overeating_pica）</label>
+              <input type="text" name="overeating_pica" placeholder="例：過食あり など">
+            </div>
+
+            <div class="form-item">
+              <label>水分摂取状況（hydration_care）</label>
+              <select name="hydration_care">
+                <option value="">選択してください</option>
+                <option value="気をつけている">気をつけている</option>
+                <option value="特に気をつけていない">特に気をつけていない</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>水分摂取量の目安（hydration_amount）</label>
+              <input type="text" name="hydration_amount" placeholder="例：1500ml/日くらい">
+            </div>
+          </div>
+
+          <!-- ……排泄・睡眠・居住環境・金銭管理・虐待リスク・見守り・SOS も
+              同じパターンで項目を増やせます。 -->
+
+          <h3 class="subsection-title">居住環境・見守りなど</h3>
+          <div class="form-grid">
+            <div class="form-item">
+              <label>居住環境の問題（environment_problem）</label>
+              <select name="environment_problem">
+                <option value="">選択してください</option>
+                <option value="なし">なし</option>
+                <option value="あり">あり</option>
+              </select>
+            </div>
+
+            <div class="form-item full">
+              <label>居住環境の特記事項（environment_notes）</label>
+              <textarea name="environment_notes"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>金銭管理（money_management）</label>
+              <select name="money_management">
+                <option value="">選択してください</option>
+                <option value="自己">自己</option>
+                <option value="他者">他者</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>金銭管理の担い手（money_manager）</label>
+              <input type="text" name="money_manager">
+            </div>
+
+            <div class="form-item">
+              <label>家族の介護力（caregiver_capacity）</label>
+              <select name="caregiver_capacity">
+                <option value="">選択してください</option>
+                <option value="期待できる">期待できる</option>
+                <option value="期待できない">期待できない</option>
+              </select>
+            </div>
+
+            <div class="form-item full">
+              <label>家族介護力に関する理由（caregiver_capacity_reason）</label>
+              <textarea name="caregiver_capacity_reason"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>虐待の可能性（abuse_risk）</label>
+              <select name="abuse_risk">
+                <option value="">選択してください</option>
+                <option value="みられない">みられない</option>
+                <option value="要注意">要注意</option>
+              </select>
+            </div>
+
+            <div class="form-item full">
+              <label>虐待リスクに関する根拠（abuse_risk_reason）</label>
+              <textarea name="abuse_risk_reason"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>見守りの状況（monitoring）</label>
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="monitoring" value="家族">家族</label>
+                <label><input type="checkbox" name="monitoring" value="民生委員">民生委員</label>
+                <label><input type="checkbox" name="monitoring" value="近隣住民">近隣住民</label>
+                <label><input type="checkbox" name="monitoring" value="その他">その他</label>
+                <label><input type="checkbox" name="monitoring" value="なし">なし</label>
+              </div>
+            </div>
+
+            <div class="form-item">
+              <label>緊急時のSOS発信（emergency_sos）</label>
+              <select name="emergency_sos">
+                <option value="">選択してください</option>
+                <option value="できる">できる</option>
+                <option value="できない">できない</option>
+                <option value="不明">不明</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-actions right">
@@ -902,7 +1323,20 @@
         return;
       }
       syncClientIdFields(cid);
-      const data = formToJSON(document.getElementById("form-visit"));
+
+      const raw = formToJSON(document.getElementById("form-visit"));
+
+      const data = {
+        client_id: cid,
+        visit_datetime: raw.visit_datetime || null,
+        visitor_name: raw.visitor_name || null,
+        visit_purpose: raw.visit_purpose || "",
+        visit_condition: raw.visit_condition || "",
+        support_decision: raw.support_decision || "",
+        future_plan: raw.future_plan || "",
+        details_json: raw   // ★ ここに全部詰める（上記以外も含む）
+      };
+
       postJSON("/api/save_visit_record", data);
     }
 
@@ -913,7 +1347,16 @@
         return;
       }
       syncClientIdFields(cid);
-      const data = formToJSON(document.getElementById("form-physical"));
+
+      const raw = formToJSON(document.getElementById("form-physical"));
+
+      const data = {
+        client_id: cid,
+        check_item: raw.check_item || "",
+        physical_status_id: raw.physical_status_id || null,
+        details_json: raw   // ★ ここに詳細全部
+      };
+
       postJSON("/api/save_physical_status", data);
     }
 
