@@ -1,250 +1,584 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>対象者詳細</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/unified.css') }}">
-
-  <style>
-    .tab-menu {
-      display: flex;
-      gap: 10px;
-      border-bottom: 2px solid #ddd;
-      margin-bottom: 20px;
-    }
-    .tab-btn {
-      padding: 10px 18px;
-      background: #e9f0f7;
-      border: 1px solid #cdd6e4;
-      cursor: pointer;
-      border-radius: 6px 6px 0 0;
-      font-weight: 600;
-    }
-    .tab-btn.active {
-      background: #fff;
-      border-bottom: 2px solid #fff;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .save-row {
-      text-align: center;
-      margin-top: 25px;
-    }
-    .save-btn {
-      padding: 10px 24px;
-      border-radius: 6px;
-      border: none;
-      background: #4a6cd8;
-      color: #fff;
-      cursor: pointer;
-      font-size: 15px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>対象者詳細・アセスメント</title>
+  <!-- 統一CSS（ファイル名は環境に合わせて変更OK） -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
 </head>
-
 <body>
-<main>
+  <div class="page-wrapper">
+    <header class="page-header">
+      <h1>認知症初期集中支援　対象者詳細・アセスメント</h1>
+      <div class="client-info-header">
+        <label>利用者ID（client_id）：</label>
+        <input type="text" id="global_client_id" class="client-id-input" placeholder="例: ABC001" />
+        <button type="button" id="reloadBtn">読込</button>
+      </div>
+    </header>
 
-  <h1 class="form-title">対象者詳細（SHOUSAI）</h1>
+    <!-- タブ切り替え -->
+    <nav class="tabs">
+      <button class="tab-button active" data-tab="tab-client">① 利用者基本情報</button>
+      <button class="tab-button" data-tab="tab-visit">② 訪問記録表</button>
+      <button class="tab-button" data-tab="tab-physical">③ 身体状況チェック表</button>
+      <button class="tab-button" data-tab="tab-dasc">④ DASC-21</button>
+      <button class="tab-button" data-tab="tab-dbd">⑤ DBD-13</button>
+    </nav>
 
-  <!-- ✅ client_id をページ間で共有する -->
-  <input type="hidden" id="client_id">
+    <main class="tab-contents">
+      <!-- ① 利用者基本情報（client） -->
+      <section id="tab-client" class="tab-pane active">
+        <h2>① 利用者基本情報（client）</h2>
+        <form id="form-client" class="form-section">
+          <!-- client_id は共通ID。ここにも持たせておく -->
+          <input type="hidden" name="client_id" class="client-id-field" />
 
-  <!-- ✅ タブメニュー -->
-  <div class="tab-menu">
-    <button class="tab-btn active" data-tab="client">基本情報</button>
-    <button class="tab-btn" data-tab="visit">訪問記録</button>
-    <button class="tab-btn" data-tab="physical">身体状況</button>
-    <button class="tab-btn" data-tab="dasc21">DASC-21</button>
-    <button class="tab-btn" data-tab="dbd13">DBD13</button>
+          <div class="form-grid">
+            <div class="form-item">
+              <label>作成担当者（writer_name）</label>
+              <input type="text" name="writer_name">
+            </div>
+
+            <div class="form-item">
+              <label>相談日（consultation_date）</label>
+              <input type="date" name="consultation_date">
+            </div>
+
+            <div class="form-item">
+              <label>本人の現況（current_status）</label>
+              <textarea name="current_status"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>本人氏名（client_name）</label>
+              <input type="text" name="client_name">
+            </div>
+
+            <div class="form-item">
+              <label>性別（gender）</label>
+              <select name="gender">
+                <option value="">選択してください</option>
+                <option value="男性">男性</option>
+                <option value="女性">女性</option>
+                <option value="その他">その他</option>
+              </select>
+            </div>
+
+            <div class="form-item">
+              <label>生年月日（birth_date）</label>
+              <input type="date" name="birth_date">
+            </div>
+
+            <div class="form-item">
+              <label>住所（address）</label>
+              <input type="text" name="address">
+            </div>
+
+            <div class="form-item">
+              <label>電話番号（phone_number）</label>
+              <input type="text" name="phone_number">
+            </div>
+
+            <div class="form-item">
+              <label>障害高齢者の日常生活自立度（disability_adl_level）</label>
+              <input type="text" name="disability_adl_level" placeholder="自立 / J1 / A1 ...">
+            </div>
+
+            <div class="form-item">
+              <label>認知症高齢者の日常生活自立度（dementia_adl_level）</label>
+              <input type="text" name="dementia_adl_level" placeholder="自立 / IIa / IIIa ...">
+            </div>
+
+            <div class="form-item">
+              <label>認定・総合事業情報（certification_info）</label>
+              <textarea name="certification_info"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>障害等認定（disability_certification）</label>
+              <textarea name="disability_certification" placeholder="身障○級・療育○度 など"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>住居環境（living_environment）</label>
+              <textarea name="living_environment" placeholder="自宅 / 借家 / 集合住宅 など"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>経済状況（economic_status）</label>
+              <textarea name="economic_status" placeholder="年金・生活保護 等"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>来所者・相談者氏名（visitor_name）</label>
+              <input type="text" name="visitor_name">
+            </div>
+
+            <div class="form-item">
+              <label>来所者連絡先（visitor_contact）</label>
+              <input type="text" name="visitor_contact">
+            </div>
+
+            <div class="form-item">
+              <label>本人との続柄（relation_to_client）</label>
+              <input type="text" name="relation_to_client">
+            </div>
+
+            <div class="form-item">
+              <label>家族構成（family_composition）</label>
+              <textarea name="family_composition"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>緊急連絡先氏名（emergency_contact_name）</label>
+              <input type="text" name="emergency_contact_name">
+            </div>
+
+            <div class="form-item">
+              <label>続柄（emergency_relation）</label>
+              <input type="text" name="emergency_relation">
+            </div>
+
+            <div class="form-item">
+              <label>緊急連絡先（emergency_contact_info）</label>
+              <input type="text" name="emergency_contact_info">
+            </div>
+
+            <div class="form-item">
+              <label>今までの生活歴（life_history）</label>
+              <textarea name="life_history"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>現在の生活状況・1日の過ごし方（daily_life_pattern）</label>
+              <textarea name="daily_life_pattern"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>時間帯（time_of_day）</label>
+              <input type="text" name="time_of_day" placeholder="例：日中 / 夜間 など">
+            </div>
+
+            <div class="form-item">
+              <label>本人の思い・気持ち（person_content）</label>
+              <textarea name="person_content"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>介護者・家族の思い（caregiver_content）</label>
+              <textarea name="caregiver_content"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>趣味・楽しみ（hobbies）</label>
+              <textarea name="hobbies"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>友人・地域とのつながり（social_connections）</label>
+              <textarea name="social_connections"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>発症時期（disease_onset_date）</label>
+              <input type="text" name="disease_onset_date" placeholder="西暦・和暦など自由記載">
+            </div>
+
+            <div class="form-item">
+              <label>主な疾患名（disease_name）</label>
+              <input type="text" name="disease_name">
+            </div>
+
+            <div class="form-item">
+              <label>主治医・医療機関（medical_institution）</label>
+              <input type="text" name="medical_institution">
+            </div>
+
+            <div class="form-item">
+              <label>既往歴（medical_history）</label>
+              <textarea name="medical_history"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>現在の状態・経過（current_condition）</label>
+              <textarea name="current_condition"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>現在利用中の公的サービス（public_services）</label>
+              <textarea name="public_services"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>現在利用中の非公的サービス（private_services）</label>
+              <textarea name="private_services"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions right">
+            <button type="button" onclick="saveClient()">保存</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ② 訪問記録表（visit_record） -->
+      <section id="tab-visit" class="tab-pane">
+        <h2>② 訪問記録表（visit_record）</h2>
+        <form id="form-visit" class="form-section">
+          <input type="hidden" name="client_id" class="client-id-field" />
+          <input type="hidden" name="physical_status_id" />
+
+          <div class="form-grid">
+            <div class="form-item">
+              <label>訪問日時（visit_datetime）</label>
+              <input type="datetime-local" name="visit_datetime">
+            </div>
+
+            <div class="form-item">
+              <label>訪問者氏名（visitor_name）</label>
+              <input type="text" name="visitor_name">
+            </div>
+
+            <div class="form-item">
+              <label>訪問目的（visit_purpose）</label>
+              <textarea name="visit_purpose"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>訪問時の状況・観察内容（visit_condition）</label>
+              <textarea name="visit_condition"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>判断・支援内容（support_decision）</label>
+              <textarea name="support_decision"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>今後の方針・支援計画（future_plan）</label>
+              <textarea name="future_plan"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions right">
+            <button type="button" onclick="saveVisit()">保存</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ③ 身体状況チェック表（physical_status） -->
+      <section id="tab-physical" class="tab-pane">
+        <h2>③ 身体状況チェック表（physical_status）</h2>
+        <form id="form-physical" class="form-section">
+          <input type="hidden" name="client_id" class="client-id-field" />
+          <input type="hidden" name="physical_status_id">
+
+          <div class="form-item">
+            <label>身体状況・運動機能・栄養・衛生などのまとめ（check_item）</label>
+            <textarea name="check_item" rows="10"
+              placeholder="運動・移動状況、コミュニケーション、衛生状態、栄養状態などを自由記載（またはチェック内容をここに集約）"></textarea>
+          </div>
+
+          <div class="form-actions right">
+            <button type="button" onclick="savePhysical()">保存</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ④ DASC-21 -->
+      <section id="tab-dasc" class="tab-pane">
+        <h2>④ DASC-21（dasc21）</h2>
+        <form id="form-dasc" class="form-section">
+          <input type="hidden" name="client_id" class="client-id-field" />
+
+          <div class="form-grid">
+            <div class="form-item">
+              <label>情報提供者氏名（informant_name）</label>
+              <input type="text" name="informant_name">
+            </div>
+
+            <div class="form-item">
+              <label>評価者氏名（evaluator_name）</label>
+              <input type="text" name="evaluator_name">
+            </div>
+
+            <div class="form-item">
+              <label>評価項目・回答内容（assessment_item）</label>
+              <textarea name="assessment_item"
+                placeholder="DASC-21 各設問の結果を自由形式 / JSON形式などで保存します"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>備考（remarks）</label>
+              <textarea name="remarks"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>合計点（total_score）</label>
+              <input type="number" name="total_score" min="0" max="84" step="1">
+            </div>
+          </div>
+
+          <div class="form-actions right">
+            <button type="button" onclick="saveDasc()">保存</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ⑤ DBD-13 -->
+      <section id="tab-dbd" class="tab-pane">
+        <h2>⑤ DBD-13（dbd13）</h2>
+        <form id="form-dbd" class="form-section">
+          <input type="hidden" name="client_id" class="client-id-field" />
+
+          <div class="form-grid">
+            <div class="form-item">
+              <label>回答者氏名（respondent_name）</label>
+              <input type="text" name="respondent_name" placeholder="主な介護者など">
+            </div>
+
+            <div class="form-item">
+              <label>評価者氏名（evaluator_name）</label>
+              <input type="text" name="evaluator_name">
+            </div>
+
+            <div class="form-item">
+              <label>記入日（entry_date）</label>
+              <input type="date" name="entry_date">
+            </div>
+
+            <div class="form-item">
+              <label>行動・心理症状の内容（assessment_item）</label>
+              <textarea name="assessment_item"
+                placeholder="DBD-13 各設問の結果を自由形式 / JSON形式などで保存します"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>備考（remarks）</label>
+              <textarea name="remarks"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>小計（subtotal_score）</label>
+              <input type="number" name="subtotal_score" min="0" step="1">
+            </div>
+
+            <div class="form-item">
+              <label>合計点（total_score）</label>
+              <input type="number" name="total_score" min="0" step="1">
+            </div>
+          </div>
+
+          <div class="form-actions right">
+            <button type="button" onclick="saveDbd()">保存</button>
+          </div>
+        </form>
+      </section>
+    </main>
   </div>
 
-  <!-- ✅ 基本情報フォーム -->
-  <section id="client" class="tab-content active">
-    <h2 class="section-title">利用者基本情報</h2>
+  <script>
+    // -----------------------------
+    // 共通：タブ切り替え
+    // -----------------------------
+    document.querySelectorAll(".tab-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.tab;
+        document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
 
-    <label>氏名：<input type="text" id="client_name"></label><br><br>
-    <label>性別：
-      <select id="gender">
-        <option></option>
-        <option>男</option>
-        <option>女</option>
-      </select>
-    </label><br><br>
-    <label>生年月日：<input type="date" id="birth_date"></label><br><br>
-    <label>住所：<input type="text" id="address"></label><br><br>
+        btn.classList.add("active");
+        document.getElementById(target).classList.add("active");
 
-    <div class="save-row">
-      <button class="save-btn" onclick="saveClient()">保存</button>
-    </div>
-  </section>
-
-  <!-- ✅ 訪問記録 -->
-  <section id="visit" class="tab-content">
-    <h2 class="section-title">訪問記録</h2>
-
-    <label>訪問日時：<input type="datetime-local" id="visit_datetime"></label><br><br>
-    <label>訪問目的：<input type="text" id="visit_purpose"></label><br><br>
-    <label>訪問内容：</label><br>
-    <textarea id="visit_condition" rows="5"></textarea><br>
-
-    <div class="save-row">
-      <button class="save-btn" onclick="saveVisit()">保存</button>
-    </div>
-  </section>
-
-  <!-- ✅ 身体状況 -->
-  <section id="physical" class="tab-content">
-    <h2 class="section-title">身体状況チェック表</h2>
-
-    <textarea id="physical_check" rows="7"
-      placeholder="チェック内容をテキストまたは JSON 形式で保存します"></textarea>
-
-    <div class="save-row">
-      <button class="save-btn" onclick="savePhysical()">保存</button>
-    </div>
-  </section>
-
-  <!-- ✅ DASC-21 -->
-  <section id="dasc21" class="tab-content">
-    <h2 class="section-title">DASC-21</h2>
-
-    <label>評価者：<input type="text" id="dasc_eval"></label><br><br>
-    <label>合計点：<input type="number" id="dasc_total"></label><br><br>
-
-    <textarea id="dasc_items" rows="6"
-      placeholder="評価項目（JSONまたはテキスト）"></textarea>
-
-    <div class="save-row">
-      <button class="save-btn" onclick="saveDASC()">保存</button>
-    </div>
-  </section>
-
-  <!-- ✅ DBD-13 -->
-  <section id="dbd13" class="tab-content">
-    <h2 class="section-title">DBD-13</h2>
-
-    <label>評価者：<input type="text" id="dbd_eval"></label><br><br>
-    <label>合計点：<input type="number" id="dbd_total"></label><br><br>
-
-    <textarea id="dbd_items" rows="6"
-      placeholder="評価項目（JSONまたはテキスト）"></textarea>
-
-    <div class="save-row">
-      <button class="save-btn" onclick="saveDBD()">保存</button>
-    </div>
-  </section>
-
-</main>
-
-<script>
-  // ✅ タブ切り替え処理 + 保存状態を保持
-  const tabs = document.querySelectorAll(".tab-btn");
-  const contents = document.querySelectorAll(".tab-content");
-
-  tabs.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const target = btn.dataset.tab;
-
-      localStorage.setItem("activeTab", target);
-
-      tabs.forEach(b => b.classList.remove("active"));
-      contents.forEach(c => c.classList.remove("active"));
-
-      btn.classList.add("active");
-      document.getElementById(target).classList.add("active");
-    });
-  });
-
-  // ✅ 前回開いていたタブを復元
-  const savedTab = localStorage.getItem("activeTab");
-  if (savedTab) {
-    document.querySelector(`[data-tab="${savedTab}"]`).click();
-  }
-
-  // ✅ 保存処理（API 呼び出し）
-  async function saveClient() {
-    const payload = {
-      client_id: document.getElementById("client_id").value || null,
-      client_name: document.getElementById("client_name").value,
-      gender: document.getElementById("gender").value,
-      birth_date: document.getElementById("birth_date").value,
-      address: document.getElementById("address").value
-    };
-
-    const res = await fetch("/api/save_client", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(payload)
+        // タブ状態をローカルに保存（任意）
+        localStorage.setItem("shousai_active_tab", target);
+      });
     });
 
-    const json = await res.json();
-    document.getElementById("client_id").value = json.client_id;
-    alert("保存しました");
-  }
+    // -----------------------------
+    // 共通：client_id の同期
+    // -----------------------------
+    function getClientIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("client_id") || "";
+    }
 
-  async function saveVisit() {
-    const payload = {
-      client_id: document.getElementById("client_id").value,
-      visit_datetime: document.getElementById("visit_datetime").value,
-      visit_purpose: document.getElementById("visit_purpose").value,
-      visit_condition: document.getElementById("visit_condition").value
-    };
+    function syncClientIdFields(cid) {
+      document.getElementById("global_client_id").value = cid;
+      document.querySelectorAll(".client-id-field").forEach(el => {
+        el.value = cid;
+      });
+    }
 
-    await fetch("/api/save_visit_record", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(payload)
+    // -----------------------------
+    // フォーム → JSON 変換
+    // -----------------------------
+    function formToJSON(form) {
+      const fd = new FormData(form);
+      const obj = {};
+      fd.forEach((value, key) => {
+        // 同じnameが複数ある場合は配列にする（今回はほぼ単一想定）
+        if (key in obj) {
+          if (!Array.isArray(obj[key])) {
+            obj[key] = [obj[key]];
+          }
+          obj[key].push(value);
+        } else {
+          obj[key] = value;
+        }
+      });
+      return obj;
+    }
+
+    // -----------------------------
+    // JSON → フォームへ反映
+    // -----------------------------
+    function fillForm(formId, record) {
+      if (!record) return;
+      const form = document.getElementById(formId);
+      if (!form) return;
+
+      Object.keys(record).forEach(key => {
+        const field = form.elements.namedItem(key);
+        if (!field) return;
+
+        if (field.type === "checkbox" || field.type === "radio") {
+          // 今回は単純な text/textarea/number が中心なので簡略
+          field.checked = !!record[key];
+        } else {
+          field.value = record[key] == null ? "" : record[key];
+        }
+      });
+    }
+
+    // -----------------------------
+    // 保存API呼び出し
+    // -----------------------------
+    async function postJSON(url, data) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (!res.ok || json.status !== "saved") {
+        console.error(json);
+        alert("保存中にエラーが発生しました：" + (json.message || res.statusText));
+        return;
+      }
+      alert("保存しました");
+    }
+
+    function saveClient() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-client"));
+      postJSON("/api/save_client", data);
+    }
+
+    function saveVisit() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-visit"));
+      postJSON("/api/save_visit_record", data);
+    }
+
+    function savePhysical() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-physical"));
+      postJSON("/api/save_physical_status", data);
+    }
+
+    function saveDasc() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-dasc"));
+      postJSON("/api/save_dasc21", data);
+    }
+
+    function saveDbd() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-dbd"));
+      postJSON("/api/save_dbd13", data);
+    }
+
+    // -----------------------------
+    // 初期表示：URL の client_id を反映 & データ読み込み
+    // -----------------------------
+    async function loadAllData() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        return;
+      }
+      syncClientIdFields(cid);
+
+      try {
+        const res = await fetch(`/api/get_all_data?client_id=${encodeURIComponent(cid)}`);
+        const json = await res.json();
+        if (json.status !== "ok") {
+          console.warn(json);
+          return;
+        }
+        fillForm("form-client", json.client);
+        fillForm("form-visit", json.visit_record);
+        if (json.physical_status) {
+          // physical_status は physical_status_id も取れるかもしれないので反映
+          fillForm("form-physical", json.physical_status);
+        }
+        fillForm("form-dasc", json.dasc21);
+        fillForm("form-dbd", json.dbd13);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // URL から client_id を取得
+      const cid = getClientIdFromUrl();
+      if (cid) {
+        syncClientIdFields(cid);
+      }
+
+      // 前回のタブ状態復元
+      const savedTab = localStorage.getItem("shousai_active_tab");
+      if (savedTab && document.getElementById(savedTab)) {
+        document.querySelectorAll(".tab-button").forEach(b => {
+          b.classList.toggle("active", b.dataset.tab === savedTab);
+        });
+        document.querySelectorAll(".tab-pane").forEach(p => {
+          p.classList.toggle("active", p.id === savedTab);
+        });
+      }
+
+      // 初期データ読み込み
+      loadAllData();
+
+      // 「読込」ボタンで再読込
+      document.getElementById("reloadBtn").addEventListener("click", loadAllData);
     });
-
-    alert("保存しました");
-  }
-
-  async function savePhysical() {
-    await fetch("/api/save_physical_status", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        client_id: document.getElementById("client_id").value,
-        check_item: document.getElementById("physical_check").value
-      })
-    });
-
-    alert("保存しました");
-  }
-
-  async function saveDASC() {
-    await fetch("/api/save_dasc21", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        client_id: document.getElementById("client_id").value,
-        evaluator_name: document.getElementById("dasc_eval").value,
-        total_score: document.getElementById("dasc_total").value,
-        assessment_item: document.getElementById("dasc_items").value
-      })
-    });
-    alert("保存しました");
-  }
-
-  async function saveDBD() {
-    await fetch("/api/save_dbd13", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        client_id: document.getElementById("client_id").value,
-        evaluator_name: document.getElementById("dbd_eval").value,
-        total_score: document.getElementById("dbd_total").value,
-        assessment_item: document.getElementById("dbd_items").value
-      })
-    });
-    alert("保存しました");
-  }
-</script>
-
+  </script>
 </body>
 </html>
