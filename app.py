@@ -351,109 +351,102 @@ def save_client():
 
 @app.route("/api/save_visit_record", methods=["POST"])
 def save_visit_record():
-    data = request.json or {}
+    data = request.json
+    cid = data.get("client_id")
 
-    client_id = to_int_or_none(data.get("client_id"))
-    if client_id is None:
+    if not cid:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
-
-    physical_status_id = to_int_or_none(data.get("physical_status_id"))
-    visit_datetime = to_datetime_or_none(data.get("visit_datetime"))
-    visitor_name = data.get("visitor_name", "")
-    visit_purpose = data.get("visit_purpose", "")
-    visit_condition = data.get("visit_condition", "")
-    support_decision = data.get("support_decision", "")
-    future_plan = data.get("future_plan", "")
 
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            # 1クライアントにつき 1件だけ保持（上書き）
-            cur.execute(
-                "SELECT visit_record_id FROM visit_record WHERE client_id=%s ORDER BY visit_record_id DESC LIMIT 1",
-                (client_id,)
-            )
+
+            # 既存レコードがあるか？
+            cur.execute("SELECT visit_record_id FROM visit_record WHERE client_id=%s", (cid,))
             row = cur.fetchone()
 
             if row:
+                # 既存 → UPDATE
                 sql = """
-                    UPDATE visit_record
-                       SET physical_status_id=%s,
-                           visit_datetime=%s,
-                           visitor_name=%s,
-                           visit_purpose=%s,
-                           visit_condition=%s,
-                           support_decision=%s,
-                           future_plan=%s
-                     WHERE visit_record_id=%s
+                    UPDATE visit_record SET
+                        visit_datetime=%s,
+                        visitor_name=%s,
+                        visit_purpose=%s,
+                        visit_condition=%s,
+                        support_decision=%s,
+                        future_plan=%s
+                    WHERE client_id=%s
                 """
                 cur.execute(sql, (
-                    physical_status_id, visit_datetime, visitor_name,
-                    visit_purpose, visit_condition, support_decision,
-                    future_plan, row["visit_record_id"]
+                    data.get("visit_datetime"),
+                    data.get("visitor_name"),
+                    data.get("visit_purpose"),
+                    data.get("visit_condition"),
+                    data.get("support_decision"),
+                    data.get("future_plan"),
+                    cid
                 ))
-                visit_record_id = row["visit_record_id"]
             else:
+                # 新規 → INSERT
                 sql = """
                     INSERT INTO visit_record (
-                        client_id, physical_status_id, visit_datetime,
-                        visitor_name, visit_purpose, visit_condition,
+                        client_id, visit_datetime, visitor_name,
+                        visit_purpose, visit_condition,
                         support_decision, future_plan
-                    )
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
                 cur.execute(sql, (
-                    client_id, physical_status_id, visit_datetime,
-                    visitor_name, visit_purpose, visit_condition,
-                    support_decision, future_plan
+                    cid,
+                    data.get("visit_datetime"),
+                    data.get("visitor_name"),
+                    data.get("visit_purpose"),
+                    data.get("visit_condition"),
+                    data.get("support_decision"),
+                    data.get("future_plan")
                 ))
-                visit_record_id = cur.lastrowid
 
         conn.commit()
 
-    return jsonify({"status": "saved", "visit_record_id": visit_record_id})
+    return jsonify({"status": "saved"})
 
 
 # ------- physical_status：身体状況チェック（1クライアント1件上書き） -------
 
 @app.route("/api/save_physical_status", methods=["POST"])
 def save_physical_status():
-    data = request.json or {}
+    data = request.json
+    cid = data.get("client_id")
 
-    client_id = to_int_or_none(data.get("client_id"))
-    if client_id is None:
+    if not cid:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
-
-    check_item = data.get("check_item", "")
 
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            cur.execute(
-                "SELECT physical_status_id FROM physical_status WHERE client_id=%s LIMIT 1",
-                (client_id,)
-            )
+
+            # 既存レコードを確認
+            cur.execute("SELECT physical_status_id FROM physical_status WHERE client_id=%s", (cid,))
             row = cur.fetchone()
 
             if row:
+                # UPDATE
                 sql = """
-                    UPDATE physical_status
-                       SET check_item=%s
-                     WHERE physical_status_id=%s
+                    UPDATE physical_status SET
+                        check_item=%s
+                    WHERE client_id=%s
                 """
-                cur.execute(sql, (check_item, row["physical_status_id"]))
-                physical_status_id = row["physical_status_id"]
+                cur.execute(sql, (data.get("check_item"), cid))
             else:
+                # INSERT
                 sql = """
                     INSERT INTO physical_status (client_id, check_item)
                     VALUES (%s, %s)
                 """
-                cur.execute(sql, (client_id, check_item))
-                physical_status_id = cur.lastrowid
+                cur.execute(sql, (cid, data.get("check_item")))
 
         conn.commit()
 
-    return jsonify({"status": "saved", "physical_status_id": physical_status_id})
+    return jsonify({"status": "saved"})
 
 
 # ------- dasc21：DASC-21（B：毎回追加） -------
@@ -582,6 +575,110 @@ def get_all_data():
         "dbd13": dbd13_row
     })
 
+# ================================
+#  4. 共有フォルダ（ファイル管理）
+# ================================
+
+from flask import send_from_directory
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = "uploads"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# フォルダなければ作成
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+# -------------------------
+# ⑥ ファイルアップロード
+# -------------------------
+@app.route("/api/upload_file", methods=["POST"])
+def upload_file():
+    client_id = request.form.get("client_id")
+    file = request.files.get("file")
+
+    if not client_id:
+        return jsonify({"status": "error", "message": "client_id がありません"}), 400
+    if not file:
+        return jsonify({"status": "error", "message": "ファイルがありません"}), 400
+
+    # 保存先：/uploads/<client_id>/
+    client_folder = os.path.join(app.config["UPLOAD_FOLDER"], str(client_id))
+    os.makedirs(client_folder, exist_ok=True)
+
+    filename = secure_filename(file.filename)
+    save_path = os.path.join(client_folder, filename)
+    file.save(save_path)
+
+    # DB 登録
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            sql = """
+                INSERT INTO shared_folder (client_id, file_path)
+                VALUES (%s, %s)
+            """
+            cur.execute(sql, (client_id, f"{client_id}/{filename}"))
+        conn.commit()
+
+    return jsonify({"status": "saved"})
+
+
+# -------------------------
+# ⑦ ファイル一覧取得
+# -------------------------
+@app.route("/api/files", methods=["GET"])
+def get_files():
+    client_id = request.args.get("client_id")
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT folder_id, file_path, uploaded_at FROM shared_folder WHERE client_id=%s",
+                (client_id,)
+            )
+            files = cur.fetchall()
+
+    return jsonify({"status": "ok", "files": files})
+
+
+# -------------------------
+# ⑧ ファイル削除
+# -------------------------
+@app.route("/api/delete_file", methods=["POST"])
+def delete_file():
+    folder_id = request.json.get("folder_id")
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT file_path FROM shared_folder WHERE folder_id=%s", (folder_id,))
+            row = cur.fetchone()
+
+            if not row:
+                return jsonify({"status": "error", "message": "ファイルが存在しません"}), 404
+
+            file_path = row["file_path"]
+
+            # DB から削除
+            cur.execute("DELETE FROM shared_folder WHERE folder_id=%s", (folder_id,))
+        conn.commit()
+
+    # 実ファイルも削除
+    actual = os.path.join(app.config["UPLOAD_FOLDER"], file_path)
+    if os.path.exists(actual):
+        os.remove(actual)
+
+    return jsonify({"status": "deleted"})
+
+
+# -------------------------
+# ⑨ ファイルダウンロード
+# -------------------------
+@app.route("/uploads/<path:filepath>")
+def uploaded_file(filepath):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filepath, as_attachment=True)
 
 # ================================
 #  Flask 実行

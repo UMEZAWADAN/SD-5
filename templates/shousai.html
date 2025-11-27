@@ -24,6 +24,7 @@
       <button class="tab-button" data-tab="tab-physical">③ 身体状況チェック表</button>
       <button class="tab-button" data-tab="tab-dasc">④ DASC-21</button>
       <button class="tab-button" data-tab="tab-dbd">⑤ DBD-13</button>
+      <button class="tab-button" data-tab="tab-files">⑥ 共有ファイル</button>
     </nav>
 
     <main class="tab-contents">
@@ -962,6 +963,24 @@
         </form>
 
       </section>
+      <section id="tab-files" class="tab-pane">
+        <h2>⑥ 共有ファイル（shared_folder）</h2>
+
+        <div class="form-section">
+
+          <div>
+            <label>ファイルを選択：</label>
+            <input type="file" id="upload_file_input">
+            <button type="button" onclick="uploadFile()">アップロード</button>
+          </div>
+
+          <hr>
+
+          <h3>この利用者のファイル一覧</h3>
+          <div id="file_list"></div>
+
+        </div>
+      </section>
 
     </main>
   </div>
@@ -1188,6 +1207,62 @@
         console.error(e);
       }
     }
+      async function loadFiles() {
+        const cid = document.getElementById("global_client_id").value.trim();
+        if (!cid) return;
+
+        const res = await fetch(`/api/files?client_id=${cid}`);
+        const json = await res.json();
+
+        const box = document.getElementById("file_list");
+        box.innerHTML = "";
+
+        json.files.forEach(f => {
+          const url = `/uploads/${f.file_path}`;
+          box.innerHTML += `
+            <div class="file-item">
+              <a href="${url}" download>${f.file_path.split("/").pop()}</a>
+              （${f.uploaded_at}）
+              <button onclick="deleteFile(${f.folder_id})">削除</button>
+            </div>
+          `;
+        });
+      }
+
+      async function uploadFile() {
+        const cid = document.getElementById("global_client_id").value.trim();
+        const file = document.getElementById("upload_file_input").files[0];
+
+        if (!cid || !file) {
+          alert("client_id とファイルを指定してください");
+          return;
+        }
+
+        const fd = new FormData();
+        fd.append("client_id", cid);
+        fd.append("file", file);
+
+        const res = await fetch("/api/upload_file", {
+          method: "POST",
+          body: fd
+        });
+        const json = await res.json();
+        alert("保存しました");
+
+        loadFiles();
+      }
+
+      async function deleteFile(folder_id) {
+        const res = await fetch("/api/delete_file", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({folder_id})
+        });
+
+        const json = await res.json();
+        alert("削除しました");
+        loadFiles();
+      }
 
     // -----------------------------
     // 初期設定
@@ -1215,6 +1290,11 @@
 
       // 「読込」ボタンで再読込
       document.getElementById("reloadBtn").addEventListener("click", loadAllData);
+      document.getElementById("reloadBtn").addEventListener("click", () => {
+        loadAllData();
+        loadFiles();
+      });
+
     });
   </script>
 </body>

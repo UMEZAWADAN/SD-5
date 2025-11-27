@@ -1,179 +1,117 @@
-:root {
-  --bg: #f5f7fb;
-  --panel: #ffffff;
-  --accent: #4a6cd8;
-  --accent-light: #e8f0ff;
-  --border: #d4d9e2;
-  --text: #333;
-}
-
+/* -----------------------------
+   全体レイアウト
+----------------------------- */
 body {
+  font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
   margin: 0;
-  background: var(--bg);
-  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-  color: var(--text);
+  background: #f7f8fa;
 }
 
-/* ===== ページ全体 ===== */
 .page-wrapper {
-  max-width: 1100px;
-  margin: 40px auto;
-  background: var(--panel);
-  padding: 32px 40px;
-  border-radius: 12px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+  width: 90%;
+  margin: 20px auto;
 }
 
-/* ===== 見出し ===== */
 .page-header h1 {
   text-align: center;
-  font-size: 22px;
-  margin-bottom: 25px;
-  font-weight: 700;
+  padding: 10px;
 }
 
 .client-info-header {
   display: flex;
-  gap: 10px;
   justify-content: center;
-  margin-bottom: 25px;
+  gap: 10px;
+  margin: 10px 0 20px;
 }
 
-.client-id-input {
-  padding: 6px 10px;
-  font-size: 15px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  width: 160px;
-}
-
-/* ===== タブ ===== */
+/* -----------------------------
+   タブの見た目
+----------------------------- */
 .tabs {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   overflow-x: auto;
-  padding-bottom: 8px;
-  position: sticky;
-  top: 0;
-  background: var(--panel);
-  z-index: 10;
+  padding-bottom: 10px;
 }
 
 .tab-button {
-  padding: 10px 18px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: #fff;
+  padding: 12px 20px;
+  border: none;
+  background: #ddd;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  white-space: nowrap;
+  min-width: 160px;
+  font-size: 15px;
 }
 
 .tab-button.active {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
+  background: #4682b4;
+  color: white;
 }
 
-/* ===== セクション ===== */
+/* -----------------------------
+   各フォームの表示
+----------------------------- */
 .tab-pane {
   display: none;
-  margin-top: 25px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 15px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
 }
 
 .tab-pane.active {
   display: block;
 }
 
-/* ===== フォーム ===== */
-.form-section {
-  background: var(--accent-light);
-  padding: 22px 26px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-}
-
+/* -----------------------------
+   グリッド配置
+----------------------------- */
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 30px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
 }
 
 .form-item label {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
+  font-weight: bold;
+  margin-bottom: 5px;
   display: block;
 }
 
-input, textarea, select {
+.form-item input,
+.form-item textarea,
+.form-item select {
   width: 100%;
-  padding: 8px 10px;
-  font-size: 14px;
-  border: 1px solid var(--border);
+  padding: 8px;
   border-radius: 6px;
-  background: #fff;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-.form-grid input[type="radio"] {
-  width: 22px;
-  height: 22px;
-  transform: scale(1.4);
-  margin: 6px;
-  cursor: pointer;
-}
-
-.form-grid label {
-  font-size: 1.05rem;
-}
-
-/* textarea height default */
 textarea {
-  resize: vertical;
-  min-height: 60px;
+  min-height: 100px;
 }
 
-/* ===== 保存ボタン ===== */
+/* -----------------------------
+   保存ボタン（押しやすいように強化）
+----------------------------- */
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 25px;
+  text-align: right;
+  margin-top: 20px;
 }
 
-button.save-btn {
-  background: var(--accent);
-  color: #fff;
+.form-actions button {
+  padding: 14px 28px;
+  font-size: 16px;
+  background: #4682b4;
   border: none;
-  padding: 10px 26px;
-  font-size: 15px;
+  color: white;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
-button.save-btn:hover {
-  background: #3454b5;
-}
-
-input[type="radio"],
-input[type="checkbox"] {
-  transform: scale(1.4);
-  margin: 0 6px;
-  cursor: pointer;
-}
-
-.assessment-table input[type="radio"],
-.assessment-table input[type="checkbox"] {
-  margin-inline: 8px;
-}
-
-
-/* ===== スマホ対応 ===== */
-@media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .page-wrapper {
-    padding: 22px;
-  }
+.form-actions button:hover {
+  background: #315f85;
 }
