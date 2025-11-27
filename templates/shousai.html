@@ -226,10 +226,9 @@
       <!-- ② 訪問記録表（visit_record） -->
       <section id="tab-visit" class="tab-pane">
         <h2>② 訪問記録表（visit_record）</h2>
+
         <form id="form-visit" class="form-section">
           <input type="hidden" name="client_id" class="client-id-field" />
-          <!-- physical_status_id は必要に応じて利用（今はNULL許可） -->
-          <input type="hidden" name="physical_status_id" />
 
           <div class="form-grid">
             <div class="form-item">
@@ -242,57 +241,320 @@
               <input type="text" name="visitor_name">
             </div>
 
-            <div class="form-item">
+            <div class="form-item full">
               <label>訪問目的（visit_purpose）</label>
-              <textarea name="visit_purpose"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>訪問時の状況・観察内容（visit_condition）</label>
-              <textarea name="visit_condition"
-                placeholder="［訪問に対する本人の反応・理解］［認知機能］［精神症状・行動症状］［身体状況］［生活状況］などをまとめて記入"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>判断・支援内容（support_decision）</label>
-              <textarea name="support_decision"
-                placeholder="アセスメント結果、DASC-21・DBD13・J-ZBI_8 の点数等を踏まえた判断・支援内容を記入"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>今後の方針・支援計画（future_plan）</label>
-              <textarea name="future_plan"></textarea>
+              <textarea name="visit_purpose" rows="2"></textarea>
             </div>
           </div>
 
+          <h3 class="sub-title">【訪問時の観察項目】</h3>
+
+          <div class="long-section">
+
+            <div class="form-item full">
+              <label>［訪問に対する本人の反応・理解］</label>
+              <textarea name="vr_reaction"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>［認知機能］</label>
+              <textarea name="vr_cognition"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>認知症日常生活自立度</label>
+              <input type="text" name="vr_dementia_adl" placeholder="例：IIa / IIIa">
+            </div>
+
+            <div class="form-item full">
+              <label>［精神症状・行動症状］</label>
+              <textarea name="vr_behavior"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>［身体状況］</label>
+              <textarea name="vr_physical"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>障害高齢者日常生活自立度</label>
+              <input type="text" name="vr_disability_adl" placeholder="例：J1 / A1">
+            </div>
+
+            <div class="form-item full">
+              <label>［生活状況］</label>
+              <textarea name="vr_living"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>［アセスメントシート合計］</label>
+              <div class="inline-inputs">
+                <label>DASC-21：</label><input type="number" name="vr_dasc">
+                <label>DBD13：</label><input type="number" name="vr_dbd">
+                <label>J-ZBI_8：</label><input type="number" name="vr_jzbi">
+              </div>
+            </div>
+
+            <div class="form-item full">
+              <label>［本人の意向・希望］</label>
+              <textarea name="vr_person_intent"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>［介護者の意向・希望］</label>
+              <textarea name="vr_family_intent"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>［その他］</label>
+              <textarea name="vr_other"></textarea>
+            </div>
+
+          </div>
+
+          <h3 class="sub-title">【訪問時の詳細観察（身体状況チェック）】</h3>
+          <p class="note">※身体状況チェック表の内容を要約して記録する欄です</p>
+
+          <div class="long-section">
+            <div class="form-item full">
+              <label>運動機能・立ち上がり・歩行状況</label>
+              <textarea name="vr_mobility"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>移動方法・日常的な移動範囲</label>
+              <textarea name="vr_movement"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>意思疎通の状況</label>
+              <textarea name="vr_communication"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>視力・聴力</label>
+              <textarea name="vr_senses"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>入浴・衛生・清潔状況</label>
+              <textarea name="vr_hygiene"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>栄養状態・食事状況</label>
+              <textarea name="vr_nutrition"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>排泄状況（尿・便・失禁）</label>
+              <textarea name="vr_excretion"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>睡眠状況（睡眠薬・生活リズム含む）</label>
+              <textarea name="vr_sleep"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>居住環境の問題</label>
+              <textarea name="vr_house"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>金銭管理の状況</label>
+              <textarea name="vr_money"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>家族の介護力</label>
+              <textarea name="vr_family_care"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>虐待の可能性</label>
+              <textarea name="vr_abuse"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>見守りの状況</label>
+              <textarea name="vr_watch"></textarea>
+            </div>
+
+            <div class="form-item full">
+              <label>緊急時のSOS発信の可否</label>
+              <textarea name="vr_sos"></textarea>
+            </div>
+          </div>
+
+          <h3 class="sub-title">【判断・支援内容】</h3>
+          <div class="form-item full">
+            <label>判断・支援内容（support_decision）</label>
+            <textarea name="support_decision" rows="4"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>今後の方針・支援計画（future_plan）</label>
+            <textarea name="future_plan" rows="4"></textarea>
+          </div>
+
           <div class="form-actions right">
-            <button type="button" class="btn-primary" onclick="saveVisit()">保存</button>
+            <button type="button" onclick="saveVisit()">保存</button>
           </div>
         </form>
       </section>
 
       <!-- ③ 身体状況チェック表（physical_status） -->
       <section id="tab-physical" class="tab-pane">
-        <h2>③ 身体状況チェック表（physical_status）</h2>
-        <form id="form-physical" class="form-section">
-          <input type="hidden" name="client_id" class="client-id-field" />
-          <input type="hidden" name="physical_status_id">
+      <h2>③ 身体状況チェック表（physical_status）</h2>
 
-          <div class="form-item">
-            <label>身体状況・運動機能・栄養・衛生などのまとめ（check_item）</label>
-            <textarea name="check_item" rows="10"
-              placeholder="運動機能（支えの必要性）、歩行状況、移動範囲、意思疎通、指示への反応、入浴・清潔、栄養・水分・排泄・睡眠などのチェック結果をまとめて記入"></textarea>
+      <form id="form-physical" class="form-section">
+        <input type="hidden" name="client_id" class="client-id-field" />
+
+        <div class="long-section">
+
+          <div class="form-item full">
+            <label>［立ち上がり・運動機能］</label>
+            <textarea name="ps_mobility" placeholder="例：支えなしで立てる／支えが必要 など"></textarea>
           </div>
 
-          <div class="form-actions right">
-            <button type="button" class="btn-primary" onclick="savePhysical()">保存</button>
+          <div class="form-item full">
+            <label>［歩行状況・歩行レベル］</label>
+            <textarea name="ps_walking" placeholder="室内：自立/介助　屋外：自立/介助　独歩/杖/歩行車/車いすなど"></textarea>
           </div>
-        </form>
-      </section>
+
+          <div class="form-item full">
+            <label>［移動方法・範囲］</label>
+            <textarea name="ps_transport" placeholder="公共交通機関／タクシー／自家用車／自転車／徒歩など"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［意思疎通］</label>
+            <textarea name="ps_communication" placeholder="訪問者と意思疎通ができるか、指示の理解など"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［日常の意思決定］</label>
+            <textarea name="ps_decision" placeholder="できる／ややできる／できない など"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［視力・聴力・補聴器の有無］</label>
+            <textarea name="ps_senses" placeholder="目が見えにくい／耳が聞こえにくい／補聴器の使用など"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［入浴・清潔保持］</label>
+            <textarea name="ps_hygiene" placeholder="入浴頻度・シャワー・清拭・清潔状態など"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［衣類・家屋の清潔さ］</label>
+            <textarea name="ps_cleanliness"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［栄養状態・体重・食事状況］</label>
+            <textarea name="ps_nutrition"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［過食／異食］</label>
+            <textarea name="ps_eating_behavior"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［食物を噛む・飲み込む能力］</label>
+            <textarea name="ps_swallowing"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［食事拒否・時間］</label>
+            <textarea name="ps_meal_refusal"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［水分摂取状況］</label>
+            <textarea name="ps_water"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［飲酒・喫煙］</label>
+            <textarea name="ps_habits"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［排尿・排便］</label>
+            <textarea name="ps_excretion"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［便秘（下剤の使用）］</label>
+            <textarea name="ps_constipation"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［睡眠状況（睡眠薬の有無）］</label>
+            <textarea name="ps_sleep"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［起床・就寝時間］</label>
+            <textarea name="ps_daily_rhythm"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［日中の睡眠］</label>
+            <textarea name="ps_daytime_sleep"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［夜間の行動（大声・起き上がり）］</label>
+            <textarea name="ps_night_behavior"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［居住環境の問題］</label>
+            <textarea name="ps_house_env"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［金銭管理］</label>
+            <textarea name="ps_money"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［家族の介護力］</label>
+            <textarea name="ps_family_care"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［虐待の可能性］</label>
+            <textarea name="ps_abuse"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［見守りの状況］</label>
+            <textarea name="ps_watch"></textarea>
+          </div>
+
+          <div class="form-item full">
+            <label>［緊急時のSOS発信］</label>
+            <textarea name="ps_sos"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions right">
+          <button type="button" onclick="savePhysical()">保存</button>
+        </div>
+      </form>
+    </section>
+
 
       <!-- ④ DASC-21 -->
       <section id="tab-dasc" class="tab-pane">
         <h2>④ DASC-21（dasc21）</h2>
+
         <form id="form-dasc" class="form-section">
           <input type="hidden" name="client_id" class="client-id-field" />
 
@@ -306,13 +568,220 @@
               <label>評価者氏名（evaluator_name）</label>
               <input type="text" name="evaluator_name">
             </div>
+          </div>
 
-            <div class="form-item">
-              <label>評価項目・回答内容（assessment_item）</label>
-              <textarea name="assessment_item"
-                placeholder="DASC-21 各設問の結果を自由形式 / JSON形式などで保存します"></textarea>
-            </div>
+          <h3>DASC-21 評価項目（0〜4）</h3>
 
+          <div class="dasc-table">
+            <!-- ここから21項目 -->
+            <!-- 1～21項目ループ -->
+            <!-- 各項目は q1 ～ q21 として保存 -->
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:45%;">評価項目</th>
+                  <th>0</th>
+                  <th>1</th>
+                  <th>2</th>
+                  <th>3</th>
+                  <th>4</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>1. 物忘れの程度</td>
+                  <td><input type="radio" name="q1" value="0"></td>
+                  <td><input type="radio" name="q1" value="1"></td>
+                  <td><input type="radio" name="q1" value="2"></td>
+                  <td><input type="radio" name="q1" value="3"></td>
+                  <td><input type="radio" name="q1" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>2. 同じことを繰り返す</td>
+                  <td><input type="radio" name="q2" value="0"></td>
+                  <td><input type="radio" name="q2" value="1"></td>
+                  <td><input type="radio" name="q2" value="2"></td>
+                  <td><input type="radio" name="q2" value="3"></td>
+                  <td><input type="radio" name="q2" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>3. 置き忘れ</td>
+                  <td><input type="radio" name="q3" value="0"></td>
+                  <td><input type="radio" name="q3" value="1"></td>
+                  <td><input type="radio" name="q3" value="2"></td>
+                  <td><input type="radio" name="q3" value="3"></td>
+                  <td><input type="radio" name="q3" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>4. 日付の理解</td>
+                  <td><input type="radio" name="q4" value="0"></td>
+                  <td><input type="radio" name="q4" value="1"></td>
+                  <td><input type="radio" name="q4" value="2"></td>
+                  <td><input type="radio" name="q4" value="3"></td>
+                  <td><input type="radio" name="q4" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>5. 場所の理解</td>
+                  <td><input type="radio" name="q5" value="0"></td>
+                  <td><input type="radio" name="q5" value="1"></td>
+                  <td><input type="radio" name="q5" value="2"></td>
+                  <td><input type="radio" name="q5" value="3"></td>
+                  <td><input type="radio" name="q5" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>6. 人物の理解</td>
+                  <td><input type="radio" name="q6" value="0"></td>
+                  <td><input type="radio" name="q6" value="1"></td>
+                  <td><input type="radio" name="q6" value="2"></td>
+                  <td><input type="radio" name="q6" value="3"></td>
+                  <td><input type="radio" name="q6" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>7. 服薬の管理</td>
+                  <td><input type="radio" name="q7" value="0"></td>
+                  <td><input type="radio" name="q7" value="1"></td>
+                  <td><input type="radio" name="q7" value="2"></td>
+                  <td><input type="radio" name="q7" value="3"></td>
+                  <td><input type="radio" name="q7" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>8. 金銭管理</td>
+                  <td><input type="radio" name="q8" value="0"></td>
+                  <td><input type="radio" name="q8" value="1"></td>
+                  <td><input type="radio" name="q8" value="2"></td>
+                  <td><input type="radio" name="q8" value="3"></td>
+                  <td><input type="radio" name="q8" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>9. 火の始末</td>
+                  <td><input type="radio" name="q9" value="0"></td>
+                  <td><input type="radio" name="q9" value="1"></td>
+                  <td><input type="radio" name="q9" value="2"></td>
+                  <td><input type="radio" name="q9" value="3"></td>
+                  <td><input type="radio" name="q9" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>10. 自動車・交通機関の利用</td>
+                  <td><input type="radio" name="q10" value="0"></td>
+                  <td><input type="radio" name="q10" value="1"></td>
+                  <td><input type="radio" name="q10" value="2"></td>
+                  <td><input type="radio" name="q10" value="3"></td>
+                  <td><input type="radio" name="q10" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>11. 食事の準備</td>
+                  <td><input type="radio" name="q11" value="0"></td>
+                  <td><input type="radio" name="q11" value="1"></td>
+                  <td><input type="radio" name="q11" value="2"></td>
+                  <td><input type="radio" name="q11" value="3"></td>
+                  <td><input type="radio" name="q11" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>12. 配膳・片付け</td>
+                  <td><input type="radio" name="q12" value="0"></td>
+                  <td><input type="radio" name="q12" value="1"></td>
+                  <td><input type="radio" name="q12" value="2"></td>
+                  <td><input type="radio" name="q12" value="3"></td>
+                  <td><input type="radio" name="q12" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>13. 洗濯</td>
+                  <td><input type="radio" name="q13" value="0"></td>
+                  <td><input type="radio" name="q13" value="1"></td>
+                  <td><input type="radio" name="q13" value="2"></td>
+                  <td><input type="radio" name="q13" value="3"></td>
+                  <td><input type="radio" name="q13" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>14. 掃除</td>
+                  <td><input type="radio" name="q14" value="0"></td>
+                  <td><input type="radio" name="q14" value="1"></td>
+                  <td><input type="radio" name="q14" value="2"></td>
+                  <td><input type="radio" name="q14" value="3"></td>
+                  <td><input type="radio" name="q14" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>15. 自分の身のまわりの管理</td>
+                  <td><input type="radio" name="q15" value="0"></td>
+                  <td><input type="radio" name="q15" value="1"></td>
+                  <td><input type="radio" name="q15" value="2"></td>
+                  <td><input type="radio" name="q15" value="3"></td>
+                  <td><input type="radio" name="q15" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>16. 服の着替え</td>
+                  <td><input type="radio" name="q16" value="0"></td>
+                  <td><input type="radio" name="q16" value="1"></td>
+                  <td><input type="radio" name="q16" value="2"></td>
+                  <td><input type="radio" name="q16" value="3"></td>
+                  <td><input type="radio" name="q16" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>17. 身だしなみ</td>
+                  <td><input type="radio" name="q17" value="0"></td>
+                  <td><input type="radio" name="q17" value="1"></td>
+                  <td><input type="radio" name="q17" value="2"></td>
+                  <td><input type="radio" name="q17" value="3"></td>
+                  <td><input type="radio" name="q17" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>18. 入浴</td>
+                  <td><input type="radio" name="q18" value="0"></td>
+                  <td><input type="radio" name="q18" value="1"></td>
+                  <td><input type="radio" name="q18" value="2"></td>
+                  <td><input type="radio" name="q18" value="3"></td>
+                  <td><input type="radio" name="q18" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>19. 排泄</td>
+                  <td><input type="radio" name="q19" value="0"></td>
+                  <td><input type="radio" name="q19" value="1"></td>
+                  <td><input type="radio" name="q19" value="2"></td>
+                  <td><input type="radio" name="q19" value="3"></td>
+                  <td><input type="radio" name="q19" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>20. 歩行</td>
+                  <td><input type="radio" name="q20" value="0"></td>
+                  <td><input type="radio" name="q20" value="1"></td>
+                  <td><input type="radio" name="q20" value="2"></td>
+                  <td><input type="radio" name="q20" value="3"></td>
+                  <td><input type="radio" name="q20" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>21. 外出</td>
+                  <td><input type="radio" name="q21" value="0"></td>
+                  <td><input type="radio" name="q21" value="1"></td>
+                  <td><input type="radio" name="q21" value="2"></td>
+                  <td><input type="radio" name="q21" value="3"></td>
+                  <td><input type="radio" name="q21" value="4"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="form-grid">
             <div class="form-item">
               <label>備考（remarks）</label>
               <textarea name="remarks"></textarea>
@@ -320,12 +789,12 @@
 
             <div class="form-item">
               <label>合計点（total_score）</label>
-              <input type="number" name="total_score" min="0" max="84" step="1">
+              <input type="number" name="total_score" id="dasc-total" readonly>
             </div>
           </div>
 
           <div class="form-actions right">
-            <button type="button" class="btn-primary" onclick="saveDasc()">保存</button>
+            <button type="button" onclick="saveDasc()">保存</button>
           </div>
         </form>
       </section>
@@ -333,13 +802,14 @@
       <!-- ⑤ DBD-13 -->
       <section id="tab-dbd" class="tab-pane">
         <h2>⑤ DBD-13（dbd13）</h2>
+
         <form id="form-dbd" class="form-section">
           <input type="hidden" name="client_id" class="client-id-field" />
 
           <div class="form-grid">
             <div class="form-item">
               <label>回答者氏名（respondent_name）</label>
-              <input type="text" name="respondent_name" placeholder="主な介護者など">
+              <input type="text" name="respondent_name">
             </div>
 
             <div class="form-item">
@@ -351,33 +821,146 @@
               <label>記入日（entry_date）</label>
               <input type="date" name="entry_date">
             </div>
+          </div>
 
-            <div class="form-item">
-              <label>行動・心理症状の内容（assessment_item）</label>
-              <textarea name="assessment_item"
-                placeholder="DBD-13 各設問の結果を自由形式 / JSON形式などで保存します"></textarea>
-            </div>
+          <h3>DBD-13 評価項目（0〜4：問題なし → 重い）</h3>
 
-            <div class="form-item">
-              <label>備考（remarks）</label>
-              <textarea name="remarks"></textarea>
-            </div>
+          <table class="dbd-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">項目</th>
+                <th>0</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+              </tr>
+            </thead>
 
-            <div class="form-item">
-              <label>小計（subtotal_score）</label>
-              <input type="number" name="subtotal_score" min="0" step="1">
-            </div>
+            <tbody>
+              <!-- 13項目（国立長寿医療研究センター・正式） -->
+              <tr><td>1. もの盗られ妄想</td>
+                <td><input type="radio" name="d1" value="0"></td>
+                <td><input type="radio" name="d1" value="1"></td>
+                <td><input type="radio" name="d1" value="2"></td>
+                <td><input type="radio" name="d1" value="3"></td>
+                <td><input type="radio" name="d1" value="4"></td>
+              </tr>
 
-            <div class="form-item">
-              <label>合計点（total_score）</label>
-              <input type="number" name="total_score" min="0" step="1">
-            </div>
+              <tr><td>2. 不安・イライラ</td>
+                <td><input type="radio" name="d2" value="0"></td>
+                <td><input type="radio" name="d2" value="1"></td>
+                <td><input type="radio" name="d2" value="2"></td>
+                <td><input type="radio" name="d2" value="3"></td>
+                <td><input type="radio" name="d2" value="4"></td>
+              </tr>
+
+              <tr><td>3. 不眠・睡眠リズムの乱れ</td>
+                <td><input type="radio" name="d3" value="0"></td>
+                <td><input type="radio" name="d3" value="1"></td>
+                <td><input type="radio" name="d3" value="2"></td>
+                <td><input type="radio" name="d3" value="3"></td>
+                <td><input type="radio" name="d3" value="4"></td>
+              </tr>
+
+              <tr><td>4. 拒否・怒りやすい</td>
+                <td><input type="radio" name="d4" value="0"></td>
+                <td><input type="radio" name="d4" value="1"></td>
+                <td><input type="radio" name="d4" value="2"></td>
+                <td><input type="radio" name="d4" value="3"></td>
+                <td><input type="radio" name="d4" value="4"></td>
+              </tr>
+
+              <tr><td>5. 徘徊</td>
+                <td><input type="radio" name="d5" value="0"></td>
+                <td><input type="radio" name="d5" value="1"></td>
+                <td><input type="radio" name="d5" value="2"></td>
+                <td><input type="radio" name="d5" value="3"></td>
+                <td><input type="radio" name="d5" value="4"></td>
+              </tr>
+
+              <tr><td>6. 介護への抵抗</td>
+                <td><input type="radio" name="d6" value="0"></td>
+                <td><input type="radio" name="d6" value="1"></td>
+                <td><input type="radio" name="d6" value="2"></td>
+                <td><input type="radio" name="d6" value="3"></td>
+                <td><input type="radio" name="d6" value="4"></td>
+              </tr>
+
+              <tr><td>7. 落ち着きのなさ・そわそわ</td>
+                <td><input type="radio" name="d7" value="0"></td>
+                <td><input type="radio" name="d7" value="1"></td>
+                <td><input type="radio" name="d7" value="2"></td>
+                <td><input type="radio" name="d7" value="3"></td>
+                <td><input type="radio" name="d7" value="4"></td>
+              </tr>
+
+              <tr><td>8. 抑うつ気分</td>
+                <td><input type="radio" name="d8" value="0"></td>
+                <td><input type="radio" name="d8" value="1"></td>
+                <td><input type="radio" name="d8" value="2"></td>
+                <td><input type="radio" name="d8" value="3"></td>
+                <td><input type="radio" name="d8" value="4"></td>
+              </tr>
+
+              <tr><td>9. 大声を出す・叫ぶ</td>
+                <td><input type="radio" name="d9" value="0"></td>
+                <td><input type="radio" name="d9" value="1"></td>
+                <td><input type="radio" name="d9" value="2"></td>
+                <td><input type="radio" name="d9" value="3"></td>
+                <td><input type="radio" name="d9" value="4"></td>
+              </tr>
+
+              <tr><td>10. 暴力・攻撃性</td>
+                <td><input type="radio" name="d10" value="0"></td>
+                <td><input type="radio" name="d10" value="1"></td>
+                <td><input type="radio" name="d10" value="2"></td>
+                <td><input type="radio" name="d10" value="3"></td>
+                <td><input type="radio" name="d10" value="4"></td>
+              </tr>
+
+              <tr><td>11. 幻覚</td>
+                <td><input type="radio" name="d11" value="0"></td>
+                <td><input type="radio" name="d11" value="1"></td>
+                <td><input type="radio" name="d11" value="2"></td>
+                <td><input type="radio" name="d11" value="3"></td>
+                <td><input type="radio" name="d11" value="4"></td>
+              </tr>
+
+              <tr><td>12. 性的問題行動</td>
+                <td><input type="radio" name="d12" value="0"></td>
+                <td><input type="radio" name="d12" value="1"></td>
+                <td><input type="radio" name="d12" value="2"></td>
+                <td><input type="radio" name="d12" value="3"></td>
+                <td><input type="radio" name="d12" value="4"></td>
+              </tr>
+
+              <tr><td>13. 異食・不適切な食行動</td>
+                <td><input type="radio" name="d13" value="0"></td>
+                <td><input type="radio" name="d13" value="1"></td>
+                <td><input type="radio" name="d13" value="2"></td>
+                <td><input type="radio" name="d13" value="3"></td>
+                <td><input type="radio" name="d13" value="4"></td>
+              </tr>
+
+            </tbody>
+          </table>
+
+          <div class="form-item">
+            <label>小計（subtotal_score）※項目1〜13の合計</label>
+            <input type="number" name="subtotal_score" id="dbd_subtotal" readonly>
+          </div>
+
+          <div class="form-item">
+            <label>合計点（total_score）※DBD-13 の総合点</label>
+            <input type="number" name="total_score" id="dbd_total" readonly>
           </div>
 
           <div class="form-actions right">
-            <button type="button" class="btn-primary" onclick="saveDbd()">保存</button>
+            <button type="button" onclick="saveDbd()">保存</button>
           </div>
         </form>
+
       </section>
 
     </main>
@@ -533,6 +1116,49 @@
       syncClientIdFields(cid);
       const data = formToJSON(document.getElementById("form-dbd"));
       postJSON("/api/save_dbd13", data);
+    }
+
+    // -----------------------------
+    // DASC-21：合計点の自動計算
+    // -----------------------------
+    function calcDascTotal() {
+      let total = 0;
+      for (let i = 1; i <= 21; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected) {
+          total += parseInt(selected.value);
+        }
+      }
+      document.getElementById("dasc_total").value = total;
+    }
+
+    // -----------------------------
+    // DBD-13 合計計算
+    // -----------------------------
+    function calcDbdTotal() {
+      let subtotal = 0;
+
+      for (let i = 1; i <= 13; i++) {
+        const checked = document.querySelector(`input[name="d${i}"]:checked`);
+        if (checked) subtotal += parseInt(checked.value);
+      }
+
+      document.getElementById("dbd_subtotal").value = subtotal;
+      document.getElementById("dbd_total").value = subtotal; // 今回は subtotal＝total
+    }
+
+    // ラジオ変更時にリアルタイム計算
+    for (let i = 1; i <= 13; i++) {
+      document.querySelectorAll(`input[name="d${i}"]`).forEach(radio => {
+        radio.addEventListener("change", calcDbdTotal);
+      });
+    }
+
+    // ラジオボタン変更時に合計更新
+    for (let i = 1; i <= 21; i++) {
+      document.querySelectorAll(`input[name="q${i}"]`).forEach(r => {
+        r.addEventListener("change", calcDascTotal);
+      });
     }
 
     // -----------------------------
