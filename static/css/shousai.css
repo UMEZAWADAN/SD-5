@@ -20,6 +20,7 @@ body {
 .client-info-header {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 10px;
   margin: 10px 0 20px;
 }
@@ -74,16 +75,24 @@ body {
   gap: 15px;
 }
 
-.form-item label {
+.form-item label,
+.client-info-header label{
   font-weight: bold;
   margin-bottom: 5px;
   display: block;
 }
 
+.client-info-header label{
+  font-weight: bold;
+  margin-bottom: 0px;
+  display: block;
+}
+
 .form-item input,
 .form-item textarea,
-.form-item select {
-  width: 100%;
+.form-item select,
+.client-info-header input{
+  width: 300px;
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -102,8 +111,19 @@ textarea {
   margin-top: 20px;
 }
 
-.form-actions button {
+.form-actions button,
+.client-info-header button{
   padding: 14px 28px;
+  font-size: 16px;
+  background: #4682b4;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.client-info-header button{
+  padding: 10px 20px;
   font-size: 16px;
   background: #4682b4;
   border: none;
