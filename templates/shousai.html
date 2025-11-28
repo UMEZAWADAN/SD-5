@@ -36,6 +36,8 @@
           <!-- client_id は共通ID。ここにも持たせておく -->
           <input type="hidden" name="client_id" class="client-id-field" />
 
+          <h3 class="sub-title">【基本情報】</h3>
+
           <div class="form-grid">
             <div class="form-item">
               <label>作成担当者（writer_name）</label>
@@ -136,7 +138,11 @@
               <label>緊急連絡先氏名（emergency_contact_name）</label>
               <input type="text" name="emergency_contact_name">
             </div>
+          </div>
 
+          <h3 class="sub-title">【介護予防に関する事項】</h3>
+
+          <div class="form-grid">
             <div class="form-item">
               <label>続柄（emergency_relation）</label>
               <input type="text" name="emergency_relation">
@@ -181,7 +187,11 @@
               <label>友人・地域とのつながり（social_connections）</label>
               <textarea name="social_connections"></textarea>
             </div>
+          </div>
 
+          <h3 class="sub-title">【現病歴・既往歴と経過】（新しいものから書く・現在の状況に関連するものは必ず書く）</h3>
+
+          <div class="form-grid">
             <div class="form-item">
               <label>発症時期（disease_onset_date）</label>
               <input type="date" name="disease_onset_date">
@@ -206,7 +216,11 @@
               <label>現在の状態・経過（current_condition）</label>
               <textarea name="current_condition"></textarea>
             </div>
+          </div>
 
+          <h3 class="sub-title">【現在利用しているサービス】</h3>
+
+          <div class="form-grid">
             <div class="form-item">
               <label>現在利用中の公的サービス（public_services）</label>
               <textarea name="public_services"></textarea>

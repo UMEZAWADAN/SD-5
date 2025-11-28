@@ -83,20 +83,22 @@ body {
 }
 
 .client-info-header label{
-  font-weight: bold;
   margin-bottom: 0px;
-  display: block;
 }
 
 .form-item input,
 .form-item textarea,
 .form-item select,
 .client-info-header input{
-  width: 300px;
+  width: 100%;
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+}
+
+.client-info-header input{
+  width: 300px;
 }
 
 textarea {
@@ -107,8 +109,11 @@ textarea {
    保存ボタン（押しやすいように強化）
 ----------------------------- */
 .form-actions {
-  text-align: right;
   margin-top: 20px;
+}
+
+.right{
+  text-align: right;
 }
 
 .form-actions button,
