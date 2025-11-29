@@ -1,38 +1,37 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>認知症初期支援業務管理システム</title>
-  <link rel="stylesheet" type="text/css" href="../static/css/top.css">
-=======
-<html lang="ja"><head>
     <meta charset="UTF-8">
-    <title>トップページ</title>
-    <link rel="stylesheet" href="style.css">
->>>>>>> b7ff5120af22b8908f96db862fd53b7c8fad402a
+    <title>認知症初期支援業務管理システム - トップ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/top.css') }}">
 </head>
 
 <body>
 
-    <header>
-        <div class="title-main">認知症初期支援業務管理システム</div>
-        <div class="title-sub">トップページ</div>
-    </header>
+    <!-- 上部ヘッダー -->
+    <div class="header">
+        認知症初期支援業務管理システム
+    </div>
 
-    <main>
-        <div class="search-title">対象者の検索</div>
+    <!-- 中央の白いカード -->
+    <div class="container">
 
-        <div class="search-area">
-            <input type="text" class="search-input" placeholder="対象者IDを入力">
-            <button class="search-btn">検索</button>
+        <div class="title">対象者の検索</div>
+
+        <form action="/search" method="POST" class="input-area">
+            <input type="text" name="target_id" placeholder="対象者IDを入力">
+            <br>
+            <button type="submit">検索</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 25px;">
+            <a href="/new" class="btn">対象者新規登録</a>
         </div>
 
-        <button class="register-btn">対象者新規登録</button>
-    </main>
+    </div>
 
-
+</body>
+</html>
 
 
 </body></html>
