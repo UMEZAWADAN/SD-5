@@ -59,6 +59,10 @@ def shousai():
 def text():
     return render_template("text.html")
 
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
 
 # ================================
 #  2. テキストマイニング機能（既存）
