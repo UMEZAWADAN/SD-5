@@ -1,54 +1,35 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<<<<<<< HEAD
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>アカウント新規登録ページ</title>
-  <link rel="stylesheet" type="text/css" href="../static/css/touroku.css">
     <meta charset="UTF-8">
-    <title>アカウント新規登録ページ</title>
-    <link rel="stylesheet" href="style.css">
+    <title>アカウント新規登録</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/top.css') }}">
 </head>
 <body>
 
-    <!-- ヘッダー -->
-    <div class="header">
-        <div class="title-small">認知症初期支援業務管理システム</div>
-        <div class="title-main">アカウント新規登録ページ</div>
+<div class="header">
+    認知症初期支援業務管理システム
+</div>
 
-        <div class="back-btn">
-            ログインページに<br>戻る
-        </div>
-    </div>
+<div class="back-btn-area">
+    <button class="back-btn" onclick="location.href='/login'">ログインページに戻る</button>
+</div>
 
-    <!-- メイン -->
-    <div class="main-area">
-        <div class="form-container">
+<div class="container">
+    <form action="/register" method="post">
 
-            <div class="row">
-                <label>ID</label>
-                <input type="text" class="input-box">
-            </div>
+        <label for="id">ID</label>
+        <input type="text" id="id" name="id" class="input-box">
 
-            <div class="row">
-                <label>パスワード</label>
-                <input type="password" class="input-box">
-            </div>
+        <label for="password">パスワード</label>
+        <input type="password" id="password" name="password" class="input-box">
 
-            <div class="row">
-                <label class="label-two">
-                    もう一度<br>パスワードを入力
-                </label>
-                <input type="password" class="input-box">
-            </div>
+        <label for="password2">もう一度パスワードを入力</label>
+        <input type="password" id="password2" name="password2" class="input-box">
 
-            <div class="submit-wrap">
-                <button class="submit-btn">新規登録</button>
-            </div>
-
-        </div>
-    </div>
+        <button type="submit" class="submit-btn">新規登録</button>
+    </form>
+</div>
 
 </body>
 </html>
