@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>アカウント新規登録</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/top.css') }}">
+<meta charset="UTF-8">
+<title>アカウント新規登録</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/text.css') }}">
 </head>
+
 <body>
 
-<div class="header">
-    認知症初期支援業務管理システム
+<h1>アカウント新規登録</h1>
+
+<!-- 登録フォームカード -->
+<div class="card">
+  <h3>◆ 新規登録フォーム</h3>
+
+  <label for="id">ID</label>
+  <input type="text" id="id" name="id" class="input-box">
+
+  <label for="password">パスワード</label>
+  <input type="password" id="password" name="password" class="input-box">
+
+  <label for="password2">もう一度パスワードを入力</label>
+  <input type="password" id="password2" name="password2" class="input-box">
+
+  <br>
+
+  <button class="btn-primary" onclick="document.querySelector('form').submit()">新規登録</button>
+  <button class="btn-secondary" onclick="location.href='/login'">ログインページへ戻る</button>
 </div>
 
-<div class="back-btn-area">
-    <button class="back-btn" onclick="location.href='/login'">ログインページに戻る</button>
-</div>
-
-<div class="container">
-    <form action="/register" method="post">
-
-        <label for="id">ID</label>
-        <input type="text" id="id" name="id" class="input-box">
-
-        <label for="password">パスワード</label>
-        <input type="password" id="password" name="password" class="input-box">
-
-        <label for="password2">もう一度パスワードを入力</label>
-        <input type="password" id="password2" name="password2" class="input-box">
-
-        <button type="submit" class="submit-btn">新規登録</button>
-    </form>
-</div>
+<!-- form を画面外に配置（JSボタンで送信） -->
+<form action="/register" method="post" style="display:none;"></form>
 
 </body>
 </html>
