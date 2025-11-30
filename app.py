@@ -48,6 +48,9 @@ def top():
 def list_page():
     return render_template("list.html")
 
+@app.route("/touroku")
+def touroku():
+    return render_template("touroku.html")
 
 @app.route("/shousai")
 def shousai():
