@@ -7,6 +7,71 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
 </head>
 <body>
+<!-- ========================= -->
+<!-- ヘッダー（ID・氏名・フォルダ） -->
+<!-- ========================= -->
+<style>
+    .header-bar {
+        background: #3b6ea5;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 25px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .header-title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .info-box {
+        background: #ffffff;
+        color: #333;
+        padding: 7px 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        min-width: 130px;
+        font-size: 14px;
+    }
+
+    .folder-btn {
+        background: #ffffff;
+        border: 2px solid #2f5f8a;
+        color: #2f5f8a;
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .folder-btn:hover {
+        background: #2f5f8a;
+        color: white;
+    }
+</style>
+
+<div class="header-bar">
+    <div class="header-title">認知症初期集中支援業務管理システム</div>
+
+    <div class="header-right">
+        <div class="info-box">ID：<span id="header_client_id">---</span></div>
+        <div class="info-box">氏名：<span id="header_client_name">---</span></div>
+        <button class="folder-btn" onclick="openFolder()">フォルダ</button>
+    </div>
+</div>
+
   <div class="page-wrapper">
     <header class="page-header">
       <h1>認知症初期集中支援　対象者詳細・アセスメント</h1>
@@ -24,7 +89,6 @@
       <button class="tab-button" data-tab="tab-physical">③ 身体状況チェック表</button>
       <button class="tab-button" data-tab="tab-dasc">④ DASC-21</button>
       <button class="tab-button" data-tab="tab-dbd">⑤ DBD-13</button>
-      <button class="tab-button" data-tab="tab-files">⑥ 共有ファイル</button>
     </nav>
 
     <main class="tab-contents">
@@ -35,6 +99,8 @@
         <form id="form-client" class="form-section">
           <!-- client_id は共通ID。ここにも持たせておく -->
           <input type="hidden" name="client_id" class="client-id-field" />
+
+          <h3 class="sub-title">【基本情報】</h3>
 
           <div class="form-grid">
             <div class="form-item">
@@ -136,7 +202,11 @@
               <label>緊急連絡先氏名（emergency_contact_name）</label>
               <input type="text" name="emergency_contact_name">
             </div>
+          </div>
 
+          <h3 class="sub-title">【介護予防に関する事項】</h3>
+
+          <div class="form-grid">
             <div class="form-item">
               <label>続柄（emergency_relation）</label>
               <input type="text" name="emergency_relation">
@@ -181,7 +251,11 @@
               <label>友人・地域とのつながり（social_connections）</label>
               <textarea name="social_connections"></textarea>
             </div>
+          </div>
 
+          <h3 class="sub-title">【現病歴・既往歴と経過】（新しいものから書く・現在の状況に関連するものは必ず書く）</h3>
+
+          <div class="form-grid">
             <div class="form-item">
               <label>発症時期（disease_onset_date）</label>
               <input type="date" name="disease_onset_date">
@@ -206,7 +280,11 @@
               <label>現在の状態・経過（current_condition）</label>
               <textarea name="current_condition"></textarea>
             </div>
+          </div>
 
+          <h3 class="sub-title">【現在利用しているサービス】</h3>
+
+          <div class="form-grid">
             <div class="form-item">
               <label>現在利用中の公的サービス（public_services）</label>
               <textarea name="public_services"></textarea>
@@ -963,29 +1041,32 @@
         </form>
 
       </section>
-      <section id="tab-files" class="tab-pane">
-        <h2>⑥ 共有ファイル（shared_folder）</h2>
-
-        <div class="form-section">
-
-          <div>
-            <label>ファイルを選択：</label>
-            <input type="file" id="upload_file_input">
-            <button type="button" onclick="uploadFile()">アップロード</button>
-          </div>
-
-          <hr>
-
-          <h3>この利用者のファイル一覧</h3>
-          <div id="file_list"></div>
-
-        </div>
-      </section>
-
     </main>
   </div>
 
   <script>
+    // URL から client_id 取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const client_id = urlParams.get("client_id");
+
+    // 画面上部の ID をセット
+    document.getElementById("header_client_id").textContent = client_id ?? "---";
+
+    // DB から氏名を取得して表示
+    fetch(`/api/get_all_data?client_id=${client_id}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.client) {
+                document.getElementById("header_client_name").textContent =
+                    data.client.client_name ?? "---";
+            }
+        });
+
+    // フォルダボタン
+    function openFolder() {
+        window.location.href = `/folder?client_id=${client_id}`;
+    }
+
     // -----------------------------
     // タブ切り替え
     // -----------------------------
@@ -1229,41 +1310,6 @@
         });
       }
 
-      async function uploadFile() {
-        const cid = document.getElementById("global_client_id").value.trim();
-        const file = document.getElementById("upload_file_input").files[0];
-
-        if (!cid || !file) {
-          alert("client_id とファイルを指定してください");
-          return;
-        }
-
-        const fd = new FormData();
-        fd.append("client_id", cid);
-        fd.append("file", file);
-
-        const res = await fetch("/api/upload_file", {
-          method: "POST",
-          body: fd
-        });
-        const json = await res.json();
-        alert("保存しました");
-
-        loadFiles();
-      }
-
-      async function deleteFile(folder_id) {
-        const res = await fetch("/api/delete_file", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({folder_id})
-        });
-
-        const json = await res.json();
-        alert("削除しました");
-        loadFiles();
-      }
-
     // -----------------------------
     // 初期設定
     // -----------------------------
@@ -1296,6 +1342,105 @@
       });
 
     });
+    //----------------------------------------
+    // モーダル表示
+    //----------------------------------------
+    function openFolder() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に利用者IDを入力してください。");
+        return;
+      }
+
+      document.getElementById("fileModal").style.display = "flex";
+
+      loadFileList(cid);
+    }
+
+    function closeFileModal() {
+      document.getElementById("fileModal").style.display = "none";
+    }
+
+
+    //----------------------------------------
+    // ファイル一覧取得
+    //----------------------------------------
+    async function loadFileList(client_id) {
+      const res = await fetch(`/api/shared_files?client_id=${client_id}`);
+      const json = await res.json();
+
+      const list = document.getElementById("fileList");
+      list.innerHTML = "";
+
+      json.files.forEach(f => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          ${f.file_name}
+          <button onclick="downloadFile(${f.folder_id})">DL</button>
+          <button onclick="deleteFile(${f.folder_id})">削除</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+
+    //----------------------------------------
+    // アップロード
+    //----------------------------------------
+    async function uploadFile() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      const fileInput = document.getElementById("uploadFileInput");
+
+      if (!fileInput.files.length) {
+        alert("ファイルを選択してください");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("client_id", cid);
+
+      const res = await fetch("/api/upload_shared_file", {
+        method: "POST",
+        body: formData
+      });
+
+      const json = await res.json();
+      if (json.status === "ok") {
+        alert("アップロードしました");
+        loadFileList(cid);
+        fileInput.value = "";
+      } else {
+        alert("エラー: " + json.message);
+      }
+    }
+
   </script>
 </body>
+<!-- 共有ファイル モーダル -->
+<div id="fileModal" class="modal-overlay">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h2>共有ファイル</h2>
+      <button class="modal-close" onclick="closeFileModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- アップロード -->
+      <div class="upload-area">
+        <input type="file" id="uploadFileInput">
+        <button onclick="uploadFile()">アップロード</button>
+      </div>
+
+      <hr>
+
+      <!-- ファイル一覧 -->
+      <div>
+        <h3>この利用者のファイル一覧</h3>
+        <ul id="fileList"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 </html>

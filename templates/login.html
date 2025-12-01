@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>認知症初期支援業務管理システム</title>
-  <link rel="stylesheet" href="../static/css/login.css">
+<meta charset="UTF-8">
+<title>認知症初期支援業務管理システム</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
 
-  <div class="header">
-    ログイン　認知症初期支援業務管理システム
-  </div>
+<h1>ログイン　認知症初期支援業務管理システム</h1>
 
-  <div class="login-box">
-    <label>管理者ID</label>
-    <input type="text">
+<div class="card login-box">
+  <label for="admin_id">管理者ID</label>
+  <input type="text" id="admin_id" placeholder="管理者IDを入力">
 
-    <label>パスワード</label>
-    <input type="password">
+  <label for="password">パスワード</label>
+  <input type="password" id="password" placeholder="パスワードを入力">
 
-    <button>ログイン</button>
-  </div>
+  <button onclick="login()">ログイン</button>
+</div>
+
+<script>
+function login() {
+  const adminId = document.getElementById("admin_id").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if(!adminId || !password) {
+    alert("IDとパスワードを入力してください。");
+    return;
+  }
+
+  // ここで Flask に送信する処理を追加可能
+  alert("ログイン処理（デモ）");
+}
+</script>
 
 </body>
 </html>

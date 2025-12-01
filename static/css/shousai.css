@@ -20,6 +20,7 @@ body {
 .client-info-header {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 10px;
   margin: 10px 0 20px;
 }
@@ -74,20 +75,30 @@ body {
   gap: 15px;
 }
 
-.form-item label {
+.form-item label,
+.client-info-header label{
   font-weight: bold;
   margin-bottom: 5px;
   display: block;
 }
 
+.client-info-header label{
+  margin-bottom: 0px;
+}
+
 .form-item input,
 .form-item textarea,
-.form-item select {
+.form-item select,
+.client-info-header input{
   width: 100%;
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+}
+
+.client-info-header input{
+  width: 300px;
 }
 
 textarea {
@@ -98,12 +109,26 @@ textarea {
    保存ボタン（押しやすいように強化）
 ----------------------------- */
 .form-actions {
-  text-align: right;
   margin-top: 20px;
 }
 
-.form-actions button {
+.right{
+  text-align: right;
+}
+
+.form-actions button,
+.client-info-header button{
   padding: 14px 28px;
+  font-size: 16px;
+  background: #4682b4;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.client-info-header button{
+  padding: 10px 20px;
   font-size: 16px;
   background: #4682b4;
   border: none;
@@ -114,4 +139,50 @@ textarea {
 
 .form-actions button:hover {
   background: #315f85;
+}
+
+/* ===== モーダル全体 ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* ===== モーダル本体 ===== */
+.modal-window {
+  background: #fff;
+  width: 600px;
+  max-height: 80vh;
+  padding: 20px;
+  border-radius: 10px;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-close {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #444;
+}
+
+.upload-area {
+  margin-bottom: 15px;
+}
+
+#fileList li {
+  margin: 5px 0;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
 }
