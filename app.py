@@ -58,7 +58,7 @@ def shousai():
     return render_template("shousai.html")
 
 @app.route("/shousai2")
-def shousai():
+def shousai2():
     # ?client_id=1 などのクエリは JS 側で拾って使う
     return render_template("shousai2.html")
 
