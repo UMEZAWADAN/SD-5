@@ -67,7 +67,7 @@
 
 
 
-<!-- 後で削除 -->
+<!-- ここから -->
 <div class="card">
   <h3>対象者の訪問記録（文章）ここは後で削除</h3>
   <textarea id="visit" rows="5"
@@ -78,10 +78,11 @@
   <button class="btn-primary" onclick="searchCases()">類似事例を検索</button>
   <button class="btn-secondary" onclick="clearForm()">クリア</button>
 </div>
+<!-- ここまで後で削除 -->
 
 <script>
 function searchCases() {
-  let inputText = document.getElementById("visit").value;
+  let inputText = document.getElementById("know").value;
 
   if (!inputText.trim()) {
     alert("訪問記録を入力してください。");
@@ -114,7 +115,9 @@ function searchCases() {
 }
 
 function clearForm() {
-  document.getElementById("visit").value = "";
+  document.getElementById("know").value = "";
+  document.getElementById("keyword").innerHTML =
+    "<p style='color:#888;'>(キーワードがここに表示されます)</p>";
   document.getElementById("resultArea").innerHTML =
     "<p style='color:#888;'>(検索結果がここに表示されます)</p>";
 }
