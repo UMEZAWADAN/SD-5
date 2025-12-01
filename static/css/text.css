@@ -26,7 +26,12 @@ border-left: 4px solid #2980b9;
 padding-left: 10px;
 }
 
-textarea {
+h4 {
+color: #3b4b5a;
+margin-bottom: 10px;
+}
+
+textarea, input {
 width: 100%;
 font-size: 16px;
 padding: 10px;

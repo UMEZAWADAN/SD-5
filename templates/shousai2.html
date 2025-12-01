@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>対象者詳細・アセスメント</title>
+  <!-- 統一CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
+</head>
+<body>
+<!-- ========================= -->
+<!-- ヘッダー（ID・氏名・フォルダ） -->
+<!-- ========================= -->
+<style>
+    .header-bar {
+        background: #3b6ea5;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 25px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .header-title {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .info-box {
+        background: #ffffff;
+        color: #333;
+        padding: 7px 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        min-width: 130px;
+        font-size: 14px;
+    }
+
+    .folder-btn {
+        background: #ffffff;
+        border: 2px solid #2f5f8a;
+        color: #2f5f8a;
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    /* -----------------------------
+      全体レイアウト
+    ----------------------------- */
+    body {
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      margin: 0;
+      background: #f7f8fa;
+    }
+
+    .page-wrapper {
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    .page-header h1 {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .client-info-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0 20px;
+    }
+
+    /* -----------------------------
+      タブの見た目
+    ----------------------------- */
+    .tabs {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+
+    .tab-button {
+      padding: 12px 20px;
+      border: none;
+      background: #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      min-width: 160px;
+      font-size: 15px;
+    }
+
+    .tab-button.active {
+      background: #4682b4;
+      color: white;
+    }
+
+    /* -----------------------------
+      各フォームの表示
+    ----------------------------- */
+    .tab-pane {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 15px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* -----------------------------
+      グリッド配置
+    ----------------------------- */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+    }
+
+    .form-item label,
+    .client-info-header label{
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .client-info-header label{
+      margin-bottom: 0px;
+    }
+
+    .form-item input,
+    .form-item textarea,
+    .form-item select,
+    .client-info-header input{
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .client-info-header input{
+      width: 300px;
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    /* -----------------------------
+      保存ボタン（押しやすいように強化）
+    ----------------------------- */
+    .form-actions {
+      margin-top: 20px;
+    }
+
+    .right{
+      text-align: right;
+    }
+
+    .form-actions button,
+    .client-info-header button{
+      padding: 14px 28px;
+      font-size: 16px;
+      background: #4682b4;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .client-info-header button{
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4682b4;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .form-actions button:hover {
+      background: #315f85;
+    }
+
+    /* ===== モーダル全体 ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    /* ===== モーダル本体 ===== */
+    .modal-window {
+      background: #fff;
+      width: 600px;
+      max-height: 80vh;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-y: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-close {
+      font-size: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #444;
+    }
+
+    .upload-area {
+      margin-bottom: 15px;
+    }
+
+    #fileList li {
+      margin: 5px 0;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+
+    .folder-btn:hover {
+        background: #2f5f8a;
+        color: white;
+    }
+</style>
+
+<div class="header-bar">
+    <div class="header-title">認知症初期集中支援業務管理システム</div>
+
+    <div class="header-right">
+        <div class="info-box">ID：<span id="header_client_id">---</span></div>
+        <div class="info-box">氏名：<span id="header_client_name">---</span></div>
+        <button class="folder-btn" onclick="openFolder()">フォルダ</button>
+    </div>
+</div>
+
+  <div class="page-wrapper">
+    <header class="page-header">
+      <h1>認知症初期集中支援　対象者詳細・アセスメント</h1>
+      <div class="client-info-header">
+        <label>利用者ID（client_id）：</label>
+        <input type="text" id="global_client_id" class="client-id-input" placeholder="例: 1, 2, 3 ..." />
+        <button type="button" id="reloadBtn">読込</button>
+      </div>
+    </header>
+
+    <!-- タブ切り替え -->
+    <nav class="tabs">
+      <button class="tab-button active" data-tab="tab-client">① 利用者基本情報</button>
+      <button class="tab-button" data-tab="tab-visit">② 訪問記録表</button>
+      <button class="tab-button" data-tab="tab-physical">③ 身体状況チェック表</button>
+      <button class="tab-button" data-tab="tab-dasc">④ DASC-21</button>
+      <button class="tab-button" data-tab="tab-dbd">⑤ DBD-13</button>
+    </nav>
+
+    <main class="tab-contents">
+
+      <!-- ④ DASC-21 -->
+      <section id="tab-dasc" class="tab-pane">
+        <h2>④ DASC-21（dasc21）</h2>
+
+        <form id="form-dasc" class="form-section">
+          <input type="hidden" name="client_id" class="client-id-field" />
+
+          <div class="form-grid">
+            <div class="form-item">
+              <label>情報提供者氏名（informant_name）</label>
+              <input type="text" name="informant_name">
+            </div>
+
+            <div class="form-item">
+              <label>評価者氏名（evaluator_name）</label>
+              <input type="text" name="evaluator_name">
+            </div>
+          </div>
+
+          <h3>DASC-21 評価項目（0〜4）</h3>
+
+          <div class="dasc-table">
+            <!-- ここから21項目 -->
+            <!-- 1～21項目ループ -->
+            <!-- 各項目は q1 ～ q21 として保存 -->
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:45%;">評価項目</th>
+                  <th>0</th>
+                  <th>1</th>
+                  <th>2</th>
+                  <th>3</th>
+                  <th>4</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>1. 物忘れの程度</td>
+                  <td><input type="radio" name="q1" value="0"></td>
+                  <td><input type="radio" name="q1" value="1"></td>
+                  <td><input type="radio" name="q1" value="2"></td>
+                  <td><input type="radio" name="q1" value="3"></td>
+                  <td><input type="radio" name="q1" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>2. 同じことを繰り返す</td>
+                  <td><input type="radio" name="q2" value="0"></td>
+                  <td><input type="radio" name="q2" value="1"></td>
+                  <td><input type="radio" name="q2" value="2"></td>
+                  <td><input type="radio" name="q2" value="3"></td>
+                  <td><input type="radio" name="q2" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>3. 置き忘れ</td>
+                  <td><input type="radio" name="q3" value="0"></td>
+                  <td><input type="radio" name="q3" value="1"></td>
+                  <td><input type="radio" name="q3" value="2"></td>
+                  <td><input type="radio" name="q3" value="3"></td>
+                  <td><input type="radio" name="q3" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>4. 日付の理解</td>
+                  <td><input type="radio" name="q4" value="0"></td>
+                  <td><input type="radio" name="q4" value="1"></td>
+                  <td><input type="radio" name="q4" value="2"></td>
+                  <td><input type="radio" name="q4" value="3"></td>
+                  <td><input type="radio" name="q4" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>5. 場所の理解</td>
+                  <td><input type="radio" name="q5" value="0"></td>
+                  <td><input type="radio" name="q5" value="1"></td>
+                  <td><input type="radio" name="q5" value="2"></td>
+                  <td><input type="radio" name="q5" value="3"></td>
+                  <td><input type="radio" name="q5" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>6. 人物の理解</td>
+                  <td><input type="radio" name="q6" value="0"></td>
+                  <td><input type="radio" name="q6" value="1"></td>
+                  <td><input type="radio" name="q6" value="2"></td>
+                  <td><input type="radio" name="q6" value="3"></td>
+                  <td><input type="radio" name="q6" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>7. 服薬の管理</td>
+                  <td><input type="radio" name="q7" value="0"></td>
+                  <td><input type="radio" name="q7" value="1"></td>
+                  <td><input type="radio" name="q7" value="2"></td>
+                  <td><input type="radio" name="q7" value="3"></td>
+                  <td><input type="radio" name="q7" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>8. 金銭管理</td>
+                  <td><input type="radio" name="q8" value="0"></td>
+                  <td><input type="radio" name="q8" value="1"></td>
+                  <td><input type="radio" name="q8" value="2"></td>
+                  <td><input type="radio" name="q8" value="3"></td>
+                  <td><input type="radio" name="q8" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>9. 火の始末</td>
+                  <td><input type="radio" name="q9" value="0"></td>
+                  <td><input type="radio" name="q9" value="1"></td>
+                  <td><input type="radio" name="q9" value="2"></td>
+                  <td><input type="radio" name="q9" value="3"></td>
+                  <td><input type="radio" name="q9" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>10. 自動車・交通機関の利用</td>
+                  <td><input type="radio" name="q10" value="0"></td>
+                  <td><input type="radio" name="q10" value="1"></td>
+                  <td><input type="radio" name="q10" value="2"></td>
+                  <td><input type="radio" name="q10" value="3"></td>
+                  <td><input type="radio" name="q10" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>11. 食事の準備</td>
+                  <td><input type="radio" name="q11" value="0"></td>
+                  <td><input type="radio" name="q11" value="1"></td>
+                  <td><input type="radio" name="q11" value="2"></td>
+                  <td><input type="radio" name="q11" value="3"></td>
+                  <td><input type="radio" name="q11" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>12. 配膳・片付け</td>
+                  <td><input type="radio" name="q12" value="0"></td>
+                  <td><input type="radio" name="q12" value="1"></td>
+                  <td><input type="radio" name="q12" value="2"></td>
+                  <td><input type="radio" name="q12" value="3"></td>
+                  <td><input type="radio" name="q12" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>13. 洗濯</td>
+                  <td><input type="radio" name="q13" value="0"></td>
+                  <td><input type="radio" name="q13" value="1"></td>
+                  <td><input type="radio" name="q13" value="2"></td>
+                  <td><input type="radio" name="q13" value="3"></td>
+                  <td><input type="radio" name="q13" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>14. 掃除</td>
+                  <td><input type="radio" name="q14" value="0"></td>
+                  <td><input type="radio" name="q14" value="1"></td>
+                  <td><input type="radio" name="q14" value="2"></td>
+                  <td><input type="radio" name="q14" value="3"></td>
+                  <td><input type="radio" name="q14" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>15. 自分の身のまわりの管理</td>
+                  <td><input type="radio" name="q15" value="0"></td>
+                  <td><input type="radio" name="q15" value="1"></td>
+                  <td><input type="radio" name="q15" value="2"></td>
+                  <td><input type="radio" name="q15" value="3"></td>
+                  <td><input type="radio" name="q15" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>16. 服の着替え</td>
+                  <td><input type="radio" name="q16" value="0"></td>
+                  <td><input type="radio" name="q16" value="1"></td>
+                  <td><input type="radio" name="q16" value="2"></td>
+                  <td><input type="radio" name="q16" value="3"></td>
+                  <td><input type="radio" name="q16" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>17. 身だしなみ</td>
+                  <td><input type="radio" name="q17" value="0"></td>
+                  <td><input type="radio" name="q17" value="1"></td>
+                  <td><input type="radio" name="q17" value="2"></td>
+                  <td><input type="radio" name="q17" value="3"></td>
+                  <td><input type="radio" name="q17" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>18. 入浴</td>
+                  <td><input type="radio" name="q18" value="0"></td>
+                  <td><input type="radio" name="q18" value="1"></td>
+                  <td><input type="radio" name="q18" value="2"></td>
+                  <td><input type="radio" name="q18" value="3"></td>
+                  <td><input type="radio" name="q18" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>19. 排泄</td>
+                  <td><input type="radio" name="q19" value="0"></td>
+                  <td><input type="radio" name="q19" value="1"></td>
+                  <td><input type="radio" name="q19" value="2"></td>
+                  <td><input type="radio" name="q19" value="3"></td>
+                  <td><input type="radio" name="q19" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>20. 歩行</td>
+                  <td><input type="radio" name="q20" value="0"></td>
+                  <td><input type="radio" name="q20" value="1"></td>
+                  <td><input type="radio" name="q20" value="2"></td>
+                  <td><input type="radio" name="q20" value="3"></td>
+                  <td><input type="radio" name="q20" value="4"></td>
+                </tr>
+
+                <tr>
+                  <td>21. 外出</td>
+                  <td><input type="radio" name="q21" value="0"></td>
+                  <td><input type="radio" name="q21" value="1"></td>
+                  <td><input type="radio" name="q21" value="2"></td>
+                  <td><input type="radio" name="q21" value="3"></td>
+                  <td><input type="radio" name="q21" value="4"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-item">
+              <label>備考（remarks）</label>
+              <textarea name="remarks"></textarea>
+            </div>
+
+            <div class="form-item">
+              <label>合計点（total_score）</label>
+              <input type="number" name="total_score" id="dasc-total" readonly>
+            </div>
+          </div>
+
+          <div class="form-actions right">
+            <button type="button" onclick="saveDasc()">保存</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ⑤ DBD-13 -->
+      <section id="tab-dbd" class="tab-pane">
+        <h2>⑤ DBD-13（dbd13）</h2>
+
+        <form id="form-dbd" class="form-section">
+          <input type="hidden" name="client_id" class="client-id-field" />
+
+          <div class="form-grid">
+            <div class="form-item">
+              <label>回答者氏名（respondent_name）</label>
+              <input type="text" name="respondent_name">
+            </div>
+
+            <div class="form-item">
+              <label>評価者氏名（evaluator_name）</label>
+              <input type="text" name="evaluator_name">
+            </div>
+
+            <div class="form-item">
+              <label>記入日（entry_date）</label>
+              <input type="date" name="entry_date">
+            </div>
+          </div>
+
+          <h3>DBD-13 評価項目（0〜4：問題なし → 重い）</h3>
+
+          <table class="dbd-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">項目</th>
+                <th>0</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <!-- 13項目（国立長寿医療研究センター・正式） -->
+              <tr><td>1. もの盗られ妄想</td>
+                <td><input type="radio" name="d1" value="0"></td>
+                <td><input type="radio" name="d1" value="1"></td>
+                <td><input type="radio" name="d1" value="2"></td>
+                <td><input type="radio" name="d1" value="3"></td>
+                <td><input type="radio" name="d1" value="4"></td>
+              </tr>
+
+              <tr><td>2. 不安・イライラ</td>
+                <td><input type="radio" name="d2" value="0"></td>
+                <td><input type="radio" name="d2" value="1"></td>
+                <td><input type="radio" name="d2" value="2"></td>
+                <td><input type="radio" name="d2" value="3"></td>
+                <td><input type="radio" name="d2" value="4"></td>
+              </tr>
+
+              <tr><td>3. 不眠・睡眠リズムの乱れ</td>
+                <td><input type="radio" name="d3" value="0"></td>
+                <td><input type="radio" name="d3" value="1"></td>
+                <td><input type="radio" name="d3" value="2"></td>
+                <td><input type="radio" name="d3" value="3"></td>
+                <td><input type="radio" name="d3" value="4"></td>
+              </tr>
+
+              <tr><td>4. 拒否・怒りやすい</td>
+                <td><input type="radio" name="d4" value="0"></td>
+                <td><input type="radio" name="d4" value="1"></td>
+                <td><input type="radio" name="d4" value="2"></td>
+                <td><input type="radio" name="d4" value="3"></td>
+                <td><input type="radio" name="d4" value="4"></td>
+              </tr>
+
+              <tr><td>5. 徘徊</td>
+                <td><input type="radio" name="d5" value="0"></td>
+                <td><input type="radio" name="d5" value="1"></td>
+                <td><input type="radio" name="d5" value="2"></td>
+                <td><input type="radio" name="d5" value="3"></td>
+                <td><input type="radio" name="d5" value="4"></td>
+              </tr>
+
+              <tr><td>6. 介護への抵抗</td>
+                <td><input type="radio" name="d6" value="0"></td>
+                <td><input type="radio" name="d6" value="1"></td>
+                <td><input type="radio" name="d6" value="2"></td>
+                <td><input type="radio" name="d6" value="3"></td>
+                <td><input type="radio" name="d6" value="4"></td>
+              </tr>
+
+              <tr><td>7. 落ち着きのなさ・そわそわ</td>
+                <td><input type="radio" name="d7" value="0"></td>
+                <td><input type="radio" name="d7" value="1"></td>
+                <td><input type="radio" name="d7" value="2"></td>
+                <td><input type="radio" name="d7" value="3"></td>
+                <td><input type="radio" name="d7" value="4"></td>
+              </tr>
+
+              <tr><td>8. 抑うつ気分</td>
+                <td><input type="radio" name="d8" value="0"></td>
+                <td><input type="radio" name="d8" value="1"></td>
+                <td><input type="radio" name="d8" value="2"></td>
+                <td><input type="radio" name="d8" value="3"></td>
+                <td><input type="radio" name="d8" value="4"></td>
+              </tr>
+
+              <tr><td>9. 大声を出す・叫ぶ</td>
+                <td><input type="radio" name="d9" value="0"></td>
+                <td><input type="radio" name="d9" value="1"></td>
+                <td><input type="radio" name="d9" value="2"></td>
+                <td><input type="radio" name="d9" value="3"></td>
+                <td><input type="radio" name="d9" value="4"></td>
+              </tr>
+
+              <tr><td>10. 暴力・攻撃性</td>
+                <td><input type="radio" name="d10" value="0"></td>
+                <td><input type="radio" name="d10" value="1"></td>
+                <td><input type="radio" name="d10" value="2"></td>
+                <td><input type="radio" name="d10" value="3"></td>
+                <td><input type="radio" name="d10" value="4"></td>
+              </tr>
+
+              <tr><td>11. 幻覚</td>
+                <td><input type="radio" name="d11" value="0"></td>
+                <td><input type="radio" name="d11" value="1"></td>
+                <td><input type="radio" name="d11" value="2"></td>
+                <td><input type="radio" name="d11" value="3"></td>
+                <td><input type="radio" name="d11" value="4"></td>
+              </tr>
+
+              <tr><td>12. 性的問題行動</td>
+                <td><input type="radio" name="d12" value="0"></td>
+                <td><input type="radio" name="d12" value="1"></td>
+                <td><input type="radio" name="d12" value="2"></td>
+                <td><input type="radio" name="d12" value="3"></td>
+                <td><input type="radio" name="d12" value="4"></td>
+              </tr>
+
+              <tr><td>13. 異食・不適切な食行動</td>
+                <td><input type="radio" name="d13" value="0"></td>
+                <td><input type="radio" name="d13" value="1"></td>
+                <td><input type="radio" name="d13" value="2"></td>
+                <td><input type="radio" name="d13" value="3"></td>
+                <td><input type="radio" name="d13" value="4"></td>
+              </tr>
+
+            </tbody>
+          </table>
+
+          <div class="form-item">
+            <label>小計（subtotal_score）※項目1〜13の合計</label>
+            <input type="number" name="subtotal_score" id="dbd_subtotal" readonly>
+          </div>
+
+          <div class="form-item">
+            <label>合計点（total_score）※DBD-13 の総合点</label>
+            <input type="number" name="total_score" id="dbd_total" readonly>
+          </div>
+
+          <div class="form-actions right">
+            <button type="button" onclick="saveDbd()">保存</button>
+          </div>
+        </form>
+
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // URL から client_id 取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const client_id = urlParams.get("client_id");
+
+    // 画面上部の ID をセット
+    document.getElementById("header_client_id").textContent = client_id ?? "---";
+
+    // DB から氏名を取得して表示
+    fetch(`/api/get_all_data?client_id=${client_id}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.client) {
+                document.getElementById("header_client_name").textContent =
+                    data.client.client_name ?? "---";
+            }
+        });
+
+    // フォルダボタン
+    function openFolder() {
+        window.location.href = `/folder?client_id=${client_id}`;
+    }
+
+    // -----------------------------
+    // タブ切り替え
+    // -----------------------------
+    document.querySelectorAll(".tab-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.tab;
+        document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+
+        btn.classList.add("active");
+        document.getElementById(target).classList.add("active");
+
+        // タブ状態をローカルに保存
+        localStorage.setItem("shousai_active_tab", target);
+      });
+    });
+
+    // -----------------------------
+    // URL から client_id を取得
+    // -----------------------------
+    function getClientIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("client_id") || "";
+    }
+
+    // -----------------------------
+    // client_id の同期
+    // -----------------------------
+    function syncClientIdFields(cid) {
+      document.getElementById("global_client_id").value = cid;
+      document.querySelectorAll(".client-id-field").forEach(el => {
+        el.value = cid;
+      });
+    }
+
+    // -----------------------------
+    // フォーム → JSON 変換
+    // -----------------------------
+    function formToJSON(form) {
+      const fd = new FormData(form);
+      const obj = {};
+      fd.forEach((value, key) => {
+        if (key in obj) {
+          if (!Array.isArray(obj[key])) {
+            obj[key] = [obj[key]];
+          }
+          obj[key].push(value);
+        } else {
+          obj[key] = value;
+        }
+      });
+      return obj;
+    }
+
+    // -----------------------------
+    // JSON → フォームへ反映
+    // -----------------------------
+    function fillForm(formId, record) {
+      if (!record) return;
+      const form = document.getElementById(formId);
+      if (!form) return;
+
+      Object.keys(record).forEach(key => {
+        const field = form.elements.namedItem(key);
+        if (!field) return;
+
+        if (field.type === "checkbox" || field.type === "radio") {
+          // 今回は text/textarea/number中心なので簡易対応
+          field.checked = !!record[key];
+        } else {
+          field.value = record[key] == null ? "" : record[key];
+        }
+      });
+    }
+
+    // -----------------------------
+    // 共通 POST 関数
+    // -----------------------------
+    async function postJSON(url, data) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (!res.ok || json.status !== "saved") {
+        console.error(json);
+        alert("保存中にエラーが発生しました：" + (json.message || res.statusText));
+        return;
+      }
+      alert("保存しました");
+    }
+
+    // =============================
+    // 保存ボタン：各フォーム
+    // =============================
+    function saveClient() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-client"));
+      postJSON("/api/save_client", data);
+    }
+
+    function saveVisit() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-visit"));
+      postJSON("/api/save_visit_record", data);
+    }
+
+    function savePhysical() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-physical"));
+      postJSON("/api/save_physical_status", data);
+    }
+
+    function saveDasc() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-dasc"));
+      postJSON("/api/save_dasc21", data);
+    }
+
+    function saveDbd() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      syncClientIdFields(cid);
+      const data = formToJSON(document.getElementById("form-dbd"));
+      postJSON("/api/save_dbd13", data);
+    }
+
+    // -----------------------------
+    // DASC-21：合計点の自動計算
+    // -----------------------------
+    function calcDascTotal() {
+      let total = 0;
+      for (let i = 1; i <= 21; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected) {
+          total += parseInt(selected.value);
+        }
+      }
+      document.getElementById("dasc_total").value = total;
+    }
+
+    // -----------------------------
+    // DBD-13 合計計算
+    // -----------------------------
+    function calcDbdTotal() {
+      let subtotal = 0;
+
+      for (let i = 1; i <= 13; i++) {
+        const checked = document.querySelector(`input[name="d${i}"]:checked`);
+        if (checked) subtotal += parseInt(checked.value);
+      }
+
+      document.getElementById("dbd_subtotal").value = subtotal;
+      document.getElementById("dbd_total").value = subtotal; // 今回は subtotal＝total
+    }
+
+    // ラジオ変更時にリアルタイム計算
+    for (let i = 1; i <= 13; i++) {
+      document.querySelectorAll(`input[name="d${i}"]`).forEach(radio => {
+        radio.addEventListener("change", calcDbdTotal);
+      });
+    }
+
+    // ラジオボタン変更時に合計更新
+    for (let i = 1; i <= 21; i++) {
+      document.querySelectorAll(`input[name="q${i}"]`).forEach(r => {
+        r.addEventListener("change", calcDascTotal);
+      });
+    }
+
+    // -----------------------------
+    // 全データ読み込み
+    // -----------------------------
+    async function loadAllData() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) return;
+
+      syncClientIdFields(cid);
+
+      try {
+        const res = await fetch(`/api/get_all_data?client_id=${encodeURIComponent(cid)}`);
+        const json = await res.json();
+        if (json.status !== "ok") {
+          console.warn(json);
+          return;
+        }
+        fillForm("form-client", json.client);
+        fillForm("form-visit", json.visit_record);
+        if (json.physical_status) {
+          fillForm("form-physical", json.physical_status);
+        }
+        fillForm("form-dasc", json.dasc21);
+        fillForm("form-dbd", json.dbd13);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+      async function loadFiles() {
+        const cid = document.getElementById("global_client_id").value.trim();
+        if (!cid) return;
+
+        const res = await fetch(`/api/files?client_id=${cid}`);
+        const json = await res.json();
+
+        const box = document.getElementById("file_list");
+        box.innerHTML = "";
+
+        json.files.forEach(f => {
+          const url = `/uploads/${f.file_path}`;
+          box.innerHTML += `
+            <div class="file-item">
+              <a href="${url}" download>${f.file_path.split("/").pop()}</a>
+              （${f.uploaded_at}）
+              <button onclick="deleteFile(${f.folder_id})">削除</button>
+            </div>
+          `;
+        });
+      }
+
+    // -----------------------------
+    // 初期設定
+    // -----------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+      // URLから client_id
+      const cid = getClientIdFromUrl();
+      if (cid) {
+        syncClientIdFields(cid);
+      }
+
+      // 前回のタブ復元
+      const savedTab = localStorage.getItem("shousai_active_tab");
+      if (savedTab && document.getElementById(savedTab)) {
+        document.querySelectorAll(".tab-button").forEach(b => {
+          b.classList.toggle("active", b.dataset.tab === savedTab);
+        });
+        document.querySelectorAll(".tab-pane").forEach(p => {
+          p.classList.toggle("active", p.id === savedTab);
+        });
+      }
+
+      // 初期データ読み込み
+      loadAllData();
+
+      // 「読込」ボタンで再読込
+      document.getElementById("reloadBtn").addEventListener("click", loadAllData);
+      document.getElementById("reloadBtn").addEventListener("click", () => {
+        loadAllData();
+        loadFiles();
+      });
+
+    });
+    //----------------------------------------
+    // モーダル表示
+    //----------------------------------------
+    function openFolder() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に利用者IDを入力してください。");
+        return;
+      }
+
+      document.getElementById("fileModal").style.display = "flex";
+
+      loadFileList(cid);
+    }
+
+    function closeFileModal() {
+      document.getElementById("fileModal").style.display = "none";
+    }
+
+
+    //----------------------------------------
+    // ファイル一覧取得
+    //----------------------------------------
+    async function loadFileList(client_id) {
+      const res = await fetch(`/api/shared_files?client_id=${client_id}`);
+      const json = await res.json();
+
+      const list = document.getElementById("fileList");
+      list.innerHTML = "";
+
+      json.files.forEach(f => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          ${f.file_name}
+          <button onclick="downloadFile(${f.folder_id})">DL</button>
+          <button onclick="deleteFile(${f.folder_id})">削除</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+
+    //----------------------------------------
+    // アップロード
+    //----------------------------------------
+    async function uploadFile() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      const fileInput = document.getElementById("uploadFileInput");
+
+      if (!fileInput.files.length) {
+        alert("ファイルを選択してください");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("client_id", cid);
+
+      const res = await fetch("/api/upload_shared_file", {
+        method: "POST",
+        body: formData
+      });
+
+      const json = await res.json();
+      if (json.status === "ok") {
+        alert("アップロードしました");
+        loadFileList(cid);
+        fileInput.value = "";
+      } else {
+        alert("エラー: " + json.message);
+      }
+    }
+
+  </script>
+</body>
+<!-- 共有ファイル モーダル -->
+<div id="fileModal" class="modal-overlay">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h2>共有ファイル</h2>
+      <button class="modal-close" onclick="closeFileModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- アップロード -->
+      <div class="upload-area">
+        <input type="file" id="uploadFileInput">
+        <button onclick="uploadFile()">アップロード</button>
+      </div>
+
+      <hr>
+
+      <!-- ファイル一覧 -->
+      <div>
+        <h3>この利用者のファイル一覧</h3>
+        <ul id="fileList"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+//============================
+// 1. タブ切り替え処理
+//============================
+function switchTab(tabName) {
+    // タブボタン
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tabName) {
+            btn.classList.add('active');
+        }
+    });
+
+    // 表示するタブ
+    document.querySelectorAll('.form-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.${tabName}`).classList.add('active');
+}
+
+//============================
+// 2. client_id を全フォームへ同期
+//============================
+document.addEventListener("DOMContentLoaded", () => {
+    const idFields = document.querySelectorAll('.client-id-field');
+
+    idFields.forEach(field => {
+        field.addEventListener("input", (e) => {
+            const value = e.target.value;
+            idFields.forEach(f => {
+                if (f !== e.target) f.value = value;
+            });
+        });
+    });
+});
+
+//============================
+// 3. DASC-21 自動合計計算
+//============================
+document.addEventListener("change", () => {
+    let total = 0;
+    for (let i = 1; i <= 21; i++) {
+        const checked = document.querySelector(`input[name="q${i}"]:checked`);
+        if (checked) total += parseInt(checked.value);
+    }
+    document.getElementById("dasc_total").textContent = total;
+});
+
+//============================
+// 4. DBD-13 自動合計計算
+//============================
+document.addEventListener("change", () => {
+    let total = 0;
+    for (let i = 1; i <= 13; i++) {
+        const checked = document.querySelector(`input[name="d${i}"]:checked`);
+        if (checked) total += parseInt(checked.value);
+    }
+    document.getElementById("dbd_total").textContent = total;
+});
+
+//============================
+// 5. 保存（POST送信）
+//============================
+document.getElementById("saveBtn").addEventListener("click", () => {
+    const form = document.getElementById("mainForm");
+    form.action = "/save_client_data"; // Flask 側の保存ルート
+    form.method = "POST";
+    form.submit();
+});
+
+//============================
+// 6. 読込
+//============================
+document.getElementById("loadBtn").addEventListener("click", () => {
+    const c_id = document.querySelector(".client-id-field").value;
+    if (!c_id) {
+        alert("client_id を入力してください");
+        return;
+    }
+
+    // GET /load_client_data/<id>
+    window.location.href = `/load_client_data/${c_id}`;
+});
+</script>
+
+</body>
+</html>
