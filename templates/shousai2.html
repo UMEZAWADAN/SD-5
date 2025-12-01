@@ -1095,4 +1095,90 @@
   </div>
 </div>
 
+<script>
+//============================
+// 1. タブ切り替え処理
+//============================
+function switchTab(tabName) {
+    // タブボタン
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tabName) {
+            btn.classList.add('active');
+        }
+    });
+
+    // 表示するタブ
+    document.querySelectorAll('.form-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.${tabName}`).classList.add('active');
+}
+
+//============================
+// 2. client_id を全フォームへ同期
+//============================
+document.addEventListener("DOMContentLoaded", () => {
+    const idFields = document.querySelectorAll('.client-id-field');
+
+    idFields.forEach(field => {
+        field.addEventListener("input", (e) => {
+            const value = e.target.value;
+            idFields.forEach(f => {
+                if (f !== e.target) f.value = value;
+            });
+        });
+    });
+});
+
+//============================
+// 3. DASC-21 自動合計計算
+//============================
+document.addEventListener("change", () => {
+    let total = 0;
+    for (let i = 1; i <= 21; i++) {
+        const checked = document.querySelector(`input[name="q${i}"]:checked`);
+        if (checked) total += parseInt(checked.value);
+    }
+    document.getElementById("dasc_total").textContent = total;
+});
+
+//============================
+// 4. DBD-13 自動合計計算
+//============================
+document.addEventListener("change", () => {
+    let total = 0;
+    for (let i = 1; i <= 13; i++) {
+        const checked = document.querySelector(`input[name="d${i}"]:checked`);
+        if (checked) total += parseInt(checked.value);
+    }
+    document.getElementById("dbd_total").textContent = total;
+});
+
+//============================
+// 5. 保存（POST送信）
+//============================
+document.getElementById("saveBtn").addEventListener("click", () => {
+    const form = document.getElementById("mainForm");
+    form.action = "/save_client_data"; // Flask 側の保存ルート
+    form.method = "POST";
+    form.submit();
+});
+
+//============================
+// 6. 読込
+//============================
+document.getElementById("loadBtn").addEventListener("click", () => {
+    const c_id = document.querySelector(".client-id-field").value;
+    if (!c_id) {
+        alert("client_id を入力してください");
+        return;
+    }
+
+    // GET /load_client_data/<id>
+    window.location.href = `/load_client_data/${c_id}`;
+});
+</script>
+
+</body>
 </html>

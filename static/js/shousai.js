@@ -10,7 +10,6 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     });
 });
 
-
 // ===== まとめて保存 =====
 document.getElementById("saveAllBtn").addEventListener("click", async () => {
 
@@ -31,3 +30,7 @@ document.getElementById("saveAllBtn").addEventListener("click", async () => {
     const result = await res.json();
     alert(result.status === "ok" ? "保存しました ✅" : "保存に失敗しました ❌");
 });
+</script>
+
+</body>
+</html>

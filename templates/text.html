@@ -12,9 +12,36 @@
 
 <!-- 入力部分 -->
 <div class="card">
-  <h3>◆ 対象者の訪問記録（文章）</h3>
-  <textarea id="visit" rows="5"
-    placeholder="例：最近転倒が増え、内服が自己管理できない状況である。徘徊傾向も見られ..."></textarea>
+  <h3>対象者の状況</h3>
+  <h4>訪問に対する本人の反応・理解</h4>
+  <textarea id="know" rows="5"></textarea>
+
+  <h4>認知機能</h4>
+  <input type="text" name="ninchi_kinou">
+
+  <h4>精神症状・行動症状</h4>
+  <textarea id="symptom" rows="5"></textarea>
+
+  <h4>身体状況</h4>
+  <textarea id="body_con" rows="5"></textarea>
+
+  <h4>生活状況</h4>
+  <textarea id="life_con" rows="5"></textarea>
+
+  <h4>DASC-21</h4>
+  <input type="text" name="dasc21">
+
+  <h4>DBD13</h4>
+  <input type="text" name="dbd13">
+
+  <h4>本人の意向・希望</h4>
+  <textarea id="honnin_will" rows="5"></textarea>
+
+  <h4>介護者の意向・希望</h4>
+  <textarea id="kangosha_will" rows="5"></textarea>
+
+  <h4>判断・支援内容</h4>
+  <textarea id="care" rows="5"></textarea>
 
   <br><br>
 
@@ -22,12 +49,34 @@
   <button class="btn-secondary" onclick="clearForm()">クリア</button>
 </div>
 
+<!-- キーワード表示カード -->
+<div class="card">
+  <h3>キーワード</h3>
+  <div id="keyword">
+    <p style="color:#888;">（キーワードがここに表示されます）</p>
+  </div>
+</div>
+
 <!-- 結果表示カード -->
 <div class="card">
-  <h3>◆ 類似事例の結果</h3>
+  <h3>類似事例の結果</h3>
   <div id="resultArea">
     <p style="color:#888;">（検索結果がここに表示されます）</p>
   </div>
+</div>
+
+
+
+<!-- 後で削除 -->
+<div class="card">
+  <h3>対象者の訪問記録（文章）ここは後で削除</h3>
+  <textarea id="visit" rows="5"
+    placeholder="例：最近転倒が増え、内服が自己管理できない状況である。徘徊傾向も見られ..."></textarea>
+
+  <br><br>
+
+  <button class="btn-primary" onclick="searchCases()">類似事例を検索</button>
+  <button class="btn-secondary" onclick="clearForm()">クリア</button>
 </div>
 
 <script>
