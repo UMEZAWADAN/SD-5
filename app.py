@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 import numpy as np
 from numpy.linalg import norm
 import pickle
 import os
 import pymysql
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 app = Flask(__name__)
 
@@ -23,6 +25,16 @@ DB_CONFIG = {
 def get_connection():
     return pymysql.connect(**DB_CONFIG)
 
+# -----------------------------
+# MySQL 接続オブジェクト
+# -----------------------------
+db = pymysql.connect(
+    host="localhost",       # データベースサーバー
+    user="ユーザー名",       # MySQL ユーザー名
+    password="パスワード",   # MySQL パスワード
+    database="care_system", # データベース名
+    charset="utf8mb4"
+)
 
 # ================================
 #  1. 画面ルーティング
@@ -65,6 +77,23 @@ def text():
 def login():
     return render_template("login.html")
 
+@app.route("/register", methods=["POST"])
+def register_post():
+    admin_id = request.form["id"]          # フォームの name="id"
+    password = request.form["password"]    # name="password"
+    staff_name = request.form.get("staff_name", "未設定")  # name="staff_name" がなければデフォルト
+
+    # パスワードをハッシュ化
+    hashed = generate_password_hash(password)
+
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO admin (admin_id, password, staff_name) VALUES (%s, %s, %s)",
+        (admin_id, hashed, staff_name)
+    )
+    db.commit()
+
+    return redirect("/login")
 
 
 # ================================
