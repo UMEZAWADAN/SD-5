@@ -130,10 +130,8 @@ def similar_cases():
     results = []
 
     for case in cases:
-        sim = cosine_sim(
-            np.array(input_emb),
-            np.array(case["embedding"])
-        )
+        case_emb = np.array(case["embedding"])
+        sim = cosine_sim(input_emb, case_emb)
         results.append({
             "similarity": round(sim, 3),
             "visit_text": case["visit_text"],
