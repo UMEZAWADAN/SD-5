@@ -32,5 +32,19 @@
 <!-- form を画面外に配置（JSボタンで送信） -->
 <form action="/register" method="post" style="display:none;"></form>
 
+<!-- =======================
+     ここから JS を追加
+     ======================= -->
+<script>
+document.querySelector(".btn-primary").addEventListener("click", function() {
+    const form = document.querySelector("form");
+    form.innerHTML = `
+        <input type="hidden" name="id" value="${document.getElementById('id').value}">
+        <input type="hidden" name="password" value="${document.getElementById('password').value}">
+        <input type="hidden" name="password2" value="${document.getElementById('password2').value}">
+    `;
+    form.submit();
+});
+</script>
 </body>
 </html>
