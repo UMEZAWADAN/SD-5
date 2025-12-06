@@ -65,31 +65,7 @@ def text():
 def login():
     return render_template("login.html")
 
-# 1. 画面ルーティング（ここまで）
-# login() の下までが画面ルート
 
-@app.route("/login")
-def login():
-    return render_template("login.html")
-
-# >>> ここから登録処理を追加する <<<
-@app.route("/register", methods=["POST"])
-def register_post():
-    admin_id = request.form["id"]
-    password = request.form["password"]
-    staff_name = request.form["staff_name"]
-
-    hashed = generate_password_hash(password)
-
-    cursor = db.cursor()
-    cursor.execute(
-        "INSERT INTO admin (admin_id, password, staff_name) VALUES (%s, %s, %s)",
-        (admin_id, hashed, staff_name)
-    )
-    db.commit()
-
-    return redirect("/login")
-# >>> ここまで追加 <<<
 
 # ================================
 #  2. テキストマイニング機能（既存）
