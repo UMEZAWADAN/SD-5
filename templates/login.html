@@ -19,6 +19,9 @@
   <button onclick="login()">ログイン</button>
 </div>
 
+<!-- 画面外 form -->
+<form id="login-form" action="/login" method="post" style="display:none;"></form>
+
 <script>
 function login() {
   const adminId = document.getElementById("admin_id").value.trim();
@@ -29,8 +32,12 @@ function login() {
     return;
   }
 
-  // ここで Flask に送信する処理を追加可能
-  alert("ログイン処理（デモ）");
+  const form = document.getElementById("login-form");
+  form.innerHTML = `
+    <input type="hidden" name="id" value="${adminId}">
+    <input type="hidden" name="password" value="${password}">
+  `;
+  form.submit();
 }
 </script>
 
