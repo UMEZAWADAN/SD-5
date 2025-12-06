@@ -82,7 +82,7 @@ def login_post():
             return "パスワードが違います"
 
         # ログイン成功
-        return redirect("/top")
+        return redirect("/shousai")
 
     # GET の場合はログイン画面を表示
     return render_template("login.html")
