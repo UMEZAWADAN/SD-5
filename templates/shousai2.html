@@ -55,6 +55,195 @@
         cursor: pointer;
         transition: 0.2s;
     }
+    /* -----------------------------
+      全体レイアウト
+    ----------------------------- */
+    body {
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      margin: 0;
+      background: #f7f8fa;
+    }
+
+    .page-wrapper {
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    .page-header h1 {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .client-info-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0 20px;
+    }
+
+    /* -----------------------------
+      タブの見た目
+    ----------------------------- */
+    .tabs {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+
+    .tab-button {
+      padding: 12px 20px;
+      border: none;
+      background: #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      min-width: 160px;
+      font-size: 15px;
+    }
+
+    .tab-button.active {
+      background: #4682b4;
+      color: white;
+    }
+
+    /* -----------------------------
+      各フォームの表示
+    ----------------------------- */
+    .tab-pane {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 15px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* -----------------------------
+      グリッド配置
+    ----------------------------- */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+    }
+
+    .form-item label,
+    .client-info-header label{
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .client-info-header label{
+      margin-bottom: 0px;
+    }
+
+    .form-item input,
+    .form-item textarea,
+    .form-item select,
+    .client-info-header input{
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .client-info-header input{
+      width: 300px;
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    /* -----------------------------
+      保存ボタン（押しやすいように強化）
+    ----------------------------- */
+    .form-actions {
+      margin-top: 20px;
+    }
+
+    .right{
+      text-align: right;
+    }
+
+    .form-actions button,
+    .client-info-header button{
+      padding: 14px 28px;
+      font-size: 16px;
+      background: #4682b4;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .client-info-header button{
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4682b4;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .form-actions button:hover {
+      background: #315f85;
+    }
+
+    /* ===== モーダル全体 ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    /* ===== モーダル本体 ===== */
+    .modal-window {
+      background: #fff;
+      width: 600px;
+      max-height: 80vh;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-y: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-close {
+      font-size: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #444;
+    }
+
+    .upload-area {
+      margin-bottom: 15px;
+    }
+
+    #fileList li {
+      margin: 5px 0;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
 
     .folder-btn:hover {
         background: #2f5f8a;
@@ -92,543 +281,6 @@
     </nav>
 
     <main class="tab-contents">
-
-      <!-- ① 利用者基本情報（client） -->
-      <section id="tab-client" class="tab-pane active">
-        <h2>① 利用者基本情報（client）</h2>
-        <form id="form-client" class="form-section">
-          <!-- client_id は共通ID。ここにも持たせておく -->
-          <input type="hidden" name="client_id" class="client-id-field" />
-
-          <h3 class="sub-title">【基本情報】</h3>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>作成担当者（writer_name）</label>
-              <input type="text" name="writer_name">
-            </div>
-
-            <div class="form-item">
-              <label>相談日（consultation_date）</label>
-              <input type="date" name="consultation_date">
-            </div>
-
-            <div class="form-item">
-              <label>本人の現況（current_status）</label>
-              <textarea name="current_status"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>本人氏名（client_name）</label>
-              <input type="text" name="client_name">
-            </div>
-
-            <div class="form-item">
-              <label>性別（gender）</label>
-              <select name="gender">
-                <option value="">選択してください</option>
-                <option value="男性">男性</option>
-                <option value="女性">女性</option>
-                <option value="その他">その他</option>
-              </select>
-            </div>
-
-            <div class="form-item">
-              <label>生年月日（birth_date）</label>
-              <input type="date" name="birth_date">
-            </div>
-
-            <div class="form-item">
-              <label>住所（address）</label>
-              <input type="text" name="address">
-            </div>
-
-            <div class="form-item">
-              <label>電話番号（phone_number）</label>
-              <input type="text" name="phone_number">
-            </div>
-
-            <div class="form-item">
-              <label>障害高齢者の日常生活自立度（disability_adl_level）</label>
-              <input type="text" name="disability_adl_level" placeholder="自立 / J1 / A1 ...">
-            </div>
-
-            <div class="form-item">
-              <label>認知症高齢者の日常生活自立度（dementia_adl_level）</label>
-              <input type="text" name="dementia_adl_level" placeholder="自立 / IIa / IIIa ...">
-            </div>
-
-            <div class="form-item">
-              <label>認定・総合事業情報（certification_info）</label>
-              <textarea name="certification_info"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>障害等認定（disability_certification）</label>
-              <textarea name="disability_certification" placeholder="身障○級・療育○度 など"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>住居環境（living_environment）</label>
-              <textarea name="living_environment" placeholder="自宅 / 借家 / 集合住宅 など"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>経済状況（economic_status）</label>
-              <textarea name="economic_status" placeholder="年金・生活保護 等"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>来所者・相談者氏名（visitor_name）</label>
-              <input type="text" name="visitor_name">
-            </div>
-
-            <div class="form-item">
-              <label>来所者連絡先（visitor_contact）</label>
-              <input type="text" name="visitor_contact">
-            </div>
-
-            <div class="form-item">
-              <label>本人との続柄（relation_to_client）</label>
-              <input type="text" name="relation_to_client">
-            </div>
-
-            <div class="form-item">
-              <label>家族構成（family_composition）</label>
-              <textarea name="family_composition"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>緊急連絡先氏名（emergency_contact_name）</label>
-              <input type="text" name="emergency_contact_name">
-            </div>
-          </div>
-
-          <h3 class="sub-title">【介護予防に関する事項】</h3>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>続柄（emergency_relation）</label>
-              <input type="text" name="emergency_relation">
-            </div>
-
-            <div class="form-item">
-              <label>緊急連絡先（emergency_contact_info）</label>
-              <input type="text" name="emergency_contact_info">
-            </div>
-
-            <div class="form-item">
-              <label>今までの生活歴（life_history）</label>
-              <textarea name="life_history"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>現在の生活状況・1日の過ごし方（daily_life_pattern）</label>
-              <textarea name="daily_life_pattern"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>時間帯（time_of_day）</label>
-              <input type="text" name="time_of_day" placeholder="例：日中 / 夜間 など">
-            </div>
-
-            <div class="form-item">
-              <label>本人の思い・気持ち（person_content）</label>
-              <textarea name="person_content"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>介護者・家族の思い（caregiver_content）</label>
-              <textarea name="caregiver_content"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>趣味・楽しみ（hobbies）</label>
-              <textarea name="hobbies"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>友人・地域とのつながり（social_connections）</label>
-              <textarea name="social_connections"></textarea>
-            </div>
-          </div>
-
-          <h3 class="sub-title">【現病歴・既往歴と経過】（新しいものから書く・現在の状況に関連するものは必ず書く）</h3>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>発症時期（disease_onset_date）</label>
-              <input type="date" name="disease_onset_date">
-            </div>
-
-            <div class="form-item">
-              <label>主な疾患名（disease_name）</label>
-              <input type="text" name="disease_name">
-            </div>
-
-            <div class="form-item">
-              <label>主治医・医療機関（medical_institution）</label>
-              <input type="text" name="medical_institution">
-            </div>
-
-            <div class="form-item">
-              <label>既往歴（medical_history）</label>
-              <textarea name="medical_history"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>現在の状態・経過（current_condition）</label>
-              <textarea name="current_condition"></textarea>
-            </div>
-          </div>
-
-          <h3 class="sub-title">【現在利用しているサービス】</h3>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>現在利用中の公的サービス（public_services）</label>
-              <textarea name="public_services"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>現在利用中の非公的サービス（private_services）</label>
-              <textarea name="private_services"></textarea>
-            </div>
-          </div>
-
-          <div class="form-actions right">
-            <button type="button" class="btn-primary" onclick="saveClient()">保存</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- ② 訪問記録表（visit_record） -->
-      <section id="tab-visit" class="tab-pane">
-        <h2>② 訪問記録表（visit_record）</h2>
-
-        <form id="form-visit" class="form-section">
-          <input type="hidden" name="client_id" class="client-id-field" />
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>訪問日時（visit_datetime）</label>
-              <input type="datetime-local" name="visit_datetime">
-            </div>
-
-            <div class="form-item">
-              <label>訪問者氏名（visitor_name）</label>
-              <input type="text" name="visitor_name">
-            </div>
-
-            <div class="form-item full">
-              <label>訪問目的（visit_purpose）</label>
-              <textarea name="visit_purpose" rows="2"></textarea>
-            </div>
-          </div>
-
-          <h3 class="sub-title">【訪問時の観察項目】</h3>
-
-          <div class="long-section">
-
-            <div class="form-item full">
-              <label>［訪問に対する本人の反応・理解］</label>
-              <textarea name="vr_reaction"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>［認知機能］</label>
-              <textarea name="vr_cognition"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>認知症日常生活自立度</label>
-              <input type="text" name="vr_dementia_adl" placeholder="例：IIa / IIIa">
-            </div>
-
-            <div class="form-item full">
-              <label>［精神症状・行動症状］</label>
-              <textarea name="vr_behavior"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>［身体状況］</label>
-              <textarea name="vr_physical"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>障害高齢者日常生活自立度</label>
-              <input type="text" name="vr_disability_adl" placeholder="例：J1 / A1">
-            </div>
-
-            <div class="form-item full">
-              <label>［生活状況］</label>
-              <textarea name="vr_living"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>［アセスメントシート合計］</label>
-              <div class="inline-inputs">
-                <label>DASC-21：</label><input type="number" name="vr_dasc">
-                <label>DBD13：</label><input type="number" name="vr_dbd">
-                <label>J-ZBI_8：</label><input type="number" name="vr_jzbi">
-              </div>
-            </div>
-
-            <div class="form-item full">
-              <label>［本人の意向・希望］</label>
-              <textarea name="vr_person_intent"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>［介護者の意向・希望］</label>
-              <textarea name="vr_family_intent"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>［その他］</label>
-              <textarea name="vr_other"></textarea>
-            </div>
-
-          </div>
-
-          <h3 class="sub-title">【訪問時の詳細観察（身体状況チェック）】</h3>
-          <p class="note">※身体状況チェック表の内容を要約して記録する欄です</p>
-
-          <div class="long-section">
-            <div class="form-item full">
-              <label>運動機能・立ち上がり・歩行状況</label>
-              <textarea name="vr_mobility"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>移動方法・日常的な移動範囲</label>
-              <textarea name="vr_movement"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>意思疎通の状況</label>
-              <textarea name="vr_communication"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>視力・聴力</label>
-              <textarea name="vr_senses"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>入浴・衛生・清潔状況</label>
-              <textarea name="vr_hygiene"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>栄養状態・食事状況</label>
-              <textarea name="vr_nutrition"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>排泄状況（尿・便・失禁）</label>
-              <textarea name="vr_excretion"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>睡眠状況（睡眠薬・生活リズム含む）</label>
-              <textarea name="vr_sleep"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>居住環境の問題</label>
-              <textarea name="vr_house"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>金銭管理の状況</label>
-              <textarea name="vr_money"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>家族の介護力</label>
-              <textarea name="vr_family_care"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>虐待の可能性</label>
-              <textarea name="vr_abuse"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>見守りの状況</label>
-              <textarea name="vr_watch"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>緊急時のSOS発信の可否</label>
-              <textarea name="vr_sos"></textarea>
-            </div>
-          </div>
-
-          <h3 class="sub-title">【判断・支援内容】</h3>
-          <div class="form-item full">
-            <label>判断・支援内容（support_decision）</label>
-            <textarea name="support_decision" rows="4"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>今後の方針・支援計画（future_plan）</label>
-            <textarea name="future_plan" rows="4"></textarea>
-          </div>
-
-          <div class="form-actions right">
-            <button type="button" onclick="saveVisit()">保存</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- ③ 身体状況チェック表（physical_status） -->
-      <section id="tab-physical" class="tab-pane">
-      <h2>③ 身体状況チェック表（physical_status）</h2>
-
-      <form id="form-physical" class="form-section">
-        <input type="hidden" name="client_id" class="client-id-field" />
-
-        <div class="long-section">
-
-          <div class="form-item full">
-            <label>［立ち上がり・運動機能］</label>
-            <textarea name="ps_mobility" placeholder="例：支えなしで立てる／支えが必要 など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［歩行状況・歩行レベル］</label>
-            <textarea name="ps_walking" placeholder="室内：自立/介助　屋外：自立/介助　独歩/杖/歩行車/車いすなど"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［移動方法・範囲］</label>
-            <textarea name="ps_transport" placeholder="公共交通機関／タクシー／自家用車／自転車／徒歩など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［意思疎通］</label>
-            <textarea name="ps_communication" placeholder="訪問者と意思疎通ができるか、指示の理解など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［日常の意思決定］</label>
-            <textarea name="ps_decision" placeholder="できる／ややできる／できない など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［視力・聴力・補聴器の有無］</label>
-            <textarea name="ps_senses" placeholder="目が見えにくい／耳が聞こえにくい／補聴器の使用など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［入浴・清潔保持］</label>
-            <textarea name="ps_hygiene" placeholder="入浴頻度・シャワー・清拭・清潔状態など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［衣類・家屋の清潔さ］</label>
-            <textarea name="ps_cleanliness"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［栄養状態・体重・食事状況］</label>
-            <textarea name="ps_nutrition"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［過食／異食］</label>
-            <textarea name="ps_eating_behavior"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［食物を噛む・飲み込む能力］</label>
-            <textarea name="ps_swallowing"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［食事拒否・時間］</label>
-            <textarea name="ps_meal_refusal"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［水分摂取状況］</label>
-            <textarea name="ps_water"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［飲酒・喫煙］</label>
-            <textarea name="ps_habits"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［排尿・排便］</label>
-            <textarea name="ps_excretion"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［便秘（下剤の使用）］</label>
-            <textarea name="ps_constipation"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［睡眠状況（睡眠薬の有無）］</label>
-            <textarea name="ps_sleep"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［起床・就寝時間］</label>
-            <textarea name="ps_daily_rhythm"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［日中の睡眠］</label>
-            <textarea name="ps_daytime_sleep"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［夜間の行動（大声・起き上がり）］</label>
-            <textarea name="ps_night_behavior"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［居住環境の問題］</label>
-            <textarea name="ps_house_env"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［金銭管理］</label>
-            <textarea name="ps_money"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［家族の介護力］</label>
-            <textarea name="ps_family_care"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［虐待の可能性］</label>
-            <textarea name="ps_abuse"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［見守りの状況］</label>
-            <textarea name="ps_watch"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［緊急時のSOS発信］</label>
-            <textarea name="ps_sos"></textarea>
-          </div>
-        </div>
-
-        <div class="form-actions right">
-          <button type="button" onclick="savePhysical()">保存</button>
-        </div>
-      </form>
-    </section>
-
 
       <!-- ④ DASC-21 -->
       <section id="tab-dasc" class="tab-pane">
@@ -1443,4 +1095,90 @@
   </div>
 </div>
 
+<script>
+//============================
+// 1. タブ切り替え処理
+//============================
+function switchTab(tabName) {
+    // タブボタン
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tabName) {
+            btn.classList.add('active');
+        }
+    });
+
+    // 表示するタブ
+    document.querySelectorAll('.form-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.${tabName}`).classList.add('active');
+}
+
+//============================
+// 2. client_id を全フォームへ同期
+//============================
+document.addEventListener("DOMContentLoaded", () => {
+    const idFields = document.querySelectorAll('.client-id-field');
+
+    idFields.forEach(field => {
+        field.addEventListener("input", (e) => {
+            const value = e.target.value;
+            idFields.forEach(f => {
+                if (f !== e.target) f.value = value;
+            });
+        });
+    });
+});
+
+//============================
+// 3. DASC-21 自動合計計算
+//============================
+document.addEventListener("change", () => {
+    let total = 0;
+    for (let i = 1; i <= 21; i++) {
+        const checked = document.querySelector(`input[name="q${i}"]:checked`);
+        if (checked) total += parseInt(checked.value);
+    }
+    document.getElementById("dasc_total").textContent = total;
+});
+
+//============================
+// 4. DBD-13 自動合計計算
+//============================
+document.addEventListener("change", () => {
+    let total = 0;
+    for (let i = 1; i <= 13; i++) {
+        const checked = document.querySelector(`input[name="d${i}"]:checked`);
+        if (checked) total += parseInt(checked.value);
+    }
+    document.getElementById("dbd_total").textContent = total;
+});
+
+//============================
+// 5. 保存（POST送信）
+//============================
+document.getElementById("saveBtn").addEventListener("click", () => {
+    const form = document.getElementById("mainForm");
+    form.action = "/save_client_data"; // Flask 側の保存ルート
+    form.method = "POST";
+    form.submit();
+});
+
+//============================
+// 6. 読込
+//============================
+document.getElementById("loadBtn").addEventListener("click", () => {
+    const c_id = document.querySelector(".client-id-field").value;
+    if (!c_id) {
+        alert("client_id を入力してください");
+        return;
+    }
+
+    // GET /load_client_data/<id>
+    window.location.href = `/load_client_data/${c_id}`;
+});
+</script>
+
+</body>
 </html>
