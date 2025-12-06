@@ -4,7 +4,7 @@ from numpy.linalg import norm
 import pickle
 import os
 import pymysql
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -62,8 +62,29 @@ def shousai():
 def text():
     return render_template("text.html")
 
-@app.route("/login")
-def login():
+@app.route("/login", methods=["GET", "POST"])
+def login_post():
+    if request.method == "POST":
+        admin_id = request.form.get("id")
+        password = request.form.get("password")
+
+        db = get_connection()
+        try:
+            cursor = db.cursor()
+            cursor.execute("SELECT * FROM admin WHERE admin_id=%s", (admin_id,))
+            admin = cursor.fetchone()
+        finally:
+            db.close()
+
+        if not admin:
+            return "ID が存在しません"
+        if not check_password_hash(admin['password'], password):
+            return "パスワードが違います"
+
+        # ログイン成功
+        return redirect("/top")
+
+    # GET の場合はログイン画面を表示
     return render_template("login.html")
 
 @app.route("/register", methods=["POST"])
