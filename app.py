@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 import numpy as np
 from numpy.linalg import norm
 import pickle
 import os
 import pymysql
+from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 
@@ -64,6 +65,41 @@ def text():
 @app.route("/login")
 def login():
     return render_template("login.html")
+
+@app.route("/register", methods=["POST"])
+def register_post():
+    # フォームから値を取得
+    admin_id = request.form.get("id")
+    password = request.form.get("password")
+    password2 = request.form.get("password2")
+
+    # 入力チェック
+    if not admin_id or not password:
+        return "ID またはパスワードが入力されていません"
+
+    if password != password2:
+        return "パスワードが一致しません"
+
+    # パスワードをハッシュ化
+    hashed = generate_password_hash(password)
+
+    # DB登録
+    db = get_connection()
+    try:
+        cursor = db.cursor()
+        cursor.execute(
+            "INSERT INTO admin (admin_id, password, staff_name) VALUES (%s, %s, %s)",
+            (admin_id, hashed, "未設定")
+        )
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        return f"登録エラー: {e}"
+    finally:
+        db.close()
+
+    # 登録成功したらログイン画面へ
+    return redirect("/login")
 
 # ================================
 #  2. テキストマイニング機能（既存）
