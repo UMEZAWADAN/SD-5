@@ -459,24 +459,6 @@
         min-width: 120px;
     }
 
-    /* Auto-save status indicator */
-    .auto-save-status {
-        font-size: 12px;
-        color: #666;
-    }
-
-    .auto-save-status .saved {
-        color: #217346;
-    }
-
-    .auto-save-status .saving {
-        color: #f59e0b;
-    }
-
-    .auto-save-status .error {
-        color: #dc2626;
-    }
-
     /* Observation section for visit record */
     .observation-section {
         padding: 16px 20px;
@@ -783,9 +765,6 @@
             </div>
 
             <div class="assessment-footer">
-              <div class="auto-save-status">
-                <span id="client-save-status"></span>
-              </div>
               <div class="assessment-actions">
                 <button type="button" class="btn-excel" onclick="exportClientToExcel()">Excel出力</button>
                 <button type="button" class="btn-save" onclick="saveClient()">保存</button>
@@ -952,9 +931,6 @@
             </div>
 
             <div class="assessment-footer">
-              <div class="auto-save-status">
-                <span id="visit-save-status"></span>
-              </div>
               <div class="assessment-actions">
                 <button type="button" class="btn-excel" onclick="exportVisitToExcel()">Excel出力</button>
                 <button type="button" class="btn-save" onclick="saveVisit()">保存</button>
@@ -1107,9 +1083,6 @@
             </div>
 
             <div class="assessment-footer">
-              <div class="auto-save-status">
-                <span id="physical-save-status"></span>
-              </div>
               <div class="assessment-actions">
                 <button type="button" class="btn-excel" onclick="exportPhysicalToExcel()">Excel出力</button>
                 <button type="button" class="btn-save" onclick="savePhysical()">保存</button>
@@ -1421,7 +1394,6 @@
                 <input type="number" name="total_score" id="dasc-total" readonly>
                 <span style="font-size: 12px; color: #666;">（21〜84点、31点以上で認知症の疑い）</span>
               </div>
-              <div class="auto-save-status" id="dasc-save-status"></div>
               <div class="assessment-actions">
                 <button type="button" class="btn-excel" onclick="exportDascToExcel()">Excel出力</button>
                 <button type="button" class="btn-save" onclick="saveDasc()">保存</button>
@@ -1594,7 +1566,6 @@
                 <input type="number" name="total_score" id="dbd_total" readonly>
                 <span style="font-size: 12px; color: #666;">（0〜52点、点数が高いほど行動障害が重い）</span>
               </div>
-              <div class="auto-save-status" id="dbd-save-status"></div>
               <div class="assessment-actions">
                 <button type="button" class="btn-excel" onclick="exportDbdToExcel()">Excel出力</button>
                 <button type="button" class="btn-save" onclick="saveDbd()">保存</button>
@@ -1717,7 +1688,7 @@
     // -----------------------------
     // 共通 POST 関数
     // -----------------------------
-    async function postJSON(url, data, showAlert = true) {
+    async function postJSON(url, data) {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1726,81 +1697,10 @@
       const json = await res.json();
       if (!res.ok || json.status !== "saved") {
         console.error(json);
-        if (showAlert) {
-          alert("保存中にエラーが発生しました：" + (json.message || res.statusText));
-        }
-        return false;
+        alert("保存中にエラーが発生しました：" + (json.message || res.statusText));
+        return;
       }
-      if (showAlert) {
-        alert("保存しました");
-      }
-      return true;
-    }
-
-    // -----------------------------
-    // 自動保存機能（途中保存対応）
-    // -----------------------------
-    const autoSaveTimers = {};
-    const AUTO_SAVE_DELAY = 3000;
-
-    function updateSaveStatus(statusElementId, status) {
-      const el = document.getElementById(statusElementId);
-      if (!el) return;
-      
-      switch(status) {
-        case 'saving':
-          el.innerHTML = '<span class="saving">保存中...</span>';
-          break;
-        case 'saved':
-          el.innerHTML = '<span class="saved">自動保存済み</span>';
-          setTimeout(() => {
-            if (el.innerHTML.includes('自動保存済み')) {
-              el.innerHTML = '';
-            }
-          }, 5000);
-          break;
-        case 'error':
-          el.innerHTML = '<span class="error">保存エラー</span>';
-          break;
-        default:
-          el.innerHTML = '';
-      }
-    }
-
-    async function autoSaveForm(formId, apiUrl, statusElementId) {
-      const cid = document.getElementById("global_client_id").value.trim();
-      if (!cid) return;
-      
-      syncClientIdFields(cid);
-      updateSaveStatus(statusElementId, 'saving');
-      
-      const data = formToJSON(document.getElementById(formId));
-      const success = await postJSON(apiUrl, data, false);
-      
-      if (success) {
-        updateSaveStatus(statusElementId, 'saved');
-      } else {
-        updateSaveStatus(statusElementId, 'error');
-      }
-    }
-
-    function setupAutoSave(formId, apiUrl, statusElementId) {
-      const form = document.getElementById(formId);
-      if (!form) return;
-      
-      const triggerAutoSave = () => {
-        if (autoSaveTimers[formId]) {
-          clearTimeout(autoSaveTimers[formId]);
-        }
-        autoSaveTimers[formId] = setTimeout(() => {
-          autoSaveForm(formId, apiUrl, statusElementId);
-        }, AUTO_SAVE_DELAY);
-      };
-      
-      form.querySelectorAll('input, textarea, select').forEach(field => {
-        field.addEventListener('input', triggerAutoSave);
-        field.addEventListener('change', triggerAutoSave);
-      });
+      alert("保存しました");
     }
 
     // =============================
@@ -2031,13 +1931,6 @@
         loadAllData();
         loadFiles();
       });
-
-      // 自動保存機能の初期化（途中保存対応）
-      setupAutoSave('form-client', '/api/save_client', 'client-save-status');
-      setupAutoSave('form-visit', '/api/save_visit_record', 'visit-save-status');
-      setupAutoSave('form-physical', '/api/save_physical_status', 'physical-save-status');
-      setupAutoSave('form-dasc', '/api/save_dasc21', 'dasc-save-status');
-      setupAutoSave('form-dbd', '/api/save_dbd13', 'dbd-save-status');
 
     });
     //----------------------------------------
