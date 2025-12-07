@@ -548,11 +548,7 @@
   <div class="page-wrapper">
     <header class="page-header">
       <h1>対象者詳細・アセスメント</h1>
-      <div class="client-info-header">
-        <label>利用者ID（client_id）：</label>
-        <input type="text" id="global_client_id" class="client-id-input" placeholder="例: 1, 2, 3 ..." />
-        <button type="button" id="reloadBtn">読込</button>
-      </div>
+      <input type="hidden" id="global_client_id" />
     </header>
 
     <!-- タブ切り替え -->
@@ -1780,21 +1776,42 @@
     // =============================
     // 保存ボタン：各フォーム
     // =============================
-    function saveClient() {
+    async function saveClient() {
       const cid = document.getElementById("global_client_id").value.trim();
+      if (cid) {
+        syncClientIdFields(cid);
+      }
+      const data = formToJSON(document.getElementById("form-client"));
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        delete data.client_id;
+      }
+      
+      const res = await fetch("/api/save_client", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (!res.ok || json.status !== "saved") {
+        console.error(json);
+        alert("保存中にエラーが発生しました：" + (json.message || res.statusText));
         return;
       }
-      syncClientIdFields(cid);
-      const data = formToJSON(document.getElementById("form-client"));
-      postJSON("/api/save_client", data);
+      
+      if (json.client_id && !cid) {
+        const newCid = json.client_id;
+        document.getElementById("global_client_id").value = newCid;
+        syncClientIdFields(newCid);
+        document.getElementById("header_client_id").textContent = newCid;
+        history.replaceState(null, "", `/shousai?client_id=${newCid}`);
+      }
+      alert("保存しました");
     }
 
     function saveVisit() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       syncClientIdFields(cid);
@@ -1805,7 +1822,7 @@
     function savePhysical() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       syncClientIdFields(cid);
@@ -1816,7 +1833,7 @@
     function saveDasc() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       syncClientIdFields(cid);
@@ -1828,7 +1845,7 @@
     function saveDbd() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       syncClientIdFields(cid);
@@ -1843,7 +1860,7 @@
     function exportClientToExcel() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       window.location.href = `/api/export_client?client_id=${encodeURIComponent(cid)}`;
@@ -1852,7 +1869,7 @@
     function exportVisitToExcel() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       window.location.href = `/api/export_visit?client_id=${encodeURIComponent(cid)}`;
@@ -1861,7 +1878,7 @@
     function exportPhysicalToExcel() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       window.location.href = `/api/export_physical?client_id=${encodeURIComponent(cid)}`;
@@ -1870,7 +1887,7 @@
     function exportDascToExcel() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       window.location.href = `/api/export_dasc21?client_id=${encodeURIComponent(cid)}`;
@@ -1879,7 +1896,7 @@
     function exportDbdToExcel() {
       const cid = document.getElementById("global_client_id").value.trim();
       if (!cid) {
-        alert("先に 利用者ID（client_id） を入力してください。");
+        alert("先に「利用者基本情報」タブで保存してください。");
         return;
       }
       window.location.href = `/api/export_dbd13?client_id=${encodeURIComponent(cid)}`;
