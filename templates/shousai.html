@@ -125,6 +125,273 @@
         font-size: 13px;
         margin: 0 0 16px 0;
     }
+
+    /* Assessment Sheet Styles - Paper-like Layout */
+    .assessment-sheet {
+        background: white;
+        border: 2px solid #333;
+        border-radius: 0;
+        margin: 20px 0;
+        font-family: "Yu Gothic", "Meiryo", sans-serif;
+    }
+
+    .assessment-header {
+        background: #f8f9fa;
+        border-bottom: 2px solid #333;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .assessment-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .assessment-subtitle {
+        font-size: 12px;
+        color: #666;
+        margin-top: 4px;
+    }
+
+    .assessment-meta {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .assessment-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    .assessment-meta-item label {
+        font-weight: 500;
+        color: #555;
+    }
+
+    .assessment-meta-item input {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 13px;
+        width: 150px;
+    }
+
+    .assessment-body {
+        padding: 0;
+    }
+
+    .assessment-section {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .assessment-section:last-child {
+        border-bottom: none;
+    }
+
+    .assessment-section-header {
+        background: #e8f4fc;
+        padding: 10px 20px;
+        font-weight: bold;
+        font-size: 14px;
+        color: #2c5282;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .assessment-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .assessment-table th,
+    .assessment-table td {
+        border: 1px solid #ddd;
+        padding: 10px 12px;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .assessment-table th {
+        background: #f5f7fa;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .assessment-table th.item-header {
+        text-align: left;
+        width: 50%;
+    }
+
+    .assessment-table td.item-cell {
+        text-align: left;
+        padding-left: 16px;
+    }
+
+    .assessment-table td.item-cell .item-number {
+        display: inline-block;
+        width: 24px;
+        font-weight: 600;
+        color: #3b6ea5;
+    }
+
+    .assessment-table input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .assessment-footer {
+        background: #f8f9fa;
+        border-top: 2px solid #333;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .assessment-score {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .assessment-score label {
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .assessment-score input {
+        width: 80px;
+        padding: 8px 12px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        border: 2px solid #3b6ea5;
+        border-radius: 6px;
+        background: #f0f7ff;
+        color: #2c5282;
+    }
+
+    .assessment-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-excel {
+        background: linear-gradient(135deg, #217346 0%, #1d6b3f 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-excel:hover {
+        background: linear-gradient(135deg, #1d6b3f 0%, #185a34 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(33, 115, 70, 0.3);
+    }
+
+    .btn-excel::before {
+        content: "📊";
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #3b6ea5 0%, #2c5282 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-save:hover {
+        background: linear-gradient(135deg, #2c5282 0%, #234168 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 110, 165, 0.3);
+    }
+
+    /* Scale Legend */
+    .scale-legend {
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin: 16px 20px;
+        font-size: 12px;
+        color: #92400e;
+    }
+
+    .scale-legend strong {
+        color: #78350f;
+    }
+
+    /* Form Grid for Assessment Info */
+    .assessment-info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 16px 20px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .assessment-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .assessment-info-item label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #555;
+    }
+
+    .assessment-info-item input {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    /* Remarks Section */
+    .assessment-remarks {
+        padding: 16px 20px;
+        border-top: 1px solid #ddd;
+    }
+
+    .assessment-remarks label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 8px;
+    }
+
+    .assessment-remarks textarea {
+        width: 100%;
+        min-height: 80px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        font-size: 13px;
+        resize: vertical;
+    }
   </style>
 </head>
 <body>
@@ -370,6 +637,7 @@
           </div>
 
           <div class="form-actions right">
+            <button type="button" class="btn-excel" onclick="exportClientToExcel()">Excel出力</button>
             <button type="button" class="btn-primary" onclick="saveClient()">保存</button>
           </div>
         </form>
@@ -560,6 +828,7 @@
           </div>
 
           <div class="form-actions right">
+            <button type="button" class="btn-excel" onclick="exportVisitToExcel()">Excel出力</button>
             <button type="button" onclick="saveVisit()">保存</button>
           </div>
         </form>
@@ -706,6 +975,7 @@
         </div>
 
         <div class="form-actions right">
+          <button type="button" class="btn-excel" onclick="exportPhysicalToExcel()">Excel出力</button>
           <button type="button" onclick="savePhysical()">保存</button>
         </div>
       </form>
@@ -714,414 +984,484 @@
 
       <!-- ④ DASC-21 -->
       <section id="tab-dasc" class="tab-pane">
-        <h2>④ DASC-21（dasc21）</h2>
-
         <form id="form-dasc" class="form-section">
           <input type="hidden" name="client_id" class="client-id-field" />
 
-          <div class="form-grid">
-            <div class="form-item">
-              <label>情報提供者氏名（informant_name）</label>
-              <input type="text" name="informant_name">
+          <div class="assessment-sheet">
+            <div class="assessment-header">
+              <div>
+                <div class="assessment-title">DASC-21</div>
+                <div class="assessment-subtitle">地域包括ケアシステムにおける認知症アセスメントシート</div>
+              </div>
             </div>
 
-            <div class="form-item">
-              <label>評価者氏名（evaluator_name）</label>
-              <input type="text" name="evaluator_name">
-            </div>
-          </div>
-
-          <h3>DASC-21 評価項目（0〜4）</h3>
-
-          <div class="dasc-table">
-            <!-- ここから21項目 -->
-            <!-- 1～21項目ループ -->
-            <!-- 各項目は q1 ～ q21 として保存 -->
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:45%;">評価項目</th>
-                  <th>0</th>
-                  <th>1</th>
-                  <th>2</th>
-                  <th>3</th>
-                  <th>4</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr>
-                  <td>1. 物忘れの程度</td>
-                  <td><input type="radio" name="q1" value="0"></td>
-                  <td><input type="radio" name="q1" value="1"></td>
-                  <td><input type="radio" name="q1" value="2"></td>
-                  <td><input type="radio" name="q1" value="3"></td>
-                  <td><input type="radio" name="q1" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>2. 同じことを繰り返す</td>
-                  <td><input type="radio" name="q2" value="0"></td>
-                  <td><input type="radio" name="q2" value="1"></td>
-                  <td><input type="radio" name="q2" value="2"></td>
-                  <td><input type="radio" name="q2" value="3"></td>
-                  <td><input type="radio" name="q2" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>3. 置き忘れ</td>
-                  <td><input type="radio" name="q3" value="0"></td>
-                  <td><input type="radio" name="q3" value="1"></td>
-                  <td><input type="radio" name="q3" value="2"></td>
-                  <td><input type="radio" name="q3" value="3"></td>
-                  <td><input type="radio" name="q3" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>4. 日付の理解</td>
-                  <td><input type="radio" name="q4" value="0"></td>
-                  <td><input type="radio" name="q4" value="1"></td>
-                  <td><input type="radio" name="q4" value="2"></td>
-                  <td><input type="radio" name="q4" value="3"></td>
-                  <td><input type="radio" name="q4" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>5. 場所の理解</td>
-                  <td><input type="radio" name="q5" value="0"></td>
-                  <td><input type="radio" name="q5" value="1"></td>
-                  <td><input type="radio" name="q5" value="2"></td>
-                  <td><input type="radio" name="q5" value="3"></td>
-                  <td><input type="radio" name="q5" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>6. 人物の理解</td>
-                  <td><input type="radio" name="q6" value="0"></td>
-                  <td><input type="radio" name="q6" value="1"></td>
-                  <td><input type="radio" name="q6" value="2"></td>
-                  <td><input type="radio" name="q6" value="3"></td>
-                  <td><input type="radio" name="q6" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>7. 服薬の管理</td>
-                  <td><input type="radio" name="q7" value="0"></td>
-                  <td><input type="radio" name="q7" value="1"></td>
-                  <td><input type="radio" name="q7" value="2"></td>
-                  <td><input type="radio" name="q7" value="3"></td>
-                  <td><input type="radio" name="q7" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>8. 金銭管理</td>
-                  <td><input type="radio" name="q8" value="0"></td>
-                  <td><input type="radio" name="q8" value="1"></td>
-                  <td><input type="radio" name="q8" value="2"></td>
-                  <td><input type="radio" name="q8" value="3"></td>
-                  <td><input type="radio" name="q8" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>9. 火の始末</td>
-                  <td><input type="radio" name="q9" value="0"></td>
-                  <td><input type="radio" name="q9" value="1"></td>
-                  <td><input type="radio" name="q9" value="2"></td>
-                  <td><input type="radio" name="q9" value="3"></td>
-                  <td><input type="radio" name="q9" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>10. 自動車・交通機関の利用</td>
-                  <td><input type="radio" name="q10" value="0"></td>
-                  <td><input type="radio" name="q10" value="1"></td>
-                  <td><input type="radio" name="q10" value="2"></td>
-                  <td><input type="radio" name="q10" value="3"></td>
-                  <td><input type="radio" name="q10" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>11. 食事の準備</td>
-                  <td><input type="radio" name="q11" value="0"></td>
-                  <td><input type="radio" name="q11" value="1"></td>
-                  <td><input type="radio" name="q11" value="2"></td>
-                  <td><input type="radio" name="q11" value="3"></td>
-                  <td><input type="radio" name="q11" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>12. 配膳・片付け</td>
-                  <td><input type="radio" name="q12" value="0"></td>
-                  <td><input type="radio" name="q12" value="1"></td>
-                  <td><input type="radio" name="q12" value="2"></td>
-                  <td><input type="radio" name="q12" value="3"></td>
-                  <td><input type="radio" name="q12" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>13. 洗濯</td>
-                  <td><input type="radio" name="q13" value="0"></td>
-                  <td><input type="radio" name="q13" value="1"></td>
-                  <td><input type="radio" name="q13" value="2"></td>
-                  <td><input type="radio" name="q13" value="3"></td>
-                  <td><input type="radio" name="q13" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>14. 掃除</td>
-                  <td><input type="radio" name="q14" value="0"></td>
-                  <td><input type="radio" name="q14" value="1"></td>
-                  <td><input type="radio" name="q14" value="2"></td>
-                  <td><input type="radio" name="q14" value="3"></td>
-                  <td><input type="radio" name="q14" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>15. 自分の身のまわりの管理</td>
-                  <td><input type="radio" name="q15" value="0"></td>
-                  <td><input type="radio" name="q15" value="1"></td>
-                  <td><input type="radio" name="q15" value="2"></td>
-                  <td><input type="radio" name="q15" value="3"></td>
-                  <td><input type="radio" name="q15" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>16. 服の着替え</td>
-                  <td><input type="radio" name="q16" value="0"></td>
-                  <td><input type="radio" name="q16" value="1"></td>
-                  <td><input type="radio" name="q16" value="2"></td>
-                  <td><input type="radio" name="q16" value="3"></td>
-                  <td><input type="radio" name="q16" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>17. 身だしなみ</td>
-                  <td><input type="radio" name="q17" value="0"></td>
-                  <td><input type="radio" name="q17" value="1"></td>
-                  <td><input type="radio" name="q17" value="2"></td>
-                  <td><input type="radio" name="q17" value="3"></td>
-                  <td><input type="radio" name="q17" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>18. 入浴</td>
-                  <td><input type="radio" name="q18" value="0"></td>
-                  <td><input type="radio" name="q18" value="1"></td>
-                  <td><input type="radio" name="q18" value="2"></td>
-                  <td><input type="radio" name="q18" value="3"></td>
-                  <td><input type="radio" name="q18" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>19. 排泄</td>
-                  <td><input type="radio" name="q19" value="0"></td>
-                  <td><input type="radio" name="q19" value="1"></td>
-                  <td><input type="radio" name="q19" value="2"></td>
-                  <td><input type="radio" name="q19" value="3"></td>
-                  <td><input type="radio" name="q19" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>20. 歩行</td>
-                  <td><input type="radio" name="q20" value="0"></td>
-                  <td><input type="radio" name="q20" value="1"></td>
-                  <td><input type="radio" name="q20" value="2"></td>
-                  <td><input type="radio" name="q20" value="3"></td>
-                  <td><input type="radio" name="q20" value="4"></td>
-                </tr>
-
-                <tr>
-                  <td>21. 外出</td>
-                  <td><input type="radio" name="q21" value="0"></td>
-                  <td><input type="radio" name="q21" value="1"></td>
-                  <td><input type="radio" name="q21" value="2"></td>
-                  <td><input type="radio" name="q21" value="3"></td>
-                  <td><input type="radio" name="q21" value="4"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>備考（remarks）</label>
-              <textarea name="remarks"></textarea>
+            <div class="assessment-info-grid">
+              <div class="assessment-info-item">
+                <label>情報提供者氏名</label>
+                <input type="text" name="informant_name" placeholder="ご家族・介護者等">
+              </div>
+              <div class="assessment-info-item">
+                <label>評価者氏名</label>
+                <input type="text" name="evaluator_name" placeholder="担当者名">
+              </div>
+              <div class="assessment-info-item">
+                <label>評価日</label>
+                <input type="date" name="evaluation_date">
+              </div>
             </div>
 
-            <div class="form-item">
-              <label>合計点（total_score）</label>
-              <input type="number" name="total_score" id="dasc-total" readonly>
+            <div class="scale-legend">
+              <strong>評価基準：</strong>
+              1＝問題なくできる　2＝だいたいできる　3＝あまりできない　4＝できない
             </div>
-          </div>
 
-          <div class="form-actions right">
-            <button type="button" onclick="saveDasc()">保存</button>
+            <div class="assessment-body">
+              <!-- A. 記憶 -->
+              <div class="assessment-section">
+                <div class="assessment-section-header">A. 記憶</div>
+                <table class="assessment-table">
+                  <thead>
+                    <tr>
+                      <th class="item-header">評価項目</th>
+                      <th style="width:10%">1</th>
+                      <th style="width:10%">2</th>
+                      <th style="width:10%">3</th>
+                      <th style="width:10%">4</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">1.</span> 財布や鍵など、物を置いた場所がわからなくなることがありますか</td>
+                      <td><input type="radio" name="q1" value="1"></td>
+                      <td><input type="radio" name="q1" value="2"></td>
+                      <td><input type="radio" name="q1" value="3"></td>
+                      <td><input type="radio" name="q1" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">2.</span> 5分前に聞いた話を思い出せないことがありますか</td>
+                      <td><input type="radio" name="q2" value="1"></td>
+                      <td><input type="radio" name="q2" value="2"></td>
+                      <td><input type="radio" name="q2" value="3"></td>
+                      <td><input type="radio" name="q2" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">3.</span> 自分の生年月日がわからなくなることがありますか</td>
+                      <td><input type="radio" name="q3" value="1"></td>
+                      <td><input type="radio" name="q3" value="2"></td>
+                      <td><input type="radio" name="q3" value="3"></td>
+                      <td><input type="radio" name="q3" value="4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- B. 見当識 -->
+              <div class="assessment-section">
+                <div class="assessment-section-header">B. 見当識</div>
+                <table class="assessment-table">
+                  <thead>
+                    <tr>
+                      <th class="item-header">評価項目</th>
+                      <th style="width:10%">1</th>
+                      <th style="width:10%">2</th>
+                      <th style="width:10%">3</th>
+                      <th style="width:10%">4</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">4.</span> 今日が何月何日かわからないときがありますか</td>
+                      <td><input type="radio" name="q4" value="1"></td>
+                      <td><input type="radio" name="q4" value="2"></td>
+                      <td><input type="radio" name="q4" value="3"></td>
+                      <td><input type="radio" name="q4" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">5.</span> 自分のいる場所がどこだかわからなくなることがありますか</td>
+                      <td><input type="radio" name="q5" value="1"></td>
+                      <td><input type="radio" name="q5" value="2"></td>
+                      <td><input type="radio" name="q5" value="3"></td>
+                      <td><input type="radio" name="q5" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">6.</span> 道に迷って家に帰ってこられなくなることがありますか</td>
+                      <td><input type="radio" name="q6" value="1"></td>
+                      <td><input type="radio" name="q6" value="2"></td>
+                      <td><input type="radio" name="q6" value="3"></td>
+                      <td><input type="radio" name="q6" value="4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- C. 問題解決・判断力 -->
+              <div class="assessment-section">
+                <div class="assessment-section-header">C. 問題解決・判断力</div>
+                <table class="assessment-table">
+                  <thead>
+                    <tr>
+                      <th class="item-header">評価項目</th>
+                      <th style="width:10%">1</th>
+                      <th style="width:10%">2</th>
+                      <th style="width:10%">3</th>
+                      <th style="width:10%">4</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">7.</span> 電気やガスや水道が止まってしまったときに、自分で適切に対処できますか</td>
+                      <td><input type="radio" name="q7" value="1"></td>
+                      <td><input type="radio" name="q7" value="2"></td>
+                      <td><input type="radio" name="q7" value="3"></td>
+                      <td><input type="radio" name="q7" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">8.</span> 一日の計画を自分で立てることができますか</td>
+                      <td><input type="radio" name="q8" value="1"></td>
+                      <td><input type="radio" name="q8" value="2"></td>
+                      <td><input type="radio" name="q8" value="3"></td>
+                      <td><input type="radio" name="q8" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">9.</span> 季節や状況に合った服を自分で選ぶことができますか</td>
+                      <td><input type="radio" name="q9" value="1"></td>
+                      <td><input type="radio" name="q9" value="2"></td>
+                      <td><input type="radio" name="q9" value="3"></td>
+                      <td><input type="radio" name="q9" value="4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- D. 家庭外のIADL -->
+              <div class="assessment-section">
+                <div class="assessment-section-header">D. 家庭外のIADL（手段的日常生活動作）</div>
+                <table class="assessment-table">
+                  <thead>
+                    <tr>
+                      <th class="item-header">評価項目</th>
+                      <th style="width:10%">1</th>
+                      <th style="width:10%">2</th>
+                      <th style="width:10%">3</th>
+                      <th style="width:10%">4</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">10.</span> バスや電車、自家用車などを使って一人で外出できますか</td>
+                      <td><input type="radio" name="q10" value="1"></td>
+                      <td><input type="radio" name="q10" value="2"></td>
+                      <td><input type="radio" name="q10" value="3"></td>
+                      <td><input type="radio" name="q10" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">11.</span> 貯金の出し入れや、家賃や公共料金の支払いは一人でできますか</td>
+                      <td><input type="radio" name="q11" value="1"></td>
+                      <td><input type="radio" name="q11" value="2"></td>
+                      <td><input type="radio" name="q11" value="3"></td>
+                      <td><input type="radio" name="q11" value="4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- E. 家庭内のIADL -->
+              <div class="assessment-section">
+                <div class="assessment-section-header">E. 家庭内のIADL（手段的日常生活動作）</div>
+                <table class="assessment-table">
+                  <thead>
+                    <tr>
+                      <th class="item-header">評価項目</th>
+                      <th style="width:10%">1</th>
+                      <th style="width:10%">2</th>
+                      <th style="width:10%">3</th>
+                      <th style="width:10%">4</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">12.</span> 薬を決まった時間に決まった分量のむことはできますか</td>
+                      <td><input type="radio" name="q12" value="1"></td>
+                      <td><input type="radio" name="q12" value="2"></td>
+                      <td><input type="radio" name="q12" value="3"></td>
+                      <td><input type="radio" name="q12" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">13.</span> 電話をかけることができますか</td>
+                      <td><input type="radio" name="q13" value="1"></td>
+                      <td><input type="radio" name="q13" value="2"></td>
+                      <td><input type="radio" name="q13" value="3"></td>
+                      <td><input type="radio" name="q13" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">14.</span> 自分で食事の準備はできますか</td>
+                      <td><input type="radio" name="q14" value="1"></td>
+                      <td><input type="radio" name="q14" value="2"></td>
+                      <td><input type="radio" name="q14" value="3"></td>
+                      <td><input type="radio" name="q14" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">15.</span> 自分で、掃除機やほうきを使って掃除ができますか</td>
+                      <td><input type="radio" name="q15" value="1"></td>
+                      <td><input type="radio" name="q15" value="2"></td>
+                      <td><input type="radio" name="q15" value="3"></td>
+                      <td><input type="radio" name="q15" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">16.</span> 自分で洗濯ができますか</td>
+                      <td><input type="radio" name="q16" value="1"></td>
+                      <td><input type="radio" name="q16" value="2"></td>
+                      <td><input type="radio" name="q16" value="3"></td>
+                      <td><input type="radio" name="q16" value="4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- F. 身体的ADL -->
+              <div class="assessment-section">
+                <div class="assessment-section-header">F. 身体的ADL（基本的日常生活動作）</div>
+                <table class="assessment-table">
+                  <thead>
+                    <tr>
+                      <th class="item-header">評価項目</th>
+                      <th style="width:10%">1</th>
+                      <th style="width:10%">2</th>
+                      <th style="width:10%">3</th>
+                      <th style="width:10%">4</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">17.</span> 自分で適切な量の食事をとることはできますか</td>
+                      <td><input type="radio" name="q17" value="1"></td>
+                      <td><input type="radio" name="q17" value="2"></td>
+                      <td><input type="radio" name="q17" value="3"></td>
+                      <td><input type="radio" name="q17" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">18.</span> 入浴は一人でできますか</td>
+                      <td><input type="radio" name="q18" value="1"></td>
+                      <td><input type="radio" name="q18" value="2"></td>
+                      <td><input type="radio" name="q18" value="3"></td>
+                      <td><input type="radio" name="q18" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">19.</span> トイレは一人でできますか</td>
+                      <td><input type="radio" name="q19" value="1"></td>
+                      <td><input type="radio" name="q19" value="2"></td>
+                      <td><input type="radio" name="q19" value="3"></td>
+                      <td><input type="radio" name="q19" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">20.</span> 身だしなみを整えることは一人でできますか</td>
+                      <td><input type="radio" name="q20" value="1"></td>
+                      <td><input type="radio" name="q20" value="2"></td>
+                      <td><input type="radio" name="q20" value="3"></td>
+                      <td><input type="radio" name="q20" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">21.</span> 一人で外出できますか</td>
+                      <td><input type="radio" name="q21" value="1"></td>
+                      <td><input type="radio" name="q21" value="2"></td>
+                      <td><input type="radio" name="q21" value="3"></td>
+                      <td><input type="radio" name="q21" value="4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="assessment-remarks">
+              <label>備考</label>
+              <textarea name="remarks" placeholder="特記事項があれば記入してください"></textarea>
+            </div>
+
+            <div class="assessment-footer">
+              <div class="assessment-score">
+                <label>合計点</label>
+                <input type="number" name="total_score" id="dasc-total" readonly>
+                <span style="font-size: 12px; color: #666;">（21〜84点、31点以上で認知症の疑い）</span>
+              </div>
+              <div class="assessment-actions">
+                <button type="button" class="btn-excel" onclick="exportDascToExcel()">Excel出力</button>
+                <button type="button" class="btn-save" onclick="saveDasc()">保存</button>
+              </div>
+            </div>
           </div>
         </form>
       </section>
 
       <!-- ⑤ DBD-13 -->
       <section id="tab-dbd" class="tab-pane">
-        <h2>⑤ DBD-13（dbd13）</h2>
-
         <form id="form-dbd" class="form-section">
           <input type="hidden" name="client_id" class="client-id-field" />
 
-          <div class="form-grid">
-            <div class="form-item">
-              <label>回答者氏名（respondent_name）</label>
-              <input type="text" name="respondent_name">
+          <div class="assessment-sheet">
+            <div class="assessment-header">
+              <div>
+                <div class="assessment-title">DBD-13</div>
+                <div class="assessment-subtitle">認知症行動障害尺度（Dementia Behavior Disturbance Scale）短縮版</div>
+              </div>
             </div>
 
-            <div class="form-item">
-              <label>評価者氏名（evaluator_name）</label>
-              <input type="text" name="evaluator_name">
+            <div class="assessment-info-grid">
+              <div class="assessment-info-item">
+                <label>回答者氏名</label>
+                <input type="text" name="respondent_name" placeholder="ご家族・介護者等">
+              </div>
+              <div class="assessment-info-item">
+                <label>評価者氏名</label>
+                <input type="text" name="evaluator_name" placeholder="担当者名">
+              </div>
+              <div class="assessment-info-item">
+                <label>記入日</label>
+                <input type="date" name="entry_date">
+              </div>
             </div>
 
-            <div class="form-item">
-              <label>記入日（entry_date）</label>
-              <input type="date" name="entry_date">
+            <div class="scale-legend">
+              <strong>評価基準：</strong>
+              0＝全くない　1＝ほとんどない　2＝ときどきある　3＝よくある　4＝常にある
             </div>
-          </div>
 
-          <h3>DBD-13 評価項目（0〜4：問題なし → 重い）</h3>
+            <div class="assessment-body">
+              <div class="assessment-section">
+                <div class="assessment-section-header">行動・心理症状（BPSD）評価項目</div>
+                <table class="assessment-table">
+                  <thead>
+                    <tr>
+                      <th class="item-header">評価項目</th>
+                      <th style="width:8%">0</th>
+                      <th style="width:8%">1</th>
+                      <th style="width:8%">2</th>
+                      <th style="width:8%">3</th>
+                      <th style="width:8%">4</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">1.</span> 同じことを何度も何度も聞く</td>
+                      <td><input type="radio" name="d1" value="0"></td>
+                      <td><input type="radio" name="d1" value="1"></td>
+                      <td><input type="radio" name="d1" value="2"></td>
+                      <td><input type="radio" name="d1" value="3"></td>
+                      <td><input type="radio" name="d1" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">2.</span> よく物をなくしたり、置き場所を間違えたり、隠したりしている</td>
+                      <td><input type="radio" name="d2" value="0"></td>
+                      <td><input type="radio" name="d2" value="1"></td>
+                      <td><input type="radio" name="d2" value="2"></td>
+                      <td><input type="radio" name="d2" value="3"></td>
+                      <td><input type="radio" name="d2" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">3.</span> 日常的な物事に関心を示さない</td>
+                      <td><input type="radio" name="d3" value="0"></td>
+                      <td><input type="radio" name="d3" value="1"></td>
+                      <td><input type="radio" name="d3" value="2"></td>
+                      <td><input type="radio" name="d3" value="3"></td>
+                      <td><input type="radio" name="d3" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">4.</span> 夜中に起き出す</td>
+                      <td><input type="radio" name="d4" value="0"></td>
+                      <td><input type="radio" name="d4" value="1"></td>
+                      <td><input type="radio" name="d4" value="2"></td>
+                      <td><input type="radio" name="d4" value="3"></td>
+                      <td><input type="radio" name="d4" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">5.</span> 根拠のない事を言う（例：盗まれた、配偶者が浮気している等）</td>
+                      <td><input type="radio" name="d5" value="0"></td>
+                      <td><input type="radio" name="d5" value="1"></td>
+                      <td><input type="radio" name="d5" value="2"></td>
+                      <td><input type="radio" name="d5" value="3"></td>
+                      <td><input type="radio" name="d5" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">6.</span> 昼間、寝てばかりいる</td>
+                      <td><input type="radio" name="d6" value="0"></td>
+                      <td><input type="radio" name="d6" value="1"></td>
+                      <td><input type="radio" name="d6" value="2"></td>
+                      <td><input type="radio" name="d6" value="3"></td>
+                      <td><input type="radio" name="d6" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">7.</span> やたらに歩き回る</td>
+                      <td><input type="radio" name="d7" value="0"></td>
+                      <td><input type="radio" name="d7" value="1"></td>
+                      <td><input type="radio" name="d7" value="2"></td>
+                      <td><input type="radio" name="d7" value="3"></td>
+                      <td><input type="radio" name="d7" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">8.</span> 同じ動作をいつまでも繰り返す</td>
+                      <td><input type="radio" name="d8" value="0"></td>
+                      <td><input type="radio" name="d8" value="1"></td>
+                      <td><input type="radio" name="d8" value="2"></td>
+                      <td><input type="radio" name="d8" value="3"></td>
+                      <td><input type="radio" name="d8" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">9.</span> 口汚くののしる</td>
+                      <td><input type="radio" name="d9" value="0"></td>
+                      <td><input type="radio" name="d9" value="1"></td>
+                      <td><input type="radio" name="d9" value="2"></td>
+                      <td><input type="radio" name="d9" value="3"></td>
+                      <td><input type="radio" name="d9" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">10.</span> 場違いあるいは季節に合わない不適切な服装をする</td>
+                      <td><input type="radio" name="d10" value="0"></td>
+                      <td><input type="radio" name="d10" value="1"></td>
+                      <td><input type="radio" name="d10" value="2"></td>
+                      <td><input type="radio" name="d10" value="3"></td>
+                      <td><input type="radio" name="d10" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">11.</span> 世話をされるのを拒否する</td>
+                      <td><input type="radio" name="d11" value="0"></td>
+                      <td><input type="radio" name="d11" value="1"></td>
+                      <td><input type="radio" name="d11" value="2"></td>
+                      <td><input type="radio" name="d11" value="3"></td>
+                      <td><input type="radio" name="d11" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">12.</span> 食べられないものを口に入れる</td>
+                      <td><input type="radio" name="d12" value="0"></td>
+                      <td><input type="radio" name="d12" value="1"></td>
+                      <td><input type="radio" name="d12" value="2"></td>
+                      <td><input type="radio" name="d12" value="3"></td>
+                      <td><input type="radio" name="d12" value="4"></td>
+                    </tr>
+                    <tr>
+                      <td class="item-cell"><span class="item-number">13.</span> 引き出しやタンスの中身を全部出してしまう</td>
+                      <td><input type="radio" name="d13" value="0"></td>
+                      <td><input type="radio" name="d13" value="1"></td>
+                      <td><input type="radio" name="d13" value="2"></td>
+                      <td><input type="radio" name="d13" value="3"></td>
+                      <td><input type="radio" name="d13" value="4"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-          <table class="dbd-table">
-            <thead>
-              <tr>
-                <th style="width: 50%;">項目</th>
-                <th>0</th>
-                <th>1</th>
-                <th>2</th>
-                <th>3</th>
-                <th>4</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <!-- 13項目（国立長寿医療研究センター・正式） -->
-              <tr><td>1. もの盗られ妄想</td>
-                <td><input type="radio" name="d1" value="0"></td>
-                <td><input type="radio" name="d1" value="1"></td>
-                <td><input type="radio" name="d1" value="2"></td>
-                <td><input type="radio" name="d1" value="3"></td>
-                <td><input type="radio" name="d1" value="4"></td>
-              </tr>
-
-              <tr><td>2. 不安・イライラ</td>
-                <td><input type="radio" name="d2" value="0"></td>
-                <td><input type="radio" name="d2" value="1"></td>
-                <td><input type="radio" name="d2" value="2"></td>
-                <td><input type="radio" name="d2" value="3"></td>
-                <td><input type="radio" name="d2" value="4"></td>
-              </tr>
-
-              <tr><td>3. 不眠・睡眠リズムの乱れ</td>
-                <td><input type="radio" name="d3" value="0"></td>
-                <td><input type="radio" name="d3" value="1"></td>
-                <td><input type="radio" name="d3" value="2"></td>
-                <td><input type="radio" name="d3" value="3"></td>
-                <td><input type="radio" name="d3" value="4"></td>
-              </tr>
-
-              <tr><td>4. 拒否・怒りやすい</td>
-                <td><input type="radio" name="d4" value="0"></td>
-                <td><input type="radio" name="d4" value="1"></td>
-                <td><input type="radio" name="d4" value="2"></td>
-                <td><input type="radio" name="d4" value="3"></td>
-                <td><input type="radio" name="d4" value="4"></td>
-              </tr>
-
-              <tr><td>5. 徘徊</td>
-                <td><input type="radio" name="d5" value="0"></td>
-                <td><input type="radio" name="d5" value="1"></td>
-                <td><input type="radio" name="d5" value="2"></td>
-                <td><input type="radio" name="d5" value="3"></td>
-                <td><input type="radio" name="d5" value="4"></td>
-              </tr>
-
-              <tr><td>6. 介護への抵抗</td>
-                <td><input type="radio" name="d6" value="0"></td>
-                <td><input type="radio" name="d6" value="1"></td>
-                <td><input type="radio" name="d6" value="2"></td>
-                <td><input type="radio" name="d6" value="3"></td>
-                <td><input type="radio" name="d6" value="4"></td>
-              </tr>
-
-              <tr><td>7. 落ち着きのなさ・そわそわ</td>
-                <td><input type="radio" name="d7" value="0"></td>
-                <td><input type="radio" name="d7" value="1"></td>
-                <td><input type="radio" name="d7" value="2"></td>
-                <td><input type="radio" name="d7" value="3"></td>
-                <td><input type="radio" name="d7" value="4"></td>
-              </tr>
-
-              <tr><td>8. 抑うつ気分</td>
-                <td><input type="radio" name="d8" value="0"></td>
-                <td><input type="radio" name="d8" value="1"></td>
-                <td><input type="radio" name="d8" value="2"></td>
-                <td><input type="radio" name="d8" value="3"></td>
-                <td><input type="radio" name="d8" value="4"></td>
-              </tr>
-
-              <tr><td>9. 大声を出す・叫ぶ</td>
-                <td><input type="radio" name="d9" value="0"></td>
-                <td><input type="radio" name="d9" value="1"></td>
-                <td><input type="radio" name="d9" value="2"></td>
-                <td><input type="radio" name="d9" value="3"></td>
-                <td><input type="radio" name="d9" value="4"></td>
-              </tr>
-
-              <tr><td>10. 暴力・攻撃性</td>
-                <td><input type="radio" name="d10" value="0"></td>
-                <td><input type="radio" name="d10" value="1"></td>
-                <td><input type="radio" name="d10" value="2"></td>
-                <td><input type="radio" name="d10" value="3"></td>
-                <td><input type="radio" name="d10" value="4"></td>
-              </tr>
-
-              <tr><td>11. 幻覚</td>
-                <td><input type="radio" name="d11" value="0"></td>
-                <td><input type="radio" name="d11" value="1"></td>
-                <td><input type="radio" name="d11" value="2"></td>
-                <td><input type="radio" name="d11" value="3"></td>
-                <td><input type="radio" name="d11" value="4"></td>
-              </tr>
-
-              <tr><td>12. 性的問題行動</td>
-                <td><input type="radio" name="d12" value="0"></td>
-                <td><input type="radio" name="d12" value="1"></td>
-                <td><input type="radio" name="d12" value="2"></td>
-                <td><input type="radio" name="d12" value="3"></td>
-                <td><input type="radio" name="d12" value="4"></td>
-              </tr>
-
-              <tr><td>13. 異食・不適切な食行動</td>
-                <td><input type="radio" name="d13" value="0"></td>
-                <td><input type="radio" name="d13" value="1"></td>
-                <td><input type="radio" name="d13" value="2"></td>
-                <td><input type="radio" name="d13" value="3"></td>
-                <td><input type="radio" name="d13" value="4"></td>
-              </tr>
-
-            </tbody>
-          </table>
-
-          <div class="form-item">
-            <label>小計（subtotal_score）※項目1〜13の合計</label>
-            <input type="number" name="subtotal_score" id="dbd_subtotal" readonly>
-          </div>
-
-          <div class="form-item">
-            <label>合計点（total_score）※DBD-13 の総合点</label>
-            <input type="number" name="total_score" id="dbd_total" readonly>
-          </div>
-
-          <div class="form-actions right">
-            <button type="button" onclick="saveDbd()">保存</button>
+            <div class="assessment-footer">
+              <div class="assessment-score">
+                <label>合計点</label>
+                <input type="number" name="total_score" id="dbd_total" readonly>
+                <span style="font-size: 12px; color: #666;">（0〜52点、点数が高いほど行動障害が重い）</span>
+              </div>
+              <div class="assessment-actions">
+                <button type="button" class="btn-excel" onclick="exportDbdToExcel()">Excel出力</button>
+                <button type="button" class="btn-save" onclick="saveDbd()">保存</button>
+              </div>
+            </div>
           </div>
         </form>
-
       </section>
     </main>
   </div>
@@ -1308,6 +1648,54 @@
       syncClientIdFields(cid);
       const data = formToJSON(document.getElementById("form-dbd"));
       postJSON("/api/save_dbd13", data);
+    }
+
+    // =============================
+    // Excel出力ボタン：各フォーム
+    // =============================
+    function exportClientToExcel() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      window.location.href = `/api/export_client?client_id=${encodeURIComponent(cid)}`;
+    }
+
+    function exportVisitToExcel() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      window.location.href = `/api/export_visit?client_id=${encodeURIComponent(cid)}`;
+    }
+
+    function exportPhysicalToExcel() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      window.location.href = `/api/export_physical?client_id=${encodeURIComponent(cid)}`;
+    }
+
+    function exportDascToExcel() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      window.location.href = `/api/export_dasc21?client_id=${encodeURIComponent(cid)}`;
+    }
+
+    function exportDbdToExcel() {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) {
+        alert("先に 利用者ID（client_id） を入力してください。");
+        return;
+      }
+      window.location.href = `/api/export_dbd13?client_id=${encodeURIComponent(cid)}`;
     }
 
     // -----------------------------

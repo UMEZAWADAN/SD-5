@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify, redirect, send_file
 import numpy as np
 from numpy.linalg import norm
 import pickle
@@ -8,6 +8,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import re
+from io import BytesIO
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -901,6 +905,443 @@ def delete_file():
 @app.route("/uploads/<path:filepath>")
 def uploaded_file(filepath):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filepath, as_attachment=True)
+
+# ================================
+#  5. Excel出力API
+# ================================
+
+def create_excel_styles():
+    """共通のExcelスタイルを作成"""
+    header_font = Font(bold=True, size=12)
+    header_fill = PatternFill(start_color="E8F4FC", end_color="E8F4FC", fill_type="solid")
+    title_font = Font(bold=True, size=14)
+    thin_border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+    center_align = Alignment(horizontal='center', vertical='center')
+    left_align = Alignment(horizontal='left', vertical='center', wrap_text=True)
+    return {
+        'header_font': header_font,
+        'header_fill': header_fill,
+        'title_font': title_font,
+        'thin_border': thin_border,
+        'center_align': center_align,
+        'left_align': left_align
+    }
+
+
+@app.route("/api/export_client", methods=["GET"])
+def export_client():
+    """利用者基本情報をExcelで出力"""
+    client_id = request.args.get("client_id")
+    if not client_id:
+        return jsonify({"status": "error", "message": "client_id が必要です"}), 400
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM client WHERE client_id = %s", (client_id,))
+            data = cur.fetchone()
+
+    if not data:
+        return jsonify({"status": "error", "message": "データが見つかりません"}), 404
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "利用者基本情報"
+    styles = create_excel_styles()
+
+    ws.merge_cells('A1:D1')
+    ws['A1'] = "利用者基本情報"
+    ws['A1'].font = styles['title_font']
+    ws['A1'].alignment = styles['center_align']
+
+    fields = [
+        ("氏名", data.get("name", "")),
+        ("フリガナ", data.get("furigana", "")),
+        ("生年月日", str(data.get("birth_date", "")) if data.get("birth_date") else ""),
+        ("性別", data.get("gender", "")),
+        ("住所", data.get("address", "")),
+        ("電話番号", data.get("phone", "")),
+        ("緊急連絡先", data.get("emergency_contact", "")),
+        ("緊急連絡先電話", data.get("emergency_phone", "")),
+        ("主治医・医療機関", data.get("medical_institution", "")),
+        ("既往歴", data.get("medical_history", "")),
+        ("現在の状態・経過", data.get("current_condition", "")),
+        ("現在利用中の公的サービス", data.get("public_services", "")),
+        ("現在利用中の非公的サービス", data.get("private_services", "")),
+    ]
+
+    for i, (label, value) in enumerate(fields, start=3):
+        ws.cell(row=i, column=1, value=label).font = styles['header_font']
+        ws.cell(row=i, column=1).fill = styles['header_fill']
+        ws.cell(row=i, column=1).border = styles['thin_border']
+        ws.cell(row=i, column=2, value=value).border = styles['thin_border']
+        ws.cell(row=i, column=2).alignment = styles['left_align']
+
+    ws.column_dimensions['A'].width = 25
+    ws.column_dimensions['B'].width = 50
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    filename = f"client_{client_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name=filename)
+
+
+@app.route("/api/export_visit", methods=["GET"])
+def export_visit():
+    """訪問記録表をExcelで出力"""
+    client_id = request.args.get("client_id")
+    if not client_id:
+        return jsonify({"status": "error", "message": "client_id が必要です"}), 400
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM visit_record WHERE client_id = %s ORDER BY visit_datetime DESC LIMIT 1", (client_id,))
+            data = cur.fetchone()
+
+    if not data:
+        return jsonify({"status": "error", "message": "データが見つかりません"}), 404
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "訪問記録表"
+    styles = create_excel_styles()
+
+    ws.merge_cells('A1:D1')
+    ws['A1'] = "訪問記録表"
+    ws['A1'].font = styles['title_font']
+    ws['A1'].alignment = styles['center_align']
+
+    fields = [
+        ("訪問日時", str(data.get("visit_datetime", "")) if data.get("visit_datetime") else ""),
+        ("訪問者氏名", data.get("visitor_name", "")),
+        ("訪問目的", data.get("visit_purpose", "")),
+        ("訪問に対する本人の反応・理解", data.get("vr_reaction", "")),
+        ("認知機能", data.get("vr_cognition", "")),
+        ("生活状況", data.get("vr_living", "")),
+        ("身体状況", data.get("vr_physical", "")),
+        ("精神状態", data.get("vr_mental", "")),
+        ("服薬状況", data.get("vr_medication", "")),
+        ("判断・支援内容", data.get("support_decision", "")),
+        ("今後の方針・支援計画", data.get("future_plan", "")),
+    ]
+
+    for i, (label, value) in enumerate(fields, start=3):
+        ws.cell(row=i, column=1, value=label).font = styles['header_font']
+        ws.cell(row=i, column=1).fill = styles['header_fill']
+        ws.cell(row=i, column=1).border = styles['thin_border']
+        ws.cell(row=i, column=2, value=value).border = styles['thin_border']
+        ws.cell(row=i, column=2).alignment = styles['left_align']
+
+    ws.column_dimensions['A'].width = 30
+    ws.column_dimensions['B'].width = 60
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    filename = f"visit_{client_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name=filename)
+
+
+@app.route("/api/export_physical", methods=["GET"])
+def export_physical():
+    """身体状況チェック表をExcelで出力"""
+    client_id = request.args.get("client_id")
+    if not client_id:
+        return jsonify({"status": "error", "message": "client_id が必要です"}), 400
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM physical_status WHERE client_id = %s ORDER BY physical_id DESC LIMIT 1", (client_id,))
+            data = cur.fetchone()
+
+    if not data:
+        return jsonify({"status": "error", "message": "データが見つかりません"}), 404
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "身体状況チェック表"
+    styles = create_excel_styles()
+
+    ws.merge_cells('A1:D1')
+    ws['A1'] = "身体状況チェック表"
+    ws['A1'].font = styles['title_font']
+    ws['A1'].alignment = styles['center_align']
+
+    fields = [
+        ("立ち上がり・運動機能", data.get("ps_mobility", "")),
+        ("歩行状況・歩行レベル", data.get("ps_walking", "")),
+        ("移動方法・範囲", data.get("ps_transport", "")),
+        ("意思疎通", data.get("ps_communication", "")),
+        ("視力", data.get("ps_vision", "")),
+        ("聴力", data.get("ps_hearing", "")),
+        ("食事", data.get("ps_eating", "")),
+        ("排泄", data.get("ps_toilet", "")),
+        ("入浴", data.get("ps_bathing", "")),
+        ("睡眠", data.get("ps_sleep", "")),
+        ("服薬管理", data.get("ps_medication", "")),
+        ("金銭管理", data.get("ps_money", "")),
+        ("家族の介護力", data.get("ps_family_care", "")),
+        ("虐待の可能性", data.get("ps_abuse", "")),
+        ("見守りの状況", data.get("ps_watch", "")),
+        ("緊急時のSOS発信", data.get("ps_sos", "")),
+    ]
+
+    for i, (label, value) in enumerate(fields, start=3):
+        ws.cell(row=i, column=1, value=label).font = styles['header_font']
+        ws.cell(row=i, column=1).fill = styles['header_fill']
+        ws.cell(row=i, column=1).border = styles['thin_border']
+        ws.cell(row=i, column=2, value=value or "").border = styles['thin_border']
+        ws.cell(row=i, column=2).alignment = styles['left_align']
+
+    ws.column_dimensions['A'].width = 25
+    ws.column_dimensions['B'].width = 60
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    filename = f"physical_{client_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name=filename)
+
+
+@app.route("/api/export_dasc21", methods=["GET"])
+def export_dasc21():
+    """DASC-21をExcelで出力"""
+    client_id = request.args.get("client_id")
+    if not client_id:
+        return jsonify({"status": "error", "message": "client_id が必要です"}), 400
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM dasc21 WHERE client_id = %s ORDER BY dasc_id DESC LIMIT 1", (client_id,))
+            data = cur.fetchone()
+
+    if not data:
+        return jsonify({"status": "error", "message": "データが見つかりません"}), 404
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "DASC-21"
+    styles = create_excel_styles()
+
+    ws.merge_cells('A1:F1')
+    ws['A1'] = "DASC-21 地域包括ケアシステムにおける認知症アセスメントシート"
+    ws['A1'].font = styles['title_font']
+    ws['A1'].alignment = styles['center_align']
+
+    ws['A3'] = "情報提供者氏名"
+    ws['B3'] = data.get("informant_name", "")
+    ws['C3'] = "評価者氏名"
+    ws['D3'] = data.get("evaluator_name", "")
+    for col in ['A', 'B', 'C', 'D']:
+        ws[f'{col}3'].border = styles['thin_border']
+
+    ws['A5'] = "評価基準: 1=問題なくできる 2=だいたいできる 3=あまりできない 4=できない"
+    ws['A5'].font = Font(italic=True, size=10)
+
+    dasc_items = [
+        ("A. 記憶", [
+            ("1", "財布や鍵など、物を置いた場所がわからなくなることがありますか"),
+            ("2", "5分前に聞いた話を思い出せないことがありますか"),
+            ("3", "自分の生年月日がわからなくなることがありますか"),
+        ]),
+        ("B. 見当識", [
+            ("4", "今日が何月何日かわからないときがありますか"),
+            ("5", "自分のいる場所がどこだかわからなくなることがありますか"),
+            ("6", "道に迷って家に帰ってこられなくなることがありますか"),
+        ]),
+        ("C. 問題解決・判断力", [
+            ("7", "電気やガスや水道が止まってしまったときに、自分で適切に対処できますか"),
+            ("8", "一日の計画を自分で立てることができますか"),
+            ("9", "季節や状況に合った服を自分で選ぶことができますか"),
+        ]),
+        ("D. 家庭外のIADL", [
+            ("10", "バスや電車、自家用車などを使って一人で外出できますか"),
+            ("11", "貯金の出し入れや、家賃や公共料金の支払いは一人でできますか"),
+        ]),
+        ("E. 家庭内のIADL", [
+            ("12", "薬を決まった時間に決まった分量のむことはできますか"),
+            ("13", "電話をかけることができますか"),
+            ("14", "自分で食事の準備はできますか"),
+            ("15", "自分で、掃除機やほうきを使って掃除ができますか"),
+            ("16", "自分で洗濯ができますか"),
+        ]),
+        ("F. 身体的ADL", [
+            ("17", "自分で適切な量の食事をとることはできますか"),
+            ("18", "入浴は一人でできますか"),
+            ("19", "トイレは一人でできますか"),
+            ("20", "身だしなみを整えることは一人でできますか"),
+            ("21", "一人で外出できますか"),
+        ]),
+    ]
+
+    row = 7
+    headers = ["No.", "評価項目", "1", "2", "3", "4", "評価"]
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=row, column=col, value=header)
+        cell.font = styles['header_font']
+        cell.fill = styles['header_fill']
+        cell.border = styles['thin_border']
+        cell.alignment = styles['center_align']
+    row += 1
+
+    for category, items in dasc_items:
+        ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=7)
+        cell = ws.cell(row=row, column=1, value=category)
+        cell.font = Font(bold=True, color="2C5282")
+        cell.fill = PatternFill(start_color="E8F4FC", end_color="E8F4FC", fill_type="solid")
+        cell.border = styles['thin_border']
+        row += 1
+
+        for num, question in items:
+            score = data.get(f"q{num}", "")
+            ws.cell(row=row, column=1, value=num).border = styles['thin_border']
+            ws.cell(row=row, column=1).alignment = styles['center_align']
+            ws.cell(row=row, column=2, value=question).border = styles['thin_border']
+            ws.cell(row=row, column=2).alignment = styles['left_align']
+            for i, val in enumerate([1, 2, 3, 4], start=3):
+                cell = ws.cell(row=row, column=i, value="○" if score == val else "")
+                cell.border = styles['thin_border']
+                cell.alignment = styles['center_align']
+            ws.cell(row=row, column=7, value=score if score else "").border = styles['thin_border']
+            ws.cell(row=row, column=7).alignment = styles['center_align']
+            row += 1
+
+    row += 1
+    ws.cell(row=row, column=1, value="合計点").font = styles['header_font']
+    ws.cell(row=row, column=2, value=data.get("total_score", ""))
+    ws.cell(row=row, column=3, value="（21〜84点、31点以上で認知症の疑い）")
+
+    row += 1
+    ws.cell(row=row, column=1, value="備考").font = styles['header_font']
+    ws.cell(row=row, column=2, value=data.get("remarks", ""))
+
+    ws.column_dimensions['A'].width = 8
+    ws.column_dimensions['B'].width = 55
+    for col in ['C', 'D', 'E', 'F']:
+        ws.column_dimensions[col].width = 6
+    ws.column_dimensions['G'].width = 8
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    filename = f"dasc21_{client_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name=filename)
+
+
+@app.route("/api/export_dbd13", methods=["GET"])
+def export_dbd13():
+    """DBD-13をExcelで出力"""
+    client_id = request.args.get("client_id")
+    if not client_id:
+        return jsonify({"status": "error", "message": "client_id が必要です"}), 400
+
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM dbd13 WHERE client_id = %s ORDER BY dbd_id DESC LIMIT 1", (client_id,))
+            data = cur.fetchone()
+
+    if not data:
+        return jsonify({"status": "error", "message": "データが見つかりません"}), 404
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "DBD-13"
+    styles = create_excel_styles()
+
+    ws.merge_cells('A1:G1')
+    ws['A1'] = "DBD-13 認知症行動障害尺度（短縮版）"
+    ws['A1'].font = styles['title_font']
+    ws['A1'].alignment = styles['center_align']
+
+    ws['A3'] = "回答者氏名"
+    ws['B3'] = data.get("respondent_name", "")
+    ws['C3'] = "評価者氏名"
+    ws['D3'] = data.get("evaluator_name", "")
+    ws['E3'] = "記入日"
+    ws['F3'] = str(data.get("entry_date", "")) if data.get("entry_date") else ""
+    for col in ['A', 'B', 'C', 'D', 'E', 'F']:
+        ws[f'{col}3'].border = styles['thin_border']
+
+    ws['A5'] = "評価基準: 0=全くない 1=ほとんどない 2=ときどきある 3=よくある 4=常にある"
+    ws['A5'].font = Font(italic=True, size=10)
+
+    dbd_items = [
+        ("1", "同じことを何度も何度も聞く"),
+        ("2", "よく物をなくしたり、置き場所を間違えたり、隠したりしている"),
+        ("3", "日常的な物事に関心を示さない"),
+        ("4", "夜中に起き出す"),
+        ("5", "根拠のない事を言う（例：盗まれた、配偶者が浮気している等）"),
+        ("6", "昼間、寝てばかりいる"),
+        ("7", "やたらに歩き回る"),
+        ("8", "同じ動作をいつまでも繰り返す"),
+        ("9", "口汚くののしる"),
+        ("10", "場違いあるいは季節に合わない不適切な服装をする"),
+        ("11", "世話をされるのを拒否する"),
+        ("12", "食べられないものを口に入れる"),
+        ("13", "引き出しやタンスの中身を全部出してしまう"),
+    ]
+
+    row = 7
+    headers = ["No.", "評価項目", "0", "1", "2", "3", "4", "評価"]
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=row, column=col, value=header)
+        cell.font = styles['header_font']
+        cell.fill = styles['header_fill']
+        cell.border = styles['thin_border']
+        cell.alignment = styles['center_align']
+    row += 1
+
+    for num, question in dbd_items:
+        score = data.get(f"d{num}", "")
+        ws.cell(row=row, column=1, value=num).border = styles['thin_border']
+        ws.cell(row=row, column=1).alignment = styles['center_align']
+        ws.cell(row=row, column=2, value=question).border = styles['thin_border']
+        ws.cell(row=row, column=2).alignment = styles['left_align']
+        for i, val in enumerate([0, 1, 2, 3, 4], start=3):
+            cell = ws.cell(row=row, column=i, value="○" if score == val else "")
+            cell.border = styles['thin_border']
+            cell.alignment = styles['center_align']
+        ws.cell(row=row, column=8, value=score if score is not None else "").border = styles['thin_border']
+        ws.cell(row=row, column=8).alignment = styles['center_align']
+        row += 1
+
+    row += 1
+    ws.cell(row=row, column=1, value="合計点").font = styles['header_font']
+    ws.cell(row=row, column=2, value=data.get("total_score", ""))
+    ws.cell(row=row, column=3, value="（0〜52点、点数が高いほど行動障害が重い）")
+
+    ws.column_dimensions['A'].width = 8
+    ws.column_dimensions['B'].width = 55
+    for col in ['C', 'D', 'E', 'F', 'G']:
+        ws.column_dimensions[col].width = 6
+    ws.column_dimensions['H'].width = 8
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    filename = f"dbd13_{client_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name=filename)
+
 
 # ================================
 #  Flask 実行
