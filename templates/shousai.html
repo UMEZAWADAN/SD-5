@@ -1698,6 +1698,11 @@
           answers[`q${i}`] = selected.value;
         }
       }
+      // 評価日も含める
+      const evalDate = document.querySelector('#form-dasc input[name="evaluation_date"]');
+      if (evalDate && evalDate.value) {
+        answers.evaluation_date = evalDate.value;
+      }
       return answers;
     }
 
@@ -1728,6 +1733,11 @@
             const radio = document.querySelector(`input[name="${key}"][value="${answers[key]}"]`);
             if (radio) radio.checked = true;
           }
+        }
+        // 評価日も復元
+        if (answers.evaluation_date) {
+          const evalDateInput = document.querySelector('#form-dasc input[name="evaluation_date"]');
+          if (evalDateInput) evalDateInput.value = answers.evaluation_date;
         }
         calcDascTotal();
       } catch (e) {
@@ -2052,7 +2062,7 @@
     // ファイル一覧取得
     //----------------------------------------
     async function loadFileList(client_id) {
-      const res = await fetch(`/api/shared_files?client_id=${client_id}`);
+      const res = await fetch(`/api/files?client_id=${client_id}`);
       const json = await res.json();
 
       const list = document.getElementById("fileList");
@@ -2108,13 +2118,13 @@
       formData.append("file", fileInput.files[0]);
       formData.append("client_id", cid);
 
-      const res = await fetch("/api/upload_shared_file", {
+      const res = await fetch("/api/upload_file", {
         method: "POST",
         body: formData
       });
 
       const json = await res.json();
-      if (json.status === "ok") {
+      if (json.status === "saved") {
         alert("アップロードしました");
         loadFileList(cid);
         fileInput.value = "";
