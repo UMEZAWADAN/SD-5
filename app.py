@@ -565,16 +565,23 @@ def save_visit_record():
     if not cid:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
+    visit_datetime = to_datetime_or_none(data.get("visit_datetime"))
+    if visit_datetime is None:
+        visit_datetime = datetime.now()
+    visitor_name = data.get("visitor_name", "") or ""
+    visit_purpose = data.get("visit_purpose", "") or ""
+    visit_condition = data.get("visit_condition", "") or ""
+    support_decision = data.get("support_decision", "") or ""
+    future_plan = data.get("future_plan", "") or ""
+
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
 
-            # 既存レコードがあるか？
             cur.execute("SELECT visit_record_id FROM visit_record WHERE client_id=%s", (cid,))
             row = cur.fetchone()
 
             if row:
-                # 既存 → UPDATE
                 sql = """
                     UPDATE visit_record SET
                         visit_datetime=%s,
@@ -586,16 +593,15 @@ def save_visit_record():
                     WHERE client_id=%s
                 """
                 cur.execute(sql, (
-                    data.get("visit_datetime"),
-                    data.get("visitor_name"),
-                    data.get("visit_purpose"),
-                    data.get("visit_condition"),
-                    data.get("support_decision"),
-                    data.get("future_plan"),
+                    visit_datetime,
+                    visitor_name,
+                    visit_purpose,
+                    visit_condition,
+                    support_decision,
+                    future_plan,
                     cid
                 ))
             else:
-                # 新規 → INSERT
                 sql = """
                     INSERT INTO visit_record (
                         client_id, visit_datetime, visitor_name,
@@ -605,12 +611,12 @@ def save_visit_record():
                 """
                 cur.execute(sql, (
                     cid,
-                    data.get("visit_datetime"),
-                    data.get("visitor_name"),
-                    data.get("visit_purpose"),
-                    data.get("visit_condition"),
-                    data.get("support_decision"),
-                    data.get("future_plan")
+                    visit_datetime,
+                    visitor_name,
+                    visit_purpose,
+                    visit_condition,
+                    support_decision,
+                    future_plan
                 ))
 
         conn.commit()
@@ -667,10 +673,10 @@ def save_dasc21():
     if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
-    informant_name = data.get("informant_name", "")
-    evaluator_name = data.get("evaluator_name", "")
-    assessment_item = data.get("assessment_item", "")
-    remarks = data.get("remarks", "")
+    informant_name = data.get("informant_name", "") or ""
+    evaluator_name = data.get("evaluator_name", "") or ""
+    assessment_item = data.get("assessment_item", "") or ""
+    remarks = data.get("remarks", "") or ""
     total_score = to_int_or_none(data.get("total_score")) or 0
 
     conn = get_connection()
@@ -703,11 +709,13 @@ def save_dbd13():
     if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
-    respondent_name = data.get("respondent_name", "")
-    evaluator_name = data.get("evaluator_name", "")
+    respondent_name = data.get("respondent_name", "") or ""
+    evaluator_name = data.get("evaluator_name", "") or ""
     entry_date = to_date_or_none(data.get("entry_date"))
-    assessment_item = data.get("assessment_item", "")
-    remarks = data.get("remarks", "")
+    if entry_date is None:
+        entry_date = datetime.now().date()
+    assessment_item = data.get("assessment_item", "") or ""
+    remarks = data.get("remarks", "") or ""
     subtotal_score = to_int_or_none(data.get("subtotal_score")) or 0
     total_score = to_int_or_none(data.get("total_score")) or 0
 

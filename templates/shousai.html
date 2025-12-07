@@ -1834,8 +1834,8 @@
         if (checked) subtotal += parseInt(checked.value);
       }
 
-      document.getElementById("dbd_subtotal").value = subtotal;
-      document.getElementById("dbd_total").value = subtotal; // 今回は subtotal＝total
+      const totalEl = document.getElementById("dbd_total");
+      if (totalEl) totalEl.value = subtotal;
     }
 
     // ラジオ変更時にリアルタイム計算
