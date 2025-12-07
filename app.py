@@ -910,6 +910,23 @@ def uploaded_file(filepath):
 #  5. Excel出力API
 # ================================
 
+CLIENT_EXPORTS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'clients')
+
+def ensure_client_folder(client_id):
+    """対象者ごとのフォルダを作成し、パスを返す"""
+    client_folder = os.path.join(CLIENT_EXPORTS_FOLDER, str(client_id))
+    os.makedirs(client_folder, exist_ok=True)
+    return client_folder
+
+def save_excel_to_client_folder(wb, client_id, sheet_type):
+    """ExcelファイルをクライアントフォルダにSave"""
+    client_folder = ensure_client_folder(client_id)
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"{sheet_type}_{client_id}_{timestamp}.xlsx"
+    filepath = os.path.join(client_folder, filename)
+    wb.save(filepath)
+    return filepath
+
 def create_excel_styles():
     """共通のExcelスタイルを作成"""
     header_font = Font(bold=True, size=12)
@@ -985,6 +1002,8 @@ def export_client():
     ws.column_dimensions['A'].width = 25
     ws.column_dimensions['B'].width = 50
 
+    save_excel_to_client_folder(wb, client_id, "client")
+
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -1043,6 +1062,8 @@ def export_visit():
 
     ws.column_dimensions['A'].width = 30
     ws.column_dimensions['B'].width = 60
+
+    save_excel_to_client_folder(wb, client_id, "visit")
 
     output = BytesIO()
     wb.save(output)
@@ -1107,6 +1128,8 @@ def export_physical():
 
     ws.column_dimensions['A'].width = 25
     ws.column_dimensions['B'].width = 60
+
+    save_excel_to_client_folder(wb, client_id, "physical")
 
     output = BytesIO()
     wb.save(output)
@@ -1236,6 +1259,8 @@ def export_dasc21():
         ws.column_dimensions[col].width = 6
     ws.column_dimensions['G'].width = 8
 
+    save_excel_to_client_folder(wb, client_id, "dasc21")
+
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -1333,6 +1358,8 @@ def export_dbd13():
     for col in ['C', 'D', 'E', 'F', 'G']:
         ws.column_dimensions[col].width = 6
     ws.column_dimensions['H'].width = 8
+
+    save_excel_to_client_folder(wb, client_id, "dbd13")
 
     output = BytesIO()
     wb.save(output)
