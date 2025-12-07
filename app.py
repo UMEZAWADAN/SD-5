@@ -1137,10 +1137,13 @@ def save_excel_to_client_folder(wb, client_id, sheet_type):
 
 def create_excel_styles():
     """共通のExcelスタイルを作成"""
-    header_font = Font(bold=True, size=12)
+    header_font = Font(bold=True, size=11)
     header_fill = PatternFill(start_color="E8F4FC", end_color="E8F4FC", fill_type="solid")
     title_font = Font(bold=True, size=16, color="FFFFFF")
     title_fill = PatternFill(start_color="2C5282", end_color="2C5282", fill_type="solid")
+    # セクションヘッダー用スタイル（shousai.htmlのassessment-section-headerに対応）
+    section_font = Font(bold=True, size=12, color="FFFFFF")
+    section_fill = PatternFill(start_color="4A5568", end_color="4A5568", fill_type="solid")
     thin_border = Border(
         left=Side(style='thin'),
         right=Side(style='thin'),
@@ -1154,11 +1157,37 @@ def create_excel_styles():
         'header_fill': header_fill,
         'title_font': title_font,
         'title_fill': title_fill,
+        'section_font': section_font,
+        'section_fill': section_fill,
         'thin_border': thin_border,
         'center_align': center_align,
         'left_align': left_align
     }
 
+
+def add_section_header(ws, row, title, styles, col_span=2):
+    """セクションヘッダーを追加するヘルパー関数"""
+    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=col_span)
+    cell = ws.cell(row=row, column=1, value=title)
+    cell.font = styles['section_font']
+    cell.fill = styles['section_fill']
+    cell.alignment = styles['center_align']
+    cell.border = styles['thin_border']
+    ws.row_dimensions[row].height = 25
+    return row + 1
+
+def add_field_row(ws, row, label, value, styles):
+    """フィールド行を追加するヘルパー関数"""
+    label_cell = ws.cell(row=row, column=1, value=label)
+    label_cell.font = styles['header_font']
+    label_cell.fill = styles['header_fill']
+    label_cell.border = styles['thin_border']
+    label_cell.alignment = styles['left_align']
+    
+    value_cell = ws.cell(row=row, column=2, value=value)
+    value_cell.border = styles['thin_border']
+    value_cell.alignment = styles['left_align']
+    return row + 1
 
 @app.route("/api/export_client", methods=["GET"])
 def export_client():
@@ -1181,60 +1210,92 @@ def export_client():
     ws.title = "利用者基本情報"
     styles = create_excel_styles()
 
-    ws.merge_cells('A1:D1')
+    # タイトル行
+    ws.merge_cells('A1:B1')
     ws['A1'] = "利用者基本情報"
     ws['A1'].font = styles['title_font']
     ws['A1'].fill = styles['title_fill']
     ws['A1'].alignment = styles['center_align']
     ws.row_dimensions[1].height = 30
 
-    fields = [
-        ("作成担当者", data.get("writer_name", "")),
-        ("相談日", str(data.get("consultation_date", "")) if data.get("consultation_date") else ""),
-        ("現況", data.get("current_status", "")),
-        ("氏名", data.get("client_name", "")),
-        ("性別", data.get("gender", "")),
-        ("生年月日", str(data.get("birth_date", "")) if data.get("birth_date") else ""),
-        ("住所", data.get("address", "")),
-        ("電話番号", data.get("phone_number", "")),
-        ("障害高齢者の日常生活自立度", data.get("disability_adl_level", "")),
-        ("認知症高齢者の日常生活自立度", data.get("dementia_adl_level", "")),
-        ("要介護認定情報", data.get("certification_info", "")),
-        ("障害者手帳", data.get("disability_certification", "")),
-        ("居住環境", data.get("living_environment", "")),
-        ("経済状況", data.get("economic_status", "")),
-        ("来訪者氏名", data.get("visitor_name", "")),
-        ("来訪者連絡先", data.get("visitor_contact", "")),
-        ("本人との関係", data.get("relation_to_client", "")),
-        ("家族構成", data.get("family_composition", "")),
-        ("緊急連絡先氏名", data.get("emergency_contact_name", "")),
-        ("緊急連絡先関係", data.get("emergency_relation", "")),
-        ("緊急連絡先情報", data.get("emergency_contact_info", "")),
-        ("生活歴", data.get("life_history", "")),
-        ("日常生活パターン", data.get("daily_life_pattern", "")),
-        ("時間帯", data.get("time_of_day", "")),
-        ("本人の内容", data.get("person_content", "")),
-        ("介護者の内容", data.get("caregiver_content", "")),
-        ("趣味・嗜好", data.get("hobbies", "")),
-        ("社会的つながり", data.get("social_connections", "")),
-        ("発症日", str(data.get("disease_onset_date", "")) if data.get("disease_onset_date") else ""),
-        ("疾患名", data.get("disease_name", "")),
-        ("主治医・医療機関", data.get("medical_institution", "")),
-        ("既往歴", data.get("medical_history", "")),
-        ("現在の状態・経過", data.get("current_condition", "")),
-        ("現在利用中の公的サービス", data.get("public_services", "")),
-        ("現在利用中の非公的サービス", data.get("private_services", "")),
-    ]
+    row = 3
+    
+    # 基本情報セクション
+    row = add_section_header(ws, row, "基本情報", styles)
+    row = add_field_row(ws, row, "作成担当者", data.get("writer_name", ""), styles)
+    row = add_field_row(ws, row, "相談日", str(data.get("consultation_date", "")) if data.get("consultation_date") else "", styles)
+    row = add_field_row(ws, row, "本人氏名", data.get("client_name", ""), styles)
+    row = add_field_row(ws, row, "性別", data.get("gender", ""), styles)
+    row = add_field_row(ws, row, "生年月日", str(data.get("birth_date", "")) if data.get("birth_date") else "", styles)
+    row = add_field_row(ws, row, "電話番号", data.get("phone_number", ""), styles)
+    row = add_field_row(ws, row, "住所", data.get("address", ""), styles)
+    row = add_field_row(ws, row, "本人の現況", data.get("current_status", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 自立度・認定情報セクション
+    row = add_section_header(ws, row, "自立度・認定情報", styles)
+    row = add_field_row(ws, row, "障害高齢者の日常生活自立度", data.get("disability_adl_level", ""), styles)
+    row = add_field_row(ws, row, "認知症高齢者の日常生活自立度", data.get("dementia_adl_level", ""), styles)
+    row = add_field_row(ws, row, "認定・総合事業情報", data.get("certification_info", ""), styles)
+    row = add_field_row(ws, row, "障害等認定", data.get("disability_certification", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 生活環境セクション
+    row = add_section_header(ws, row, "生活環境", styles)
+    row = add_field_row(ws, row, "住居環境", data.get("living_environment", ""), styles)
+    row = add_field_row(ws, row, "経済状況", data.get("economic_status", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 相談者・家族情報セクション
+    row = add_section_header(ws, row, "相談者・家族情報", styles)
+    row = add_field_row(ws, row, "来所者・相談者氏名", data.get("visitor_name", ""), styles)
+    row = add_field_row(ws, row, "本人との続柄", data.get("relation_to_client", ""), styles)
+    row = add_field_row(ws, row, "来所者連絡先", data.get("visitor_contact", ""), styles)
+    row = add_field_row(ws, row, "家族構成", data.get("family_composition", ""), styles)
+    row = add_field_row(ws, row, "緊急連絡先氏名", data.get("emergency_contact_name", ""), styles)
+    row = add_field_row(ws, row, "緊急連絡先続柄", data.get("emergency_relation", ""), styles)
+    row = add_field_row(ws, row, "緊急連絡先", data.get("emergency_contact_info", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 生活歴・日常生活セクション
+    row = add_section_header(ws, row, "生活歴・日常生活", styles)
+    row = add_field_row(ws, row, "生活歴", data.get("life_history", ""), styles)
+    row = add_field_row(ws, row, "日常生活パターン", data.get("daily_life_pattern", ""), styles)
+    row = add_field_row(ws, row, "時間帯", data.get("time_of_day", ""), styles)
+    row = add_field_row(ws, row, "本人の内容", data.get("person_content", ""), styles)
+    row = add_field_row(ws, row, "介護者の内容", data.get("caregiver_content", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 趣味・社会参加セクション
+    row = add_section_header(ws, row, "趣味・社会参加", styles)
+    row = add_field_row(ws, row, "趣味・嗜好", data.get("hobbies", ""), styles)
+    row = add_field_row(ws, row, "社会的つながり", data.get("social_connections", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 医療情報セクション
+    row = add_section_header(ws, row, "医療情報", styles)
+    row = add_field_row(ws, row, "発症日", str(data.get("disease_onset_date", "")) if data.get("disease_onset_date") else "", styles)
+    row = add_field_row(ws, row, "疾患名", data.get("disease_name", ""), styles)
+    row = add_field_row(ws, row, "主治医・医療機関", data.get("medical_institution", ""), styles)
+    row = add_field_row(ws, row, "既往歴", data.get("medical_history", ""), styles)
+    row = add_field_row(ws, row, "現在の状態・経過", data.get("current_condition", ""), styles)
+    
+    row += 1  # 空行
+    
+    # サービス利用状況セクション
+    row = add_section_header(ws, row, "サービス利用状況", styles)
+    row = add_field_row(ws, row, "現在利用中の公的サービス", data.get("public_services", ""), styles)
+    row = add_field_row(ws, row, "現在利用中の非公的サービス", data.get("private_services", ""), styles)
 
-    for i, (label, value) in enumerate(fields, start=3):
-        ws.cell(row=i, column=1, value=label).font = styles['header_font']
-        ws.cell(row=i, column=1).fill = styles['header_fill']
-        ws.cell(row=i, column=1).border = styles['thin_border']
-        ws.cell(row=i, column=2, value=value).border = styles['thin_border']
-        ws.cell(row=i, column=2).alignment = styles['left_align']
-
-    ws.column_dimensions['A'].width = 25
-    ws.column_dimensions['B'].width = 50
+    # 列幅を広げて文字がはみ出さないようにする
+    ws.column_dimensions['A'].width = 32
+    ws.column_dimensions['B'].width = 60
 
     save_excel_to_client_folder(wb, client_id, "client")
 
@@ -1268,43 +1329,59 @@ def export_visit():
     ws.title = "訪問記録表"
     styles = create_excel_styles()
 
-    ws.merge_cells('A1:D1')
+    # タイトル行
+    ws.merge_cells('A1:B1')
     ws['A1'] = "訪問記録表"
     ws['A1'].font = styles['title_font']
     ws['A1'].fill = styles['title_fill']
     ws['A1'].alignment = styles['center_align']
     ws.row_dimensions[1].height = 30
 
-    fields = [
-        ("訪問日時",str(data.get("visit_datetime", "")) if data.get("visit_datetime") else ""),
-        ("訪問者氏名", data.get("visitor_name", "")),
-        ("訪問目的", data.get("visit_purpose", "")),
-        ("訪問時の状態", data.get("visit_condition", "")),
-        ("訪問に対する本人の反応・理解", data.get("vr_reaction", "")),
-        ("認知機能", data.get("vr_cognition", "")),
-        ("認知症日常生活自立度", data.get("vr_dementia_adl", "")),
-        ("精神症状・行動症状", data.get("vr_behavior", "")),
-        ("身体状況", data.get("vr_physical", "")),
-        ("障害高齢者の日常生活自立度", data.get("vr_disability_adl", "")),
-        ("生活状況", data.get("vr_living", "")),
-        ("DASC-21 点数", str(data.get("vr_dasc", "")) if data.get("vr_dasc") else ""),
-        ("DBD13 点数", str(data.get("vr_dbd", "")) if data.get("vr_dbd") else ""),
-        ("J-ZBI8 点数", str(data.get("vr_jzbi", "")) if data.get("vr_jzbi") else ""),
-        ("本人の意向・希望", data.get("vr_person_intent", "")),
-        ("介護者の意向・希望", data.get("vr_family_intent", "")),
-        ("その他", data.get("vr_other", "")),
-        ("判断・支援内容", data.get("support_decision", "")),
-        ("今後の方針・支援計画", data.get("future_plan", "")),
-    ]
+    row = 3
+    
+    # 訪問基本情報セクション
+    row = add_section_header(ws, row, "訪問基本情報", styles)
+    row = add_field_row(ws, row, "訪問日時", str(data.get("visit_datetime", "")) if data.get("visit_datetime") else "", styles)
+    row = add_field_row(ws, row, "訪問者氏名", data.get("visitor_name", ""), styles)
+    row = add_field_row(ws, row, "訪問目的", data.get("visit_purpose", ""), styles)
+    row = add_field_row(ws, row, "訪問時の状態", data.get("visit_condition", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 評価内容セクション
+    row = add_section_header(ws, row, "評価内容", styles)
+    row = add_field_row(ws, row, "訪問に対する本人の反応・理解", data.get("vr_reaction", ""), styles)
+    row = add_field_row(ws, row, "認知機能", data.get("vr_cognition", ""), styles)
+    row = add_field_row(ws, row, "認知症日常生活自立度", data.get("vr_dementia_adl", ""), styles)
+    row = add_field_row(ws, row, "精神症状・行動症状", data.get("vr_behavior", ""), styles)
+    row = add_field_row(ws, row, "身体状況", data.get("vr_physical", ""), styles)
+    row = add_field_row(ws, row, "障害高齢者の日常生活自立度", data.get("vr_disability_adl", ""), styles)
+    row = add_field_row(ws, row, "生活状況", data.get("vr_living", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 評価点数セクション
+    row = add_section_header(ws, row, "評価点数", styles)
+    row = add_field_row(ws, row, "DASC-21 点数", str(data.get("vr_dasc", "")) if data.get("vr_dasc") else "", styles)
+    row = add_field_row(ws, row, "DBD13 点数", str(data.get("vr_dbd", "")) if data.get("vr_dbd") else "", styles)
+    row = add_field_row(ws, row, "J-ZBI8 点数", str(data.get("vr_jzbi", "")) if data.get("vr_jzbi") else "", styles)
+    
+    row += 1  # 空行
+    
+    # 意向・希望セクション
+    row = add_section_header(ws, row, "意向・希望", styles)
+    row = add_field_row(ws, row, "本人の意向・希望", data.get("vr_person_intent", ""), styles)
+    row = add_field_row(ws, row, "介護者の意向・希望", data.get("vr_family_intent", ""), styles)
+    row = add_field_row(ws, row, "その他", data.get("vr_other", ""), styles)
+    
+    row += 1  # 空行
+    
+    # 支援計画セクション
+    row = add_section_header(ws, row, "支援計画", styles)
+    row = add_field_row(ws, row, "判断・支援内容", data.get("support_decision", ""), styles)
+    row = add_field_row(ws, row, "今後の方針・支援計画", data.get("future_plan", ""), styles)
 
-    for i, (label, value) in enumerate(fields, start=3):
-        ws.cell(row=i, column=1, value=label).font = styles['header_font']
-        ws.cell(row=i, column=1).fill = styles['header_fill']
-        ws.cell(row=i, column=1).border = styles['thin_border']
-        ws.cell(row=i, column=2, value=value).border = styles['thin_border']
-        ws.cell(row=i, column=2).alignment = styles['left_align']
-
-    ws.column_dimensions['A'].width = 30
+    ws.column_dimensions['A'].width = 32
     ws.column_dimensions['B'].width = 60
 
     save_excel_to_client_folder(wb, client_id, "visit")
@@ -1339,50 +1416,76 @@ def export_physical():
     ws.title = "身体状況チェック表"
     styles = create_excel_styles()
 
-    ws.merge_cells('A1:D1')
+    # タイトル行
+    ws.merge_cells('A1:B1')
     ws['A1'] = "身体状況チェック表"
     ws['A1'].font = styles['title_font']
     ws['A1'].fill = styles['title_fill']
     ws['A1'].alignment = styles['center_align']
     ws.row_dimensions[1].height = 30
 
-    fields = [
-        ("立ち上がり・運動機能",data.get("ps_mobility", "")),
-        ("歩行状況", data.get("ps_walking", "")),
-        ("移動範囲", data.get("ps_transport", "")),
-        ("意思疎通", data.get("ps_communication", "")),
-        ("意思決定能力", data.get("ps_decision", "")),
-        ("視力・聴力", data.get("ps_senses", "")),
-        ("入浴と清潔状態", data.get("ps_hygiene", "")),
-        ("衣類・家屋の清潔さ", data.get("ps_cleanliness", "")),
-        ("栄養状態", data.get("ps_nutrition", "")),
-        ("過食・異食", data.get("ps_eating_behavior", "")),
-        ("嚥下能力", data.get("ps_swallowing", "")),
-        ("食事拒否・時間", data.get("ps_meal_refusal", "")),
-        ("水分摂取状況", data.get("ps_water", "")),
-        ("飲酒と喫煙", data.get("ps_habits", "")),
-        ("排泄状況", data.get("ps_excretion", "")),
-        ("便秘（下剤）", data.get("ps_constipation", "")),
-        ("睡眠状況", data.get("ps_sleep", "")),
-        ("生活リズム", data.get("ps_daily_rhythm", "")),
-        ("日中の睡眠", data.get("ps_daytime_sleep", "")),
-        ("夜間の行動", data.get("ps_night_behavior", "")),
-        ("居住環境の問題", data.get("ps_house_env", "")),
-        ("金銭管理", data.get("ps_money", "")),
-        ("家族の介護力", data.get("ps_family_care", "")),
-        ("虐待可能性", data.get("ps_abuse", "")),
-        ("見守り状況", data.get("ps_watch", "")),
-        ("SOS発信可否", data.get("ps_sos", "")),
-    ]
+    row = 3
+    
+    # 運動機能セクション
+    row = add_section_header(ws, row, "運動機能", styles)
+    row = add_field_row(ws, row, "立ち上がり・運動機能", data.get("ps_mobility", "") or "", styles)
+    row = add_field_row(ws, row, "歩行状況", data.get("ps_walking", "") or "", styles)
+    row = add_field_row(ws, row, "移動範囲", data.get("ps_transport", "") or "", styles)
+    
+    row += 1  # 空行
+    
+    # 認知・コミュニケーションセクション
+    row = add_section_header(ws, row, "認知・コミュニケーション", styles)
+    row = add_field_row(ws, row, "意思疎通", data.get("ps_communication", "") or "", styles)
+    row = add_field_row(ws, row, "意思決定能力", data.get("ps_decision", "") or "", styles)
+    row = add_field_row(ws, row, "視力・聴力", data.get("ps_senses", "") or "", styles)
+    
+    row += 1  # 空行
+    
+    # 清潔・衛生セクション
+    row = add_section_header(ws, row, "清潔・衛生", styles)
+    row = add_field_row(ws, row, "入浴と清潔状態", data.get("ps_hygiene", "") or "", styles)
+    row = add_field_row(ws, row, "衣類・家屋の清潔さ", data.get("ps_cleanliness", "") or "", styles)
+    
+    row += 1  # 空行
+    
+    # 食事・栄養セクション
+    row = add_section_header(ws, row, "食事・栄養", styles)
+    row = add_field_row(ws, row, "栄養状態", data.get("ps_nutrition", "") or "", styles)
+    row = add_field_row(ws, row, "過食・異食", data.get("ps_eating_behavior", "") or "", styles)
+    row = add_field_row(ws, row, "嚥下能力", data.get("ps_swallowing", "") or "", styles)
+    row = add_field_row(ws, row, "食事拒否・時間", data.get("ps_meal_refusal", "") or "", styles)
+    row = add_field_row(ws, row, "水分摂取状況", data.get("ps_water", "") or "", styles)
+    row = add_field_row(ws, row, "飲酒と喫煙", data.get("ps_habits", "") or "", styles)
+    
+    row += 1  # 空行
+    
+    # 排泄セクション
+    row = add_section_header(ws, row, "排泄", styles)
+    row = add_field_row(ws, row, "排泄状況", data.get("ps_excretion", "") or "", styles)
+    row = add_field_row(ws, row, "便秘（下剤）", data.get("ps_constipation", "") or "", styles)
+    
+    row += 1  # 空行
+    
+    # 睡眠・生活リズムセクション
+    row = add_section_header(ws, row, "睡眠・生活リズム", styles)
+    row = add_field_row(ws, row, "睡眠状況", data.get("ps_sleep", "") or "", styles)
+    row = add_field_row(ws, row, "生活リズム", data.get("ps_daily_rhythm", "") or "", styles)
+    row = add_field_row(ws, row, "日中の睡眠", data.get("ps_daytime_sleep", "") or "", styles)
+    row = add_field_row(ws, row, "夜間の行動", data.get("ps_night_behavior", "") or "", styles)
+    
+    row += 1  # 空行
+    
+    # 生活環境・支援状況セクション
+    row = add_section_header(ws, row, "生活環境・支援状況", styles)
+    row = add_field_row(ws, row, "居住環境の問題", data.get("ps_house_env", "") or "", styles)
+    row = add_field_row(ws, row, "金銭管理", data.get("ps_money", "") or "", styles)
+    row = add_field_row(ws, row, "家族の介護力", data.get("ps_family_care", "") or "", styles)
+    row = add_field_row(ws, row, "虐待可能性", data.get("ps_abuse", "") or "", styles)
+    row = add_field_row(ws, row, "見守り状況", data.get("ps_watch", "") or "", styles)
+    row = add_field_row(ws, row, "SOS発信可否", data.get("ps_sos", "") or "", styles)
 
-    for i, (label, value) in enumerate(fields, start=3):
-        ws.cell(row=i, column=1, value=label).font = styles['header_font']
-        ws.cell(row=i, column=1).fill = styles['header_fill']
-        ws.cell(row=i, column=1).border = styles['thin_border']
-        ws.cell(row=i, column=2, value=value or "").border = styles['thin_border']
-        ws.cell(row=i, column=2).alignment = styles['left_align']
-
-    ws.column_dimensions['A'].width = 25
+    ws.column_dimensions['A'].width = 32
     ws.column_dimensions['B'].width = 60
 
     save_excel_to_client_folder(wb, client_id, "physical")
