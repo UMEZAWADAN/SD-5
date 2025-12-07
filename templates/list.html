@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>対象者一覧</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+</head>
+<body>
+
+    <!-- 上部ヘッダー -->
+    <div class="header">
+        <div class="header-title">認知症初期支援業務管理システム</div>
+        <div class="header-nav">
+            <a href="/top" class="nav-btn">トップへ戻る</a>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <h1>対象者一覧</h1>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="氏名で検索..." onkeyup="filterTable()">
+        </div>
+
+        <table id="clientTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>氏名</th>
+                    <th>性別</th>
+                    <th>相談日</th>
+                    <th>現況</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="clientTableBody">
+                <!-- データはJavaScriptで動的に挿入 -->
+            </tbody>
+        </table>
+
+        <div id="noData" style="display: none; text-align: center; padding: 40px; color: #888;">
+            対象者データがありません
+        </div>
+    </div>
+
+<script>
+// ページ読み込み時にデータを取得
+document.addEventListener('DOMContentLoaded', function() {
+    loadClients();
+});
+
+function loadClients() {
+    fetch('/api/get_clients')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('clientTableBody');
+            const noData = document.getElementById('noData');
+            
+            if (data.status === 'ok' && data.clients && data.clients.length > 0) {
+                tbody.innerHTML = '';
+                data.clients.forEach(client => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${client.client_id}</td>
+                        <td>${client.client_name || '---'}</td>
+                        <td>${client.gender || '---'}</td>
+                        <td>${client.consultation_date || '---'}</td>
+                        <td>${client.current_status ? client.current_status.substring(0, 30) + '...' : '---'}</td>
+                        <td>
+                            <a href="/shousai?client_id=${client.client_id}" class="action-btn">詳細</a>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                noData.style.display = 'none';
+            } else {
+                tbody.innerHTML = '';
+                noData.style.display = 'block';
+            }
+        })
+        .catch(err => {
+            console.error('Error loading clients:', err);
+            document.getElementById('noData').style.display = 'block';
+            document.getElementById('noData').textContent = 'データの読み込みに失敗しました';
+        });
+}
+
+function filterTable() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('clientTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) {
+        const nameCell = rows[i].getElementsByTagName('td')[1];
+        if (nameCell) {
+            const name = nameCell.textContent || nameCell.innerText;
+            if (name.toLowerCase().indexOf(filter) > -1) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+}
+</script>
+
+</body>
+</html>

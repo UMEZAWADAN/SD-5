@@ -2,48 +2,50 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>類似事例検索システム（デモ）</title>
+<title>類似事例検索システム</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/text.css') }}">
 </head>
 
 <body>
 
+<!-- ヘッダー -->
+<div class="header">
+    <div class="header-title">認知症初期支援業務管理システム - 類似事例検索</div>
+    <div class="header-nav">
+        <a href="/top" class="nav-btn">トップへ戻る</a>
+    </div>
+</div>
+
+<div class="main-container">
+
 <h1>類似支援事例検索（テキストマイニング）</h1>
 
 <!-- 入力部分 -->
 <div class="card">
-  <h3>対象者の状況</h3>
+  <h3>対象者の状況を入力</h3>
+  
   <h4>訪問に対する本人の反応・理解</h4>
-  <textarea id="know" rows="5"></textarea>
+  <textarea id="know" rows="4" placeholder="例：訪問を受け入れ、会話は楽しそうだが、妄想的発言がみられる..."></textarea>
 
-  <h4>認知機能</h4>
-  <input type="text" name="ninchi_kinou">
+  <h4>認知機能（認知症日常生活自立度）</h4>
+  <textarea id="ninchi_kinou" rows="3" placeholder="例：DASC-21：38点。軽度～中等度の低下（近時記憶・問題解決に支障）..."></textarea>
 
   <h4>精神症状・行動症状</h4>
-  <textarea id="symptom" rows="5"></textarea>
+  <textarea id="symptom" rows="3" placeholder="例：物盗られ妄想あり。特定の隣人に対する訴えを繰り返す..."></textarea>
 
-  <h4>身体状況</h4>
-  <textarea id="body_con" rows="5"></textarea>
+  <h4>身体状況（障害高齢者の日常生活自立度）</h4>
+  <textarea id="body_con" rows="3" placeholder="例：独居。高血圧あり。ADLはおおむね自立..."></textarea>
 
   <h4>生活状況</h4>
-  <textarea id="life_con" rows="5"></textarea>
-
-  <h4>DASC-21</h4>
-  <input type="text" name="dasc21">
-
-  <h4>DBD13</h4>
-  <input type="text" name="dbd13">
+  <textarea id="life_con" rows="3" placeholder="例：室内は整理整頓されており、自立生活を維持。食事・保清は自立..."></textarea>
 
   <h4>本人の意向・希望</h4>
-  <textarea id="honnin_will" rows="5"></textarea>
+  <textarea id="honnin_will" rows="3" placeholder="例：独立志向が強く、「自分でできる」との意識。趣味継続を希望..."></textarea>
 
   <h4>介護者の意向・希望</h4>
-  <textarea id="kangosha_will" rows="5"></textarea>
+  <textarea id="kangosha_will" rows="3" placeholder="例：娘（市外）と民生委員が協力し見守り体制を希望..."></textarea>
 
-  <h4>判断・支援内容</h4>
-  <textarea id="care" rows="5"></textarea>
-
-  <br><br>
+  <br>
 
   <button class="btn-primary" onclick="searchCases()">類似事例を検索</button>
   <button class="btn-secondary" onclick="clearForm()">クリア</button>
@@ -51,9 +53,9 @@
 
 <!-- キーワード表示カード -->
 <div class="card">
-  <h3>キーワード</h3>
+  <h3>抽出されたキーワード</h3>
   <div id="keyword">
-    <p style="color:#888;">（キーワードがここに表示されます）</p>
+    <p style="color:#888;">（検索実行後にキーワードが表示されます）</p>
   </div>
 </div>
 
@@ -65,59 +67,92 @@
   </div>
 </div>
 
-
-
-<!-- ここから -->
-<div class="card">
-  <h3>対象者の訪問記録（文章）ここは後で削除</h3>
-  <textarea id="visit" rows="5"
-    placeholder="例：最近転倒が増え、内服が自己管理できない状況である。徘徊傾向も見られ..."></textarea>
-
-  <br><br>
-
-  <button class="btn-primary" onclick="searchCases()">類似事例を検索</button>
-  <button class="btn-secondary" onclick="clearForm()">クリア</button>
 </div>
-<!-- ここまで後で削除 -->
 
 <script>
 function searchCases() {
-  let inputText = document.getElementById("know").value;
+  // 全フィールドからテキストを収集
+  const know = document.getElementById("know").value;
+  const ninchi = document.getElementById("ninchi_kinou").value;
+  const symptom = document.getElementById("symptom").value;
+  const body_con = document.getElementById("body_con").value;
+  const life_con = document.getElementById("life_con").value;
+  const honnin = document.getElementById("honnin_will").value;
+  const kangosha = document.getElementById("kangosha_will").value;
 
-  if (!inputText.trim()) {
-    alert("訪問記録を入力してください。");
+  // 少なくとも1つのフィールドに入力があるかチェック
+  const allText = know + ninchi + symptom + body_con + life_con + honnin + kangosha;
+  if (!allText.trim()) {
+    alert("少なくとも1つの項目を入力してください。");
     return;
   }
 
-  // Flaskへ送信する処理は app.py に記載
-  fetch("/search", {
+  // 検索中表示
+  document.getElementById("resultArea").innerHTML = "<p>検索中...</p>";
+  document.getElementById("keyword").innerHTML = "<p>キーワード抽出中...</p>";
+
+  // Flaskへ送信
+  fetch("/api/search_similar", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ text: inputText })
+    body: JSON.stringify({
+      know: know,
+      ninchi_kinou: ninchi,
+      symptom: symptom,
+      body_con: body_con,
+      life_con: life_con,
+      honnin_will: honnin,
+      kangosha_will: kangosha
+    })
   })
   .then(res => res.json())
   .then(data => {
+    // キーワード表示
+    let keywordDiv = document.getElementById("keyword");
+    if (data.keywords && data.keywords.length > 0) {
+      keywordDiv.innerHTML = "<div class='keyword-list'>" + 
+        data.keywords.map(k => `<span class='keyword-tag'>${k}</span>`).join(" ") + 
+        "</div>";
+    } else {
+      keywordDiv.innerHTML = "<p style='color:#888;'>キーワードが抽出されませんでした</p>";
+    }
+
+    // 結果表示
     let resultDiv = document.getElementById("resultArea");
     resultDiv.innerHTML = "";
 
-    data.results.forEach((item, i) => {
-      let box = document.createElement("div");
-      box.className = "case-box";
+    if (data.results && data.results.length > 0) {
+      data.results.forEach((item, i) => {
+        let box = document.createElement("div");
+        box.className = "case-box";
 
-      box.innerHTML =
-        `<div class="case-title">【類似度 ${item.similarity}%】事例 ${i+1}</div>
-         <div><strong>記録：</strong>${item.text}</div>
-         <div><strong>支援方針：</strong>${item.policy}</div>`;
+        box.innerHTML =
+          `<div class="case-title">【類似度 ${item.similarity}%】事例 ${i+1}</div>
+           <div class="case-content"><strong>状況：</strong>${item.text}</div>
+           <div class="case-policy"><strong>支援方針：</strong>${item.policy}</div>`;
 
-      resultDiv.appendChild(box);
-    });
+        resultDiv.appendChild(box);
+      });
+    } else {
+      resultDiv.innerHTML = "<p style='color:#888;'>類似事例が見つかりませんでした。事例データを登録してください。</p>";
+    }
+  })
+  .catch(err => {
+    console.error("Error:", err);
+    document.getElementById("resultArea").innerHTML = "<p style='color:red;'>検索中にエラーが発生しました</p>";
   });
 }
 
 function clearForm() {
   document.getElementById("know").value = "";
+  document.getElementById("ninchi_kinou").value = "";
+  document.getElementById("symptom").value = "";
+  document.getElementById("body_con").value = "";
+  document.getElementById("life_con").value = "";
+  document.getElementById("honnin_will").value = "";
+  document.getElementById("kangosha_will").value = "";
   document.getElementById("keyword").innerHTML =
-    "<p style='color:#888;'>(キーワードがここに表示されます)</p>";
+    "<p style='color:#888;'>(検索実行後にキーワードが表示されます)</p>";
   document.getElementById("resultArea").innerHTML =
     "<p style='color:#888;'>(検索結果がここに表示されます)</p>";
 }
