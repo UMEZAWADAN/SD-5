@@ -1139,7 +1139,8 @@ def create_excel_styles():
     """共通のExcelスタイルを作成"""
     header_font = Font(bold=True, size=12)
     header_fill = PatternFill(start_color="E8F4FC", end_color="E8F4FC", fill_type="solid")
-    title_font = Font(bold=True, size=14)
+    title_font = Font(bold=True, size=16, color="FFFFFF")
+    title_fill = PatternFill(start_color="2C5282", end_color="2C5282", fill_type="solid")
     thin_border = Border(
         left=Side(style='thin'),
         right=Side(style='thin'),
@@ -1152,6 +1153,7 @@ def create_excel_styles():
         'header_font': header_font,
         'header_fill': header_fill,
         'title_font': title_font,
+        'title_fill': title_fill,
         'thin_border': thin_border,
         'center_align': center_align,
         'left_align': left_align
@@ -1182,7 +1184,9 @@ def export_client():
     ws.merge_cells('A1:D1')
     ws['A1'] = "利用者基本情報"
     ws['A1'].font = styles['title_font']
+    ws['A1'].fill = styles['title_fill']
     ws['A1'].alignment = styles['center_align']
+    ws.row_dimensions[1].height = 30
 
     fields = [
         ("作成担当者", data.get("writer_name", "")),
@@ -1267,10 +1271,12 @@ def export_visit():
     ws.merge_cells('A1:D1')
     ws['A1'] = "訪問記録表"
     ws['A1'].font = styles['title_font']
+    ws['A1'].fill = styles['title_fill']
     ws['A1'].alignment = styles['center_align']
+    ws.row_dimensions[1].height = 30
 
     fields = [
-        ("訪問日時", str(data.get("visit_datetime", "")) if data.get("visit_datetime") else ""),
+        ("訪問日時",str(data.get("visit_datetime", "")) if data.get("visit_datetime") else ""),
         ("訪問者氏名", data.get("visitor_name", "")),
         ("訪問目的", data.get("visit_purpose", "")),
         ("訪問時の状態", data.get("visit_condition", "")),
@@ -1336,10 +1342,12 @@ def export_physical():
     ws.merge_cells('A1:D1')
     ws['A1'] = "身体状況チェック表"
     ws['A1'].font = styles['title_font']
+    ws['A1'].fill = styles['title_fill']
     ws['A1'].alignment = styles['center_align']
+    ws.row_dimensions[1].height = 30
 
     fields = [
-        ("立ち上がり・運動機能", data.get("ps_mobility", "")),
+        ("立ち上がり・運動機能",data.get("ps_mobility", "")),
         ("歩行状況", data.get("ps_walking", "")),
         ("移動範囲", data.get("ps_transport", "")),
         ("意思疎通", data.get("ps_communication", "")),
@@ -1418,16 +1426,20 @@ def export_dasc21():
     ws.title = "DASC-21"
     styles = create_excel_styles()
 
-    ws.merge_cells('A1:F1')
+    ws.merge_cells('A1:G1')
     ws['A1'] = "DASC-21 地域包括ケアシステムにおける認知症アセスメントシート"
     ws['A1'].font = styles['title_font']
+    ws['A1'].fill = styles['title_fill']
     ws['A1'].alignment = styles['center_align']
+    ws.row_dimensions[1].height = 30
 
     ws['A3'] = "情報提供者氏名"
     ws['B3'] = data.get("informant_name", "")
     ws['C3'] = "評価者氏名"
     ws['D3'] = data.get("evaluator_name", "")
-    for col in ['A', 'B', 'C', 'D']:
+    ws['E3'] = "評価日"
+    ws['F3'] = assessment_answers.get("evaluation_date", "")
+    for col in ['A', 'B', 'C', 'D', 'E', 'F']:
         ws[f'{col}3'].border = styles['thin_border']
 
     ws['A5'] = "評価基準: 1=問題なくできる 2=だいたいできる 3=あまりできない 4=できない"
@@ -1562,10 +1574,12 @@ def export_dbd13():
     ws.title = "DBD-13"
     styles = create_excel_styles()
 
-    ws.merge_cells('A1:G1')
+    ws.merge_cells('A1:H1')
     ws['A1'] = "DBD-13 認知症行動障害尺度（短縮版）"
     ws['A1'].font = styles['title_font']
+    ws['A1'].fill = styles['title_fill']
     ws['A1'].alignment = styles['center_align']
+    ws.row_dimensions[1].height = 30
 
     ws['A3'] = "回答者氏名"
     ws['B3'] = data.get("respondent_name", "")
