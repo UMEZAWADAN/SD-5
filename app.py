@@ -1178,14 +1178,36 @@ def export_client():
     ws['A1'].alignment = styles['center_align']
 
     fields = [
-        ("氏名", data.get("name", "")),
-        ("フリガナ", data.get("furigana", "")),
-        ("生年月日", str(data.get("birth_date", "")) if data.get("birth_date") else ""),
+        ("作成担当者", data.get("writer_name", "")),
+        ("相談日", str(data.get("consultation_date", "")) if data.get("consultation_date") else ""),
+        ("現況", data.get("current_status", "")),
+        ("氏名", data.get("client_name", "")),
         ("性別", data.get("gender", "")),
+        ("生年月日", str(data.get("birth_date", "")) if data.get("birth_date") else ""),
         ("住所", data.get("address", "")),
-        ("電話番号", data.get("phone", "")),
-        ("緊急連絡先", data.get("emergency_contact", "")),
-        ("緊急連絡先電話", data.get("emergency_phone", "")),
+        ("電話番号", data.get("phone_number", "")),
+        ("障害高齢者の日常生活自立度", data.get("disability_adl_level", "")),
+        ("認知症高齢者の日常生活自立度", data.get("dementia_adl_level", "")),
+        ("要介護認定情報", data.get("certification_info", "")),
+        ("障害者手帳", data.get("disability_certification", "")),
+        ("居住環境", data.get("living_environment", "")),
+        ("経済状況", data.get("economic_status", "")),
+        ("来訪者氏名", data.get("visitor_name", "")),
+        ("来訪者連絡先", data.get("visitor_contact", "")),
+        ("本人との関係", data.get("relation_to_client", "")),
+        ("家族構成", data.get("family_composition", "")),
+        ("緊急連絡先氏名", data.get("emergency_contact_name", "")),
+        ("緊急連絡先関係", data.get("emergency_relation", "")),
+        ("緊急連絡先情報", data.get("emergency_contact_info", "")),
+        ("生活歴", data.get("life_history", "")),
+        ("日常生活パターン", data.get("daily_life_pattern", "")),
+        ("時間帯", data.get("time_of_day", "")),
+        ("本人の内容", data.get("person_content", "")),
+        ("介護者の内容", data.get("caregiver_content", "")),
+        ("趣味・嗜好", data.get("hobbies", "")),
+        ("社会的つながり", data.get("social_connections", "")),
+        ("発症日", str(data.get("disease_onset_date", "")) if data.get("disease_onset_date") else ""),
+        ("疾患名", data.get("disease_name", "")),
         ("主治医・医療機関", data.get("medical_institution", "")),
         ("既往歴", data.get("medical_history", "")),
         ("現在の状態・経過", data.get("current_condition", "")),
@@ -1244,12 +1266,20 @@ def export_visit():
         ("訪問日時", str(data.get("visit_datetime", "")) if data.get("visit_datetime") else ""),
         ("訪問者氏名", data.get("visitor_name", "")),
         ("訪問目的", data.get("visit_purpose", "")),
+        ("訪問時の状態", data.get("visit_condition", "")),
         ("訪問に対する本人の反応・理解", data.get("vr_reaction", "")),
         ("認知機能", data.get("vr_cognition", "")),
-        ("生活状況", data.get("vr_living", "")),
+        ("認知症日常生活自立度", data.get("vr_dementia_adl", "")),
+        ("精神症状・行動症状", data.get("vr_behavior", "")),
         ("身体状況", data.get("vr_physical", "")),
-        ("精神状態", data.get("vr_mental", "")),
-        ("服薬状況", data.get("vr_medication", "")),
+        ("障害高齢者の日常生活自立度", data.get("vr_disability_adl", "")),
+        ("生活状況", data.get("vr_living", "")),
+        ("DASC-21 点数", str(data.get("vr_dasc", "")) if data.get("vr_dasc") else ""),
+        ("DBD13 点数", str(data.get("vr_dbd", "")) if data.get("vr_dbd") else ""),
+        ("J-ZBI8 点数", str(data.get("vr_jzbi", "")) if data.get("vr_jzbi") else ""),
+        ("本人の意向・希望", data.get("vr_person_intent", "")),
+        ("介護者の意向・希望", data.get("vr_family_intent", "")),
+        ("その他", data.get("vr_other", "")),
         ("判断・支援内容", data.get("support_decision", "")),
         ("今後の方針・支援計画", data.get("future_plan", "")),
     ]
@@ -1303,21 +1333,31 @@ def export_physical():
 
     fields = [
         ("立ち上がり・運動機能", data.get("ps_mobility", "")),
-        ("歩行状況・歩行レベル", data.get("ps_walking", "")),
-        ("移動方法・範囲", data.get("ps_transport", "")),
+        ("歩行状況", data.get("ps_walking", "")),
+        ("移動範囲", data.get("ps_transport", "")),
         ("意思疎通", data.get("ps_communication", "")),
-        ("視力", data.get("ps_vision", "")),
-        ("聴力", data.get("ps_hearing", "")),
-        ("食事", data.get("ps_eating", "")),
-        ("排泄", data.get("ps_toilet", "")),
-        ("入浴", data.get("ps_bathing", "")),
-        ("睡眠", data.get("ps_sleep", "")),
-        ("服薬管理", data.get("ps_medication", "")),
+        ("意思決定能力", data.get("ps_decision", "")),
+        ("視力・聴力", data.get("ps_senses", "")),
+        ("入浴と清潔状態", data.get("ps_hygiene", "")),
+        ("衣類・家屋の清潔さ", data.get("ps_cleanliness", "")),
+        ("栄養状態", data.get("ps_nutrition", "")),
+        ("過食・異食", data.get("ps_eating_behavior", "")),
+        ("嚥下能力", data.get("ps_swallowing", "")),
+        ("食事拒否・時間", data.get("ps_meal_refusal", "")),
+        ("水分摂取状況", data.get("ps_water", "")),
+        ("飲酒と喫煙", data.get("ps_habits", "")),
+        ("排泄状況", data.get("ps_excretion", "")),
+        ("便秘（下剤）", data.get("ps_constipation", "")),
+        ("睡眠状況", data.get("ps_sleep", "")),
+        ("生活リズム", data.get("ps_daily_rhythm", "")),
+        ("日中の睡眠", data.get("ps_daytime_sleep", "")),
+        ("夜間の行動", data.get("ps_night_behavior", "")),
+        ("居住環境の問題", data.get("ps_house_env", "")),
         ("金銭管理", data.get("ps_money", "")),
         ("家族の介護力", data.get("ps_family_care", "")),
-        ("虐待の可能性", data.get("ps_abuse", "")),
-        ("見守りの状況", data.get("ps_watch", "")),
-        ("緊急時のSOS発信", data.get("ps_sos", "")),
+        ("虐待可能性", data.get("ps_abuse", "")),
+        ("見守り状況", data.get("ps_watch", "")),
+        ("SOS発信可否", data.get("ps_sos", "")),
     ]
 
     for i, (label, value) in enumerate(fields, start=3):
@@ -1356,6 +1396,15 @@ def export_dasc21():
 
     if not data:
         return jsonify({"status": "error", "message": "データが見つかりません"}), 404
+
+    import json
+    assessment_answers = {}
+    try:
+        assessment_item = data.get("assessment_item", "")
+        if assessment_item:
+            assessment_answers = json.loads(assessment_item)
+    except (json.JSONDecodeError, TypeError):
+        assessment_answers = {}
 
     wb = Workbook()
     ws = wb.active
@@ -1432,7 +1481,12 @@ def export_dasc21():
         row += 1
 
         for num, question in items:
-            score = data.get(f"q{num}", "")
+            score = assessment_answers.get(f"q{num}", "")
+            if score != "":
+                try:
+                    score = int(score)
+                except (ValueError, TypeError):
+                    score = ""
             ws.cell(row=row, column=1, value=num).border = styles['thin_border']
             ws.cell(row=row, column=1).alignment = styles['center_align']
             ws.cell(row=row, column=2, value=question).border = styles['thin_border']
@@ -1441,7 +1495,7 @@ def export_dasc21():
                 cell = ws.cell(row=row, column=i, value="○" if score == val else "")
                 cell.border = styles['thin_border']
                 cell.alignment = styles['center_align']
-            ws.cell(row=row, column=7, value=score if score else "").border = styles['thin_border']
+            ws.cell(row=row, column=7, value=score if score != "" else "").border = styles['thin_border']
             ws.cell(row=row, column=7).alignment = styles['center_align']
             row += 1
 
@@ -1486,6 +1540,15 @@ def export_dbd13():
 
     if not data:
         return jsonify({"status": "error", "message": "データが見つかりません"}), 404
+
+    import json
+    assessment_answers = {}
+    try:
+        assessment_item = data.get("assessment_item", "")
+        if assessment_item:
+            assessment_answers = json.loads(assessment_item)
+    except (json.JSONDecodeError, TypeError):
+        assessment_answers = {}
 
     wb = Workbook()
     ws = wb.active
@@ -1536,7 +1599,12 @@ def export_dbd13():
     row += 1
 
     for num, question in dbd_items:
-        score = data.get(f"d{num}", "")
+        score = assessment_answers.get(f"d{num}", "")
+        if score != "":
+            try:
+                score = int(score)
+            except (ValueError, TypeError):
+                score = ""
         ws.cell(row=row, column=1, value=num).border = styles['thin_border']
         ws.cell(row=row, column=1).alignment = styles['center_align']
         ws.cell(row=row, column=2, value=question).border = styles['thin_border']
@@ -1545,7 +1613,7 @@ def export_dbd13():
             cell = ws.cell(row=row, column=i, value="○" if score == val else "")
             cell.border = styles['thin_border']
             cell.alignment = styles['center_align']
-        ws.cell(row=row, column=8, value=score if score is not None else "").border = styles['thin_border']
+        ws.cell(row=row, column=8, value=score if score != "" else "").border = styles['thin_border']
         ws.cell(row=row, column=8).alignment = styles['center_align']
         row += 1
 
