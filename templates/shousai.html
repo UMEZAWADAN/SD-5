@@ -2056,14 +2056,36 @@
       const json = await res.json();
 
       const list = document.getElementById("fileList");
+      const emptyDiv = document.getElementById("emptyFiles");
       list.innerHTML = "";
+
+      if (!json.files || json.files.length === 0) {
+        emptyDiv.style.display = "block";
+        return;
+      }
+      
+      emptyDiv.style.display = "none";
 
       json.files.forEach(f => {
         const li = document.createElement("li");
+        const fileName = f.file_name || f.file_path.split("/").pop();
+        const isExcel = fileName.endsWith(".xlsx") || fileName.endsWith(".xls");
+        const fileType = isExcel ? "excel" : "other";
+        const fileTypeLabel = isExcel ? "Excel" : "ファイル";
+        const uploadDate = f.uploaded_at || "";
+        
         li.innerHTML = `
-          ${f.file_name}
-          <button onclick="downloadFile(${f.folder_id})">DL</button>
-          <button onclick="deleteFile(${f.folder_id})">削除</button>
+          <div class="file-info">
+            <span class="file-name">
+              ${fileName}
+              <span class="file-type-badge ${fileType}">${fileTypeLabel}</span>
+            </span>
+            <span class="file-date">${uploadDate}</span>
+          </div>
+          <div class="file-actions">
+            <button class="btn-download" onclick="downloadFile(${f.folder_id})">ダウンロード</button>
+            <button class="btn-delete" onclick="deleteFile(${f.folder_id})">削除</button>
+          </div>
         `;
         list.appendChild(li);
       });
@@ -2107,23 +2129,29 @@
 <div id="fileModal" class="modal-overlay">
   <div class="modal-window">
     <div class="modal-header">
-      <h2>共有ファイル</h2>
+      <h2>ファイル管理</h2>
       <button class="modal-close" onclick="closeFileModal()">×</button>
     </div>
 
     <div class="modal-body">
       <!-- アップロード -->
+      <h3 style="margin-bottom: 12px; color: #374151;">ファイルをアップロード</h3>
       <div class="upload-area">
         <input type="file" id="uploadFileInput">
         <button onclick="uploadFile()">アップロード</button>
       </div>
 
-      <hr>
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
 
       <!-- ファイル一覧 -->
-      <div>
-        <h3>この利用者のファイル一覧</h3>
+      <h3 style="margin-bottom: 12px; color: #374151;">保存されたファイル</h3>
+      <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Excel出力したファイルやアップロードしたファイルがここに表示されます</p>
+      <div class="file-list-container">
         <ul id="fileList"></ul>
+        <div id="emptyFiles" class="empty-files" style="display: none;">
+          <div class="empty-files-icon">📁</div>
+          <p>ファイルがありません</p>
+        </div>
       </div>
     </div>
   </div>
