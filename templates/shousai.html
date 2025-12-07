@@ -2,73 +2,146 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>対象者詳細・アセスメント</title>
-  <!-- 統一CSS -->
+  <title>対象者詳細・アセスメント - 認知症初期支援業務管理システム</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/shousai.css') }}">
-</head>
-<body>
-<!-- ========================= -->
-<!-- ヘッダー（ID・氏名・フォルダ） -->
-<!-- ========================= -->
-<style>
-    .header-bar {
-        background: #3b6ea5;
+  <style>
+    .detail-header {
+        background: linear-gradient(135deg, #3b6ea5 0%, #2c5282 100%);
         color: white;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 15px 25px;
-        border-radius: 10px;
-        margin-bottom: 20px;
+        padding: 16px 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
-    .header-title {
-        font-size: 22px;
-        font-weight: bold;
-        letter-spacing: 1px;
-    }
-
-    .header-right {
+    .detail-header-left {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 16px;
     }
 
-    .info-box {
-        background: #ffffff;
-        color: #333;
-        padding: 7px 12px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        min-width: 130px;
-        font-size: 14px;
-    }
-
-    .folder-btn {
-        background: #ffffff;
-        border: 2px solid #2f5f8a;
-        color: #2f5f8a;
-        padding: 8px 18px;
-        border-radius: 8px;
-        font-size: 15px;
+    .detail-header-title {
+        font-size: 18px;
         font-weight: bold;
-        cursor: pointer;
-        transition: 0.2s;
+        letter-spacing: 0.5px;
     }
 
-    .folder-btn:hover {
-        background: #2f5f8a;
+    .detail-header-nav {
+        display: flex;
+        gap: 8px;
+    }
+
+    .detail-header-nav a {
+        background: rgba(255, 255, 255, 0.15);
         color: white;
+        padding: 6px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+        transition: all 0.2s;
     }
-</style>
 
-<div class="header-bar">
-    <div class="header-title">認知症初期集中支援業務管理システム</div>
+    .detail-header-nav a:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
 
-    <div class="header-right">
-        <div class="info-box">ID：<span id="header_client_id">---</span></div>
-        <div class="info-box">氏名：<span id="header_client_name">---</span></div>
-        <button class="folder-btn" onclick="openFolder()">フォルダ</button>
+    .detail-header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .client-info-badge {
+        background: white;
+        color: #333;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .client-info-badge span {
+        color: #3b6ea5;
+        font-weight: 600;
+    }
+
+    .header-btn {
+        background: white;
+        border: none;
+        color: #3b6ea5;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .header-btn:hover {
+        background: #f0f4f8;
+        transform: translateY(-1px);
+    }
+
+    .similar-case-btn {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .similar-case-btn:hover {
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .similar-case-section {
+        background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+        border: 2px solid #ddd6fe;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 24px 0;
+        text-align: center;
+    }
+
+    .similar-case-section h4 {
+        color: #6d28d9;
+        margin: 0 0 12px 0;
+        font-size: 15px;
+    }
+
+    .similar-case-section p {
+        color: #7c3aed;
+        font-size: 13px;
+        margin: 0 0 16px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="detail-header">
+    <div class="detail-header-left">
+        <div class="detail-header-title">認知症初期支援業務管理システム</div>
+        <div class="detail-header-nav">
+            <a href="/top">トップ</a>
+            <a href="/list">対象者一覧</a>
+        </div>
+    </div>
+
+    <div class="detail-header-right">
+        <div class="client-info-badge">ID: <span id="header_client_id">---</span></div>
+        <div class="client-info-badge">氏名: <span id="header_client_name">---</span></div>
+        <button class="header-btn" onclick="openFolder()">フォルダ</button>
     </div>
 </div>
 
@@ -475,6 +548,15 @@
           <div class="form-item full">
             <label>今後の方針・支援計画（future_plan）</label>
             <textarea name="future_plan" rows="4"></textarea>
+          </div>
+
+          <!-- 類似事例検索セクション -->
+          <div class="similar-case-section">
+            <h4>類似事例を検索</h4>
+            <p>この対象者のアセスメント情報をもとに、類似した支援事例を検索できます</p>
+            <button type="button" class="similar-case-btn" onclick="openSimilarCases()">
+              類似事例を検索
+            </button>
           </div>
 
           <div class="form-actions right">
@@ -1065,6 +1147,16 @@
     // フォルダボタン
     function openFolder() {
         window.location.href = `/folder?client_id=${client_id}`;
+    }
+
+    // 類似事例検索ボタン
+    function openSimilarCases() {
+        const cid = document.getElementById("global_client_id").value.trim();
+        if (cid) {
+            window.location.href = `/text?client_id=${cid}`;
+        } else {
+            window.location.href = '/text';
+        }
     }
 
     // -----------------------------

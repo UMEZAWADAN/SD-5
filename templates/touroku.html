@@ -2,49 +2,176 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>アカウント新規登録</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/text.css') }}">
+<title>アカウント新規登録 - 認知症初期支援業務管理システム</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    
+    .register-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+    
+    .register-card {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .register-title {
+        text-align: center;
+        font-size: 22px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+    
+    .register-subtitle {
+        text-align: center;
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 32px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .form-group input:focus {
+        outline: none;
+        border-color: #3b6ea5;
+        box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.1);
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+    
+    .btn-group .btn {
+        flex: 1;
+        padding: 14px;
+        font-size: 15px;
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .login-link a {
+        color: #3b6ea5;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+</style>
 </head>
 
 <body>
 
-<h1>アカウント新規登録</h1>
-
-<!-- 登録フォームカード -->
-<div class="card">
-  <h3>◆ 新規登録フォーム</h3>
-
-  <label for="id">ID</label>
-  <input type="text" id="id" name="id" class="input-box">
-
-  <label for="password">パスワード</label>
-  <input type="password" id="password" name="password" class="input-box">
-
-  <label for="password2">もう一度パスワードを入力</label>
-  <input type="password" id="password2" name="password2" class="input-box">
-
-  <br>
-
-  <button class="btn-primary" onclick="document.querySelector('form').submit()">新規登録</button>
-  <button class="btn-secondary" onclick="location.href='/login'">ログインページへ戻る</button>
+<!-- ヘッダー -->
+<div class="app-header">
+    <div class="app-header-title">認知症初期支援業務管理システム</div>
 </div>
 
-<!-- form を画面外に配置（JSボタンで送信） -->
-<form action="/register" method="post" style="display:none;"></form>
+<!-- 登録フォーム -->
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-title">管理者アカウント登録</div>
+        <div class="register-subtitle">新しい管理者アカウントを作成します</div>
+        
+        <div class="form-group">
+            <label for="id">管理者ID</label>
+            <input type="text" id="id" name="id" placeholder="IDを入力">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">パスワード</label>
+            <input type="password" id="password" name="password" placeholder="パスワードを入力">
+        </div>
+        
+        <div class="form-group">
+            <label for="password2">パスワード（確認）</label>
+            <input type="password" id="password2" name="password2" placeholder="もう一度パスワードを入力">
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="registerAccount()">登録する</button>
+        </div>
+        
+        <div class="login-link">
+            既にアカウントをお持ちの方は<a href="/login">ログイン</a>
+        </div>
+    </div>
+</div>
 
-<!-- =======================
-     ここから JS を追加
-     ======================= -->
+<!-- 画面外 form -->
+<form id="register-form" action="/register" method="post" style="display:none;"></form>
+
 <script>
-document.querySelector(".btn-primary").addEventListener("click", function() {
-    const form = document.querySelector("form");
+function registerAccount() {
+    const id = document.getElementById('id').value.trim();
+    const password = document.getElementById('password').value;
+    const password2 = document.getElementById('password2').value;
+    
+    if (!id || !password || !password2) {
+        alert("すべての項目を入力してください。");
+        return;
+    }
+    
+    if (password !== password2) {
+        alert("パスワードが一致しません。");
+        return;
+    }
+    
+    const form = document.getElementById("register-form");
     form.innerHTML = `
-        <input type="hidden" name="id" value="${document.getElementById('id').value}">
-        <input type="hidden" name="password" value="${document.getElementById('password').value}">
-        <input type="hidden" name="password2" value="${document.getElementById('password2').value}">
+        <input type="hidden" name="id" value="${id}">
+        <input type="hidden" name="password" value="${password}">
+        <input type="hidden" name="password2" value="${password2}">
     `;
     form.submit();
+}
+
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        registerAccount();
+    }
 });
 </script>
+
 </body>
 </html>
