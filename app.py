@@ -5,6 +5,9 @@ import pickle
 import os
 import pymysql
 from werkzeug.security import generate_password_hash, check_password_hash
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import re
 
 app = Flask(__name__)
 
@@ -81,8 +84,8 @@ def login_post():
         if not check_password_hash(admin['password'], password):
             return "パスワードが違います"
 
-        # ログイン成功
-        return redirect("/shousai")
+        # ログイン成功 - トップページへリダイレクト
+        return redirect("/top")
 
     # GET の場合はログイン画面を表示
     return render_template("login.html")
@@ -197,6 +200,147 @@ def similar_cases():
 
     results = sorted(results, key=lambda x: x["similarity"], reverse=True)
     return jsonify(results[:3])
+
+
+# ================================
+#  2.5 TF-IDF ベースのテキストマイニング
+# ================================
+
+def extract_keywords(text, top_n=10):
+    """テキストからキーワードを抽出（TF-IDF上位語）"""
+    if not text or not text.strip():
+        return []
+    
+    words = re.findall(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+', text)
+    if not words:
+        return []
+    
+    word_freq = {}
+    for word in words:
+        if len(word) >= 2:
+            word_freq[word] = word_freq.get(word, 0) + 1
+    
+    sorted_words = sorted(word_freq.items(), key=lambda x: x[1], reverse=True)
+    return [w[0] for w in sorted_words[:top_n]]
+
+
+def get_visit_records_for_tfidf():
+    """DBから訪問記録を取得してTF-IDF用のドキュメントを作成"""
+    conn = get_connection()
+    records = []
+    
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT 
+                    visit_record_id,
+                    client_id,
+                    COALESCE(reaction_understanding, '') as reaction,
+                    COALESCE(cognitive_function, '') as cognitive,
+                    COALESCE(psychiatric_symptoms, '') as psychiatric,
+                    COALESCE(physical_condition, '') as physical,
+                    COALESCE(living_situation, '') as living,
+                    COALESCE(person_wishes, '') as person_wishes,
+                    COALESCE(caregiver_wishes, '') as caregiver_wishes,
+                    COALESCE(judgment_support, '') as judgment
+                FROM visit_record
+                WHERE reaction_understanding IS NOT NULL 
+                   OR cognitive_function IS NOT NULL
+                   OR psychiatric_symptoms IS NOT NULL
+            """)
+            rows = cur.fetchall()
+            
+            for row in rows:
+                combined_text = " ".join([
+                    str(row.get("reaction", "")),
+                    str(row.get("cognitive", "")),
+                    str(row.get("psychiatric", "")),
+                    str(row.get("physical", "")),
+                    str(row.get("living", "")),
+                    str(row.get("person_wishes", "")),
+                    str(row.get("caregiver_wishes", ""))
+                ])
+                
+                if combined_text.strip():
+                    records.append({
+                        "id": row["visit_record_id"],
+                        "client_id": row["client_id"],
+                        "text": combined_text,
+                        "policy": str(row.get("judgment", ""))
+                    })
+    
+    return records
+
+
+@app.route("/api/search_similar", methods=["POST"])
+def search_similar():
+    """TF-IDFベースの類似事例検索API"""
+    data = request.json or {}
+    
+    input_parts = [
+        data.get("know", ""),
+        data.get("ninchi_kinou", ""),
+        data.get("symptom", ""),
+        data.get("body_con", ""),
+        data.get("life_con", ""),
+        data.get("honnin_will", ""),
+        data.get("kangosha_will", "")
+    ]
+    input_text = " ".join(input_parts)
+    
+    if not input_text.strip():
+        return jsonify({"results": [], "keywords": []})
+    
+    keywords = extract_keywords(input_text, top_n=8)
+    
+    records = get_visit_records_for_tfidf()
+    
+    if not records:
+        return jsonify({
+            "results": [],
+            "keywords": keywords,
+            "message": "事例データがありません。訪問記録を登録してください。"
+        })
+    
+    corpus = [r["text"] for r in records]
+    corpus.append(input_text)
+    
+    try:
+        vectorizer = TfidfVectorizer(
+            analyzer='char',
+            ngram_range=(2, 4),
+            max_features=1000
+        )
+        tfidf_matrix = vectorizer.fit_transform(corpus)
+        
+        input_vector = tfidf_matrix[-1]
+        doc_vectors = tfidf_matrix[:-1]
+        
+        similarities = cosine_similarity(input_vector, doc_vectors)[0]
+        
+        results = []
+        for i, sim in enumerate(similarities):
+            if sim > 0.01:
+                results.append({
+                    "similarity": round(sim * 100, 1),
+                    "text": records[i]["text"][:500],
+                    "policy": records[i]["policy"][:500] if records[i]["policy"] else "支援方針未登録",
+                    "client_id": records[i]["client_id"]
+                })
+        
+        results = sorted(results, key=lambda x: x["similarity"], reverse=True)[:5]
+        
+    except Exception as e:
+        return jsonify({
+            "results": [],
+            "keywords": keywords,
+            "error": str(e)
+        })
+    
+    return jsonify({
+        "results": results,
+        "keywords": keywords
+    })
 
 
 # ================================
@@ -581,6 +725,24 @@ def save_dbd13():
         conn.commit()
 
     return jsonify({"status": "saved", "dbd_id": dbd_id})
+
+
+# ------- 対象者一覧取得API -------
+
+@app.route("/api/get_clients")
+def get_clients():
+    """対象者一覧を取得"""
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT client_id, client_name, gender, consultation_date, current_status
+                FROM client
+                ORDER BY client_id DESC
+            """)
+            clients = cur.fetchall()
+
+    return jsonify({"status": "ok", "clients": clients})
 
 
 # ------- shousai 画面用：一括取得API -------

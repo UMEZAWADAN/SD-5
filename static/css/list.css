@@ -112,3 +112,86 @@ select {
   padding: 25px 0;
   font-size: 15px;
 }
+
+/* Header navigation styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #3b6ea5;
+  padding: 15px 25px;
+  color: white;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.header-nav {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-btn {
+  background: white;
+  color: #3b6ea5;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.nav-btn:hover {
+  background: #e8f0ff;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table th, table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+table th {
+  background: #f5f7fb;
+  font-weight: bold;
+}
+
+table tr:hover {
+  background: #f9f9f9;
+}
+
+.action-btn {
+  background: #1677ff;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.action-btn:hover {
+  background: #0958d9;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+#searchInput {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
