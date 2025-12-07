@@ -393,41 +393,45 @@ def save_client():
 
     client_id = to_int_or_none(data.get("client_id"))
 
-    writer_name = data.get("writer_name", "")
+    writer_name = data.get("writer_name", "") or ""
     consultation_date = to_date_or_none(data.get("consultation_date"))
-    current_status = data.get("current_status", "")
-    client_name = data.get("client_name", "")
-    gender = data.get("gender", "")
+    if consultation_date is None:
+        consultation_date = datetime.now().date()
+    current_status = data.get("current_status", "") or ""
+    client_name = data.get("client_name", "") or ""
+    gender = data.get("gender", "") or ""
     birth_date = to_date_or_none(data.get("birth_date"))
-    address = data.get("address", "")
-    phone_number = data.get("phone_number", "")
-    disability_adl_level = data.get("disability_adl_level", "")
-    dementia_adl_level = data.get("dementia_adl_level", "")
-    certification_info = data.get("certification_info", "")
-    disability_certification = data.get("disability_certification", "")
-    living_environment = data.get("living_environment", "")
-    economic_status = data.get("economic_status", "")
-    visitor_name = data.get("visitor_name", "")
-    visitor_contact = data.get("visitor_contact", "")
-    relation_to_client = data.get("relation_to_client", "")
-    family_composition = data.get("family_composition", "")
-    emergency_contact_name = data.get("emergency_contact_name", "")
-    emergency_relation = data.get("emergency_relation", "")
-    emergency_contact_info = data.get("emergency_contact_info", "")
-    life_history = data.get("life_history", "")
-    daily_life_pattern = data.get("daily_life_pattern", "")
-    time_of_day = data.get("time_of_day", "")
-    person_content = data.get("person_content", "")
-    caregiver_content = data.get("caregiver_content", "")
-    hobbies = data.get("hobbies", "")
-    social_connections = data.get("social_connections", "")
+    if birth_date is None:
+        birth_date = datetime.now().date()
+    address = data.get("address", "") or ""
+    phone_number = data.get("phone_number", "") or ""
+    disability_adl_level = data.get("disability_adl_level", "") or ""
+    dementia_adl_level = data.get("dementia_adl_level", "") or ""
+    certification_info = data.get("certification_info", "") or ""
+    disability_certification = data.get("disability_certification", "") or ""
+    living_environment = data.get("living_environment", "") or ""
+    economic_status = data.get("economic_status", "") or ""
+    visitor_name = data.get("visitor_name", "") or ""
+    visitor_contact = data.get("visitor_contact", "") or ""
+    relation_to_client = data.get("relation_to_client", "") or ""
+    family_composition = data.get("family_composition", "") or ""
+    emergency_contact_name = data.get("emergency_contact_name", "") or ""
+    emergency_relation = data.get("emergency_relation", "") or ""
+    emergency_contact_info = data.get("emergency_contact_info", "") or ""
+    life_history = data.get("life_history", "") or ""
+    daily_life_pattern = data.get("daily_life_pattern", "") or ""
+    time_of_day = data.get("time_of_day", "") or ""
+    person_content = data.get("person_content", "") or ""
+    caregiver_content = data.get("caregiver_content", "") or ""
+    hobbies = data.get("hobbies", "") or ""
+    social_connections = data.get("social_connections", "") or ""
     disease_onset_date = to_date_or_none(data.get("disease_onset_date"))
-    disease_name = data.get("disease_name", "")
-    medical_institution = data.get("medical_institution", "")
-    medical_history = data.get("medical_history", "")
-    current_condition = data.get("current_condition", "")
-    public_services = data.get("public_services", "")
-    private_services = data.get("private_services", "")
+    disease_name = data.get("disease_name", "") or ""
+    medical_institution = data.get("medical_institution", "") or ""
+    medical_history = data.get("medical_history", "") or ""
+    current_condition = data.get("current_condition", "") or ""
+    public_services = data.get("public_services", "") or ""
+    private_services = data.get("private_services", "") or ""
 
     conn = get_connection()
     with conn:
@@ -555,6 +559,15 @@ def save_client():
     return jsonify({"status": "saved", "client_id": client_id})
 
 
+def check_client_exists(client_id):
+    """Check if a client exists in the database"""
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1 FROM client WHERE client_id = %s", (client_id,))
+            return cur.fetchone() is not None
+
+
 # ------- visit_record：訪問記録（1クライアント1件を上書き） -------
 
 @app.route("/api/save_visit_record", methods=["POST"])
@@ -564,6 +577,9 @@ def save_visit_record():
 
     if not cid:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
+
+    if not check_client_exists(cid):
+        return jsonify({"status": "error", "message": "まず利用者基本情報タブで保存してください"}), 400
 
     visit_datetime = to_datetime_or_none(data.get("visit_datetime"))
     if visit_datetime is None:
@@ -634,6 +650,9 @@ def save_physical_status():
     if not cid:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
+    if not check_client_exists(cid):
+        return jsonify({"status": "error", "message": "まず利用者基本情報タブで保存してください"}), 400
+
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
@@ -673,6 +692,9 @@ def save_dasc21():
     if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
 
+    if not check_client_exists(client_id):
+        return jsonify({"status": "error", "message": "まず利用者基本情報タブで保存してください"}), 400
+
     informant_name = data.get("informant_name", "") or ""
     evaluator_name = data.get("evaluator_name", "") or ""
     assessment_item = data.get("assessment_item", "") or ""
@@ -708,6 +730,9 @@ def save_dbd13():
     client_id = to_int_or_none(data.get("client_id"))
     if client_id is None:
         return jsonify({"status": "error", "message": "client_id がありません"}), 400
+
+    if not check_client_exists(client_id):
+        return jsonify({"status": "error", "message": "まず利用者基本情報タブで保存してください"}), 400
 
     respondent_name = data.get("respondent_name", "") or ""
     evaluator_name = data.get("evaluator_name", "") or ""
