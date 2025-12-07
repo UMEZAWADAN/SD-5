@@ -2063,6 +2063,10 @@
     //----------------------------------------
     async function loadFileList(client_id) {
       const res = await fetch(`/api/files?client_id=${client_id}`);
+      if (!res.ok) {
+        console.error("ファイル一覧の取得に失敗しました");
+        return;
+      }
       const json = await res.json();
 
       const list = document.getElementById("fileList");
@@ -2093,12 +2097,58 @@
             <span class="file-date">${uploadDate}</span>
           </div>
           <div class="file-actions">
-            <button class="btn-download" onclick="downloadFile(${f.folder_id})">ダウンロード</button>
-            <button class="btn-delete" onclick="deleteFile(${f.folder_id})">削除</button>
+            <button class="btn-download">ダウンロード</button>
+            <button class="btn-delete">削除</button>
           </div>
         `;
+        
+        // イベントリスナーを追加
+        const downloadBtn = li.querySelector(".btn-download");
+        const deleteBtn = li.querySelector(".btn-delete");
+        
+        downloadBtn.addEventListener("click", () => {
+          downloadFile(f.file_path);
+        });
+        
+        deleteBtn.addEventListener("click", () => {
+          deleteFile(f.folder_id, client_id);
+        });
+        
         list.appendChild(li);
       });
+    }
+
+    //----------------------------------------
+    // ファイルダウンロード
+    //----------------------------------------
+    function downloadFile(filePath) {
+      const url = `/uploads/${encodeURIComponent(filePath)}`;
+      window.open(url, "_blank");
+    }
+
+    //----------------------------------------
+    // ファイル削除
+    //----------------------------------------
+    async function deleteFile(folderId, clientId) {
+      if (!confirm("このファイルを削除してよろしいですか？")) return;
+
+      const res = await fetch("/api/delete_file", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folder_id: folderId })
+      });
+
+      if (!res.ok) {
+        alert("削除に失敗しました");
+        return;
+      }
+
+      const json = await res.json();
+      if (json.status === "deleted") {
+        loadFileList(clientId);
+      } else {
+        alert("エラー: " + (json.message || "削除に失敗しました"));
+      }
     }
 
 
