@@ -2,68 +2,245 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>類似事例検索システム</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/text.css') }}">
+<title>類似事例検索 - 認知症初期支援業務管理システム</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+<style>
+    .text-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+    
+    .page-title {
+        font-size: 24px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .page-title::before {
+        content: "";
+        display: inline-block;
+        width: 5px;
+        height: 28px;
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        border-radius: 3px;
+    }
+    
+    .page-subtitle {
+        color: #6b7280;
+        margin-bottom: 24px;
+        font-size: 14px;
+    }
+    
+    .input-card {
+        background: white;
+        border-radius: 12px;
+        padding: 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .input-card h3 {
+        font-size: 16px;
+        color: #374151;
+        margin: 0 0 20px 0;
+        padding-left: 12px;
+        border-left: 3px solid #8b5cf6;
+    }
+    
+    .form-section {
+        margin-bottom: 20px;
+    }
+    
+    .form-section h4 {
+        font-size: 14px;
+        color: #4b5563;
+        margin: 0 0 8px 0;
+        font-weight: 600;
+    }
+    
+    .form-section textarea {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        resize: vertical;
+        min-height: 80px;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+    
+    .form-section textarea:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+    
+    .result-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .result-card h3 {
+        font-size: 16px;
+        color: #374151;
+        margin: 0 0 16px 0;
+        padding-left: 12px;
+        border-left: 3px solid #8b5cf6;
+    }
+    
+    .keyword-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .keyword-tag {
+        display: inline-block;
+        padding: 6px 12px;
+        background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+        color: #6d28d9;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    
+    .case-box {
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 16px;
+        border-left: 4px solid #8b5cf6;
+    }
+    
+    .case-title {
+        font-weight: bold;
+        color: #7c3aed;
+        margin-bottom: 12px;
+        font-size: 15px;
+    }
+    
+    .case-content,
+    .case-policy {
+        font-size: 14px;
+        color: #4b5563;
+        line-height: 1.6;
+        margin-bottom: 8px;
+    }
+    
+    .case-policy {
+        background: white;
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 12px;
+    }
+    
+    .empty-state {
+        color: #9ca3af;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .text-container {
+            padding: 16px;
+        }
+        .input-card,
+        .result-card {
+            padding: 20px;
+        }
+    }
+</style>
 </head>
 
 <body>
 
 <!-- ヘッダー -->
-<div class="header">
-    <div class="header-title">認知症初期支援業務管理システム - 類似事例検索</div>
-    <div class="header-nav">
-        <a href="/top" class="nav-btn">トップへ戻る</a>
+<div class="app-header">
+    <div class="app-header-title">認知症初期支援業務管理システム</div>
+    <div class="app-header-nav">
+        <a href="/top" class="app-header-link">トップ</a>
+        <a href="/list" class="app-header-link">対象者一覧</a>
+        <a href="/login" class="app-header-link">ログアウト</a>
     </div>
 </div>
 
-<div class="main-container">
+<div class="text-container">
 
-<h1>類似支援事例検索（テキストマイニング）</h1>
+<h1 class="page-title">類似事例検索</h1>
+<p class="page-subtitle">対象者の状況を入力して、類似した支援事例を検索します</p>
 
 <!-- 入力部分 -->
-<div class="card">
+<div class="input-card">
   <h3>対象者の状況を入力</h3>
   
-  <h4>訪問に対する本人の反応・理解</h4>
-  <textarea id="know" rows="4" placeholder="例：訪問を受け入れ、会話は楽しそうだが、妄想的発言がみられる..."></textarea>
+  <div class="form-section">
+    <h4>訪問に対する本人の反応・理解</h4>
+    <textarea id="know" rows="3" placeholder="例：訪問を受け入れ、会話は楽しそうだが、妄想的発言がみられる..."></textarea>
+  </div>
 
-  <h4>認知機能（認知症日常生活自立度）</h4>
-  <textarea id="ninchi_kinou" rows="3" placeholder="例：DASC-21：38点。軽度～中等度の低下（近時記憶・問題解決に支障）..."></textarea>
+  <div class="form-section">
+    <h4>認知機能（認知症日常生活自立度）</h4>
+    <textarea id="ninchi_kinou" rows="3" placeholder="例：DASC-21：38点。軽度～中等度の低下（近時記憶・問題解決に支障）..."></textarea>
+  </div>
 
-  <h4>精神症状・行動症状</h4>
-  <textarea id="symptom" rows="3" placeholder="例：物盗られ妄想あり。特定の隣人に対する訴えを繰り返す..."></textarea>
+  <div class="form-section">
+    <h4>精神症状・行動症状</h4>
+    <textarea id="symptom" rows="3" placeholder="例：物盗られ妄想あり。特定の隣人に対する訴えを繰り返す..."></textarea>
+  </div>
 
-  <h4>身体状況（障害高齢者の日常生活自立度）</h4>
-  <textarea id="body_con" rows="3" placeholder="例：独居。高血圧あり。ADLはおおむね自立..."></textarea>
+  <div class="form-section">
+    <h4>身体状況（障害高齢者の日常生活自立度）</h4>
+    <textarea id="body_con" rows="3" placeholder="例：独居。高血圧あり。ADLはおおむね自立..."></textarea>
+  </div>
 
-  <h4>生活状況</h4>
-  <textarea id="life_con" rows="3" placeholder="例：室内は整理整頓されており、自立生活を維持。食事・保清は自立..."></textarea>
+  <div class="form-section">
+    <h4>生活状況</h4>
+    <textarea id="life_con" rows="3" placeholder="例：室内は整理整頓されており、自立生活を維持。食事・保清は自立..."></textarea>
+  </div>
 
-  <h4>本人の意向・希望</h4>
-  <textarea id="honnin_will" rows="3" placeholder="例：独立志向が強く、「自分でできる」との意識。趣味継続を希望..."></textarea>
+  <div class="form-section">
+    <h4>本人の意向・希望</h4>
+    <textarea id="honnin_will" rows="3" placeholder="例：独立志向が強く、「自分でできる」との意識。趣味継続を希望..."></textarea>
+  </div>
 
-  <h4>介護者の意向・希望</h4>
-  <textarea id="kangosha_will" rows="3" placeholder="例：娘（市外）と民生委員が協力し見守り体制を希望..."></textarea>
+  <div class="form-section">
+    <h4>介護者の意向・希望</h4>
+    <textarea id="kangosha_will" rows="3" placeholder="例：娘（市外）と民生委員が協力し見守り体制を希望..."></textarea>
+  </div>
 
-  <br>
-
-  <button class="btn-primary" onclick="searchCases()">類似事例を検索</button>
-  <button class="btn-secondary" onclick="clearForm()">クリア</button>
+  <div class="btn-group">
+    <button class="btn btn-purple" onclick="searchCases()">類似事例を検索</button>
+    <button class="btn btn-secondary" onclick="clearForm()">クリア</button>
+  </div>
 </div>
 
 <!-- キーワード表示カード -->
-<div class="card">
+<div class="result-card">
   <h3>抽出されたキーワード</h3>
   <div id="keyword">
-    <p style="color:#888;">（検索実行後にキーワードが表示されます）</p>
+    <p class="empty-state">検索実行後にキーワードが表示されます</p>
   </div>
 </div>
 
 <!-- 結果表示カード -->
-<div class="card">
+<div class="result-card">
   <h3>類似事例の結果</h3>
   <div id="resultArea">
-    <p style="color:#888;">（検索結果がここに表示されます）</p>
+    <p class="empty-state">検索結果がここに表示されます</p>
   </div>
 </div>
 

@@ -2,21 +2,141 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>認知症初期支援業務管理システム</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+<title>ログイン - 認知症初期支援業務管理システム</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    
+    .login-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .login-title {
+        text-align: center;
+        font-size: 22px;
+        color: #2c3e50;
+        margin-bottom: 32px;
+        font-weight: bold;
+    }
+    
+    .login-subtitle {
+        text-align: center;
+        font-size: 14px;
+        color: #6b7280;
+        margin-top: -24px;
+        margin-bottom: 32px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .form-group input:focus {
+        outline: none;
+        border-color: #3b6ea5;
+        box-shadow: 0 0 0 3px rgba(59, 110, 165, 0.1);
+    }
+    
+    .login-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #3b6ea5 0%, #2c5282 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 8px;
+    }
+    
+    .login-btn:hover {
+        background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 110, 165, 0.3);
+    }
+    
+    .register-link {
+        text-align: center;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .register-link a {
+        color: #3b6ea5;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+</style>
 </head>
 <body>
 
-<h1>ログイン　認知症初期支援業務管理システム</h1>
+<!-- ヘッダー -->
+<div class="app-header">
+    <div class="app-header-title">認知症初期支援業務管理システム</div>
+</div>
 
-<div class="card login-box">
-  <label for="admin_id">管理者ID</label>
-  <input type="text" id="admin_id" placeholder="管理者IDを入力">
-
-  <label for="password">パスワード</label>
-  <input type="password" id="password" placeholder="パスワードを入力">
-
-  <button onclick="login()">ログイン</button>
+<!-- ログインフォーム -->
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-title">ログイン</div>
+        <div class="login-subtitle">管理者アカウントでログインしてください</div>
+        
+        <div class="form-group">
+            <label for="admin_id">管理者ID</label>
+            <input type="text" id="admin_id" placeholder="IDを入力">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">パスワード</label>
+            <input type="password" id="password" placeholder="パスワードを入力">
+        </div>
+        
+        <button class="login-btn" onclick="login()">ログイン</button>
+        
+        <div class="register-link">
+            アカウントをお持ちでない方は<a href="/touroku">新規登録</a>
+        </div>
+    </div>
 </div>
 
 <!-- 画面外 form -->
@@ -39,6 +159,12 @@ function login() {
   `;
   form.submit();
 }
+
+document.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    login();
+  }
+});
 </script>
 
 </body>
