@@ -589,6 +589,19 @@ def save_visit_record():
     visit_condition = data.get("visit_condition", "") or ""
     support_decision = data.get("support_decision", "") or ""
     future_plan = data.get("future_plan", "") or ""
+    vr_reaction = data.get("vr_reaction", "") or ""
+    vr_cognition = data.get("vr_cognition", "") or ""
+    vr_dementia_adl = data.get("vr_dementia_adl", "") or ""
+    vr_behavior = data.get("vr_behavior", "") or ""
+    vr_physical = data.get("vr_physical", "") or ""
+    vr_disability_adl = data.get("vr_disability_adl", "") or ""
+    vr_living = data.get("vr_living", "") or ""
+    vr_dasc = to_int_or_none(data.get("vr_dasc"))
+    vr_dbd = to_int_or_none(data.get("vr_dbd"))
+    vr_jzbi = to_int_or_none(data.get("vr_jzbi"))
+    vr_person_intent = data.get("vr_person_intent", "") or ""
+    vr_family_intent = data.get("vr_family_intent", "") or ""
+    vr_other = data.get("vr_other", "") or ""
 
     conn = get_connection()
     with conn:
@@ -605,7 +618,20 @@ def save_visit_record():
                         visit_purpose=%s,
                         visit_condition=%s,
                         support_decision=%s,
-                        future_plan=%s
+                        future_plan=%s,
+                        vr_reaction=%s,
+                        vr_cognition=%s,
+                        vr_dementia_adl=%s,
+                        vr_behavior=%s,
+                        vr_physical=%s,
+                        vr_disability_adl=%s,
+                        vr_living=%s,
+                        vr_dasc=%s,
+                        vr_dbd=%s,
+                        vr_jzbi=%s,
+                        vr_person_intent=%s,
+                        vr_family_intent=%s,
+                        vr_other=%s
                     WHERE client_id=%s
                 """
                 cur.execute(sql, (
@@ -615,6 +641,19 @@ def save_visit_record():
                     visit_condition,
                     support_decision,
                     future_plan,
+                    vr_reaction,
+                    vr_cognition,
+                    vr_dementia_adl,
+                    vr_behavior,
+                    vr_physical,
+                    vr_disability_adl,
+                    vr_living,
+                    vr_dasc,
+                    vr_dbd,
+                    vr_jzbi,
+                    vr_person_intent,
+                    vr_family_intent,
+                    vr_other,
                     cid
                 ))
             else:
@@ -622,8 +661,12 @@ def save_visit_record():
                     INSERT INTO visit_record (
                         client_id, visit_datetime, visitor_name,
                         visit_purpose, visit_condition,
-                        support_decision, future_plan
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        support_decision, future_plan,
+                        vr_reaction, vr_cognition, vr_dementia_adl,
+                        vr_behavior, vr_physical, vr_disability_adl,
+                        vr_living, vr_dasc, vr_dbd, vr_jzbi,
+                        vr_person_intent, vr_family_intent, vr_other
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
                 cur.execute(sql, (
                     cid,
@@ -632,7 +675,20 @@ def save_visit_record():
                     visit_purpose,
                     visit_condition,
                     support_decision,
-                    future_plan
+                    future_plan,
+                    vr_reaction,
+                    vr_cognition,
+                    vr_dementia_adl,
+                    vr_behavior,
+                    vr_physical,
+                    vr_disability_adl,
+                    vr_living,
+                    vr_dasc,
+                    vr_dbd,
+                    vr_jzbi,
+                    vr_person_intent,
+                    vr_family_intent,
+                    vr_other
                 ))
 
         conn.commit()
@@ -653,29 +709,93 @@ def save_physical_status():
     if not check_client_exists(cid):
         return jsonify({"status": "error", "message": "まず利用者基本情報タブで保存してください"}), 400
 
+    ps_mobility = data.get("ps_mobility", "") or ""
+    ps_walking = data.get("ps_walking", "") or ""
+    ps_transport = data.get("ps_transport", "") or ""
+    ps_communication = data.get("ps_communication", "") or ""
+    ps_decision = data.get("ps_decision", "") or ""
+    ps_senses = data.get("ps_senses", "") or ""
+    ps_hygiene = data.get("ps_hygiene", "") or ""
+    ps_cleanliness = data.get("ps_cleanliness", "") or ""
+    ps_nutrition = data.get("ps_nutrition", "") or ""
+    ps_eating_behavior = data.get("ps_eating_behavior", "") or ""
+    ps_swallowing = data.get("ps_swallowing", "") or ""
+    ps_meal_refusal = data.get("ps_meal_refusal", "") or ""
+    ps_water = data.get("ps_water", "") or ""
+    ps_habits = data.get("ps_habits", "") or ""
+    ps_excretion = data.get("ps_excretion", "") or ""
+    ps_constipation = data.get("ps_constipation", "") or ""
+    ps_sleep = data.get("ps_sleep", "") or ""
+    ps_daily_rhythm = data.get("ps_daily_rhythm", "") or ""
+    ps_daytime_sleep = data.get("ps_daytime_sleep", "") or ""
+    ps_night_behavior = data.get("ps_night_behavior", "") or ""
+    ps_house_env = data.get("ps_house_env", "") or ""
+    ps_money = data.get("ps_money", "") or ""
+    ps_family_care = data.get("ps_family_care", "") or ""
+    ps_abuse = data.get("ps_abuse", "") or ""
+    ps_watch = data.get("ps_watch", "") or ""
+    ps_sos = data.get("ps_sos", "") or ""
+
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
 
-            # 既存レコードを確認
             cur.execute("SELECT physical_status_id FROM physical_status WHERE client_id=%s", (cid,))
             row = cur.fetchone()
 
             if row:
-                # UPDATE
                 sql = """
                     UPDATE physical_status SET
-                        check_item=%s
+                        ps_mobility=%s, ps_walking=%s, ps_transport=%s,
+                        ps_communication=%s, ps_decision=%s, ps_senses=%s,
+                        ps_hygiene=%s, ps_cleanliness=%s,
+                        ps_nutrition=%s, ps_eating_behavior=%s, ps_swallowing=%s, ps_meal_refusal=%s,
+                        ps_water=%s, ps_habits=%s,
+                        ps_excretion=%s, ps_constipation=%s,
+                        ps_sleep=%s, ps_daily_rhythm=%s, ps_daytime_sleep=%s, ps_night_behavior=%s,
+                        ps_house_env=%s, ps_money=%s, ps_family_care=%s, ps_abuse=%s,
+                        ps_watch=%s, ps_sos=%s
                     WHERE client_id=%s
                 """
-                cur.execute(sql, (data.get("check_item"), cid))
+                cur.execute(sql, (
+                    ps_mobility, ps_walking, ps_transport,
+                    ps_communication, ps_decision, ps_senses,
+                    ps_hygiene, ps_cleanliness,
+                    ps_nutrition, ps_eating_behavior, ps_swallowing, ps_meal_refusal,
+                    ps_water, ps_habits,
+                    ps_excretion, ps_constipation,
+                    ps_sleep, ps_daily_rhythm, ps_daytime_sleep, ps_night_behavior,
+                    ps_house_env, ps_money, ps_family_care, ps_abuse,
+                    ps_watch, ps_sos,
+                    cid
+                ))
             else:
-                # INSERT
                 sql = """
-                    INSERT INTO physical_status (client_id, check_item)
-                    VALUES (%s, %s)
+                    INSERT INTO physical_status (
+                        client_id,
+                        ps_mobility, ps_walking, ps_transport,
+                        ps_communication, ps_decision, ps_senses,
+                        ps_hygiene, ps_cleanliness,
+                        ps_nutrition, ps_eating_behavior, ps_swallowing, ps_meal_refusal,
+                        ps_water, ps_habits,
+                        ps_excretion, ps_constipation,
+                        ps_sleep, ps_daily_rhythm, ps_daytime_sleep, ps_night_behavior,
+                        ps_house_env, ps_money, ps_family_care, ps_abuse,
+                        ps_watch, ps_sos
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
-                cur.execute(sql, (cid, data.get("check_item")))
+                cur.execute(sql, (
+                    cid,
+                    ps_mobility, ps_walking, ps_transport,
+                    ps_communication, ps_decision, ps_senses,
+                    ps_hygiene, ps_cleanliness,
+                    ps_nutrition, ps_eating_behavior, ps_swallowing, ps_meal_refusal,
+                    ps_water, ps_habits,
+                    ps_excretion, ps_constipation,
+                    ps_sleep, ps_daily_rhythm, ps_daytime_sleep, ps_night_behavior,
+                    ps_house_env, ps_money, ps_family_care, ps_abuse,
+                    ps_watch, ps_sos
+                ))
 
         conn.commit()
 

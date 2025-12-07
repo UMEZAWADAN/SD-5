@@ -1676,13 +1676,87 @@
         const field = form.elements.namedItem(key);
         if (!field) return;
 
-        if (field.type === "checkbox" || field.type === "radio") {
-          // 今回は text/textarea/number中心なので簡易対応
+        if (field instanceof RadioNodeList) {
+          const targetValue = String(record[key]);
+          field.forEach(radio => {
+            radio.checked = (radio.value === targetValue);
+          });
+        } else if (field.type === "checkbox") {
           field.checked = !!record[key];
+        } else if (field.type === "radio") {
+          field.checked = (field.value === String(record[key]));
         } else {
           field.value = record[key] == null ? "" : record[key];
         }
       });
+    }
+
+    // -----------------------------
+    // DASC-21 ラジオボタン値を収集
+    // -----------------------------
+    function collectDascAnswers() {
+      const answers = {};
+      for (let i = 1; i <= 21; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected) {
+          answers[`q${i}`] = selected.value;
+        }
+      }
+      return answers;
+    }
+
+    // -----------------------------
+    // DBD-13 ラジオボタン値を収集
+    // -----------------------------
+    function collectDbdAnswers() {
+      const answers = {};
+      for (let i = 1; i <= 13; i++) {
+        const selected = document.querySelector(`input[name="d${i}"]:checked`);
+        if (selected) {
+          answers[`d${i}`] = selected.value;
+        }
+      }
+      return answers;
+    }
+
+    // -----------------------------
+    // DASC-21 ラジオボタンを復元
+    // -----------------------------
+    function restoreDascRadios(record) {
+      if (!record || !record.assessment_item) return;
+      try {
+        const answers = JSON.parse(record.assessment_item);
+        for (let i = 1; i <= 21; i++) {
+          const key = `q${i}`;
+          if (answers[key] !== undefined) {
+            const radio = document.querySelector(`input[name="${key}"][value="${answers[key]}"]`);
+            if (radio) radio.checked = true;
+          }
+        }
+        calcDascTotal();
+      } catch (e) {
+        console.warn("DASC-21 assessment_item parse error:", e);
+      }
+    }
+
+    // -----------------------------
+    // DBD-13 ラジオボタンを復元
+    // -----------------------------
+    function restoreDbdRadios(record) {
+      if (!record || !record.assessment_item) return;
+      try {
+        const answers = JSON.parse(record.assessment_item);
+        for (let i = 1; i <= 13; i++) {
+          const key = `d${i}`;
+          if (answers[key] !== undefined) {
+            const radio = document.querySelector(`input[name="${key}"][value="${answers[key]}"]`);
+            if (radio) radio.checked = true;
+          }
+        }
+        calcDbdTotal();
+      } catch (e) {
+        console.warn("DBD-13 assessment_item parse error:", e);
+      }
     }
 
     // -----------------------------
@@ -1747,6 +1821,7 @@
       }
       syncClientIdFields(cid);
       const data = formToJSON(document.getElementById("form-dasc"));
+      data.assessment_item = JSON.stringify(collectDascAnswers());
       postJSON("/api/save_dasc21", data);
     }
 
@@ -1758,6 +1833,7 @@
       }
       syncClientIdFields(cid);
       const data = formToJSON(document.getElementById("form-dbd"));
+      data.assessment_item = JSON.stringify(collectDbdAnswers());
       postJSON("/api/save_dbd13", data);
     }
 
@@ -1874,7 +1950,9 @@
           fillForm("form-physical", json.physical_status);
         }
         fillForm("form-dasc", json.dasc21);
+        restoreDascRadios(json.dasc21);
         fillForm("form-dbd", json.dbd13);
+        restoreDbdRadios(json.dbd13);
       } catch (e) {
         console.error(e);
       }
