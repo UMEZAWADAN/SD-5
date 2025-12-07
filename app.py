@@ -1111,21 +1111,28 @@ def uploaded_file(filepath):
 #  5. Excel出力API
 # ================================
 
-CLIENT_EXPORTS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'clients')
-
-def ensure_client_folder(client_id):
-    """対象者ごとのフォルダを作成し、パスを返す"""
-    client_folder = os.path.join(CLIENT_EXPORTS_FOLDER, str(client_id))
-    os.makedirs(client_folder, exist_ok=True)
-    return client_folder
-
 def save_excel_to_client_folder(wb, client_id, sheet_type):
-    """ExcelファイルをクライアントフォルダにSave"""
-    client_folder = ensure_client_folder(client_id)
+    """ExcelファイルをクライアントフォルダにSaveし、DBに登録"""
+    # uploadsフォルダに保存（フォルダUIと同じ場所）
+    client_folder = os.path.join(app.config["UPLOAD_FOLDER"], str(client_id))
+    os.makedirs(client_folder, exist_ok=True)
+    
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f"{sheet_type}_{client_id}_{timestamp}.xlsx"
     filepath = os.path.join(client_folder, filename)
     wb.save(filepath)
+    
+    # DBのshared_folderテーブルに登録（フォルダUIに表示されるように）
+    relative_path = f"{client_id}/{filename}"
+    conn = get_connection()
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO shared_folder (client_id, file_path) VALUES (%s, %s)",
+                (client_id, relative_path)
+            )
+        conn.commit()
+    
     return filepath
 
 def create_excel_styles():
@@ -1315,7 +1322,7 @@ def export_physical():
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT * FROM physical_status WHERE client_id = %s ORDER BY physical_id DESC LIMIT 1", (client_id,))
+            cur.execute("SELECT * FROM physical_status WHERE client_id = %s ORDER BY physical_status_id DESC LIMIT 1", (client_id,))
             data = cur.fetchone()
 
     if not data:
