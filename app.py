@@ -802,7 +802,7 @@ def save_physical_status():
     return jsonify({"status": "saved"})
 
 
-# ------- dasc21：DASC-21（B：毎回追加） -------
+# ------- dasc21：DASC-21（1クライアント1件を上書き） -------
 
 @app.route("/api/save_dasc21", methods=["POST"])
 def save_dasc21():
@@ -824,24 +824,47 @@ def save_dasc21():
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            sql = """
-                INSERT INTO dasc21 (
+            cur.execute(
+                "SELECT dasc_id FROM dasc21 WHERE client_id=%s ORDER BY dasc_id DESC LIMIT 1",
+                (client_id,)
+            )
+            row = cur.fetchone()
+
+            if row:
+                dasc_id = row["dasc_id"]
+                sql = """
+                    UPDATE dasc21 SET
+                        informant_name=%s,
+                        evaluator_name=%s,
+                        assessment_item=%s,
+                        remarks=%s,
+                        total_score=%s
+                    WHERE dasc_id=%s
+                """
+                cur.execute(sql, (
+                    informant_name, evaluator_name,
+                    assessment_item, remarks, total_score,
+                    dasc_id
+                ))
+            else:
+                sql = """
+                    INSERT INTO dasc21 (
+                        client_id, informant_name, evaluator_name,
+                        assessment_item, remarks, total_score
+                    )
+                    VALUES (%s,%s,%s,%s,%s,%s)
+                """
+                cur.execute(sql, (
                     client_id, informant_name, evaluator_name,
                     assessment_item, remarks, total_score
-                )
-                VALUES (%s,%s,%s,%s,%s,%s)
-            """
-            cur.execute(sql, (
-                client_id, informant_name, evaluator_name,
-                assessment_item, remarks, total_score
-            ))
-            dasc_id = cur.lastrowid
+                ))
+                dasc_id = cur.lastrowid
         conn.commit()
 
     return jsonify({"status": "saved", "dasc_id": dasc_id})
 
 
-# ------- dbd13：DBD-13（B：毎回追加） -------
+# ------- dbd13：DBD-13（1クライアント1件を上書き） -------
 
 @app.route("/api/save_dbd13", methods=["POST"])
 def save_dbd13():
@@ -867,18 +890,43 @@ def save_dbd13():
     conn = get_connection()
     with conn:
         with conn.cursor() as cur:
-            sql = """
-                INSERT INTO dbd13 (
+            cur.execute(
+                "SELECT dbd_id FROM dbd13 WHERE client_id=%s ORDER BY dbd_id DESC LIMIT 1",
+                (client_id,)
+            )
+            row = cur.fetchone()
+
+            if row:
+                dbd_id = row["dbd_id"]
+                sql = """
+                    UPDATE dbd13 SET
+                        respondent_name=%s,
+                        evaluator_name=%s,
+                        entry_date=%s,
+                        assessment_item=%s,
+                        remarks=%s,
+                        subtotal_score=%s,
+                        total_score=%s
+                    WHERE dbd_id=%s
+                """
+                cur.execute(sql, (
+                    respondent_name, evaluator_name, entry_date,
+                    assessment_item, remarks, subtotal_score, total_score,
+                    dbd_id
+                ))
+            else:
+                sql = """
+                    INSERT INTO dbd13 (
+                        client_id, respondent_name, evaluator_name, entry_date,
+                        assessment_item, remarks, subtotal_score, total_score
+                    )
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                """
+                cur.execute(sql, (
                     client_id, respondent_name, evaluator_name, entry_date,
                     assessment_item, remarks, subtotal_score, total_score
-                )
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-            """
-            cur.execute(sql, (
-                client_id, respondent_name, evaluator_name, entry_date,
-                assessment_item, remarks, subtotal_score, total_score
-            ))
-            dbd_id = cur.lastrowid
+                ))
+                dbd_id = cur.lastrowid
         conn.commit()
 
     return jsonify({"status": "saved", "dbd_id": dbd_id})
