@@ -392,6 +392,157 @@
         font-size: 13px;
         resize: vertical;
     }
+
+    /* Info Table for Client/Visit/Physical sheets */
+    .info-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .info-table th,
+    .info-table td {
+        border: 1px solid #ddd;
+        padding: 10px 12px;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .info-table th {
+        background: #f5f7fa;
+        font-weight: 600;
+        color: #333;
+        text-align: left;
+        width: 18%;
+        white-space: nowrap;
+    }
+
+    .info-table td {
+        background: white;
+    }
+
+    .info-table input[type="text"],
+    .info-table input[type="date"],
+    .info-table input[type="datetime-local"],
+    .info-table input[type="number"],
+    .info-table textarea,
+    .info-table select {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-size: 13px;
+        background: #fafafa;
+    }
+
+    .info-table input[type="text"]:focus,
+    .info-table input[type="date"]:focus,
+    .info-table input[type="datetime-local"]:focus,
+    .info-table input[type="number"]:focus,
+    .info-table textarea:focus,
+    .info-table select:focus {
+        outline: none;
+        border-color: #3b6ea5;
+        background: white;
+        box-shadow: 0 0 0 2px rgba(59, 110, 165, 0.1);
+    }
+
+    .info-table .full-width {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .info-table textarea {
+        resize: vertical;
+        min-height: 60px;
+    }
+
+    .info-table select {
+        min-width: 120px;
+    }
+
+    /* Auto-save status indicator */
+    .auto-save-status {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .auto-save-status .saved {
+        color: #217346;
+    }
+
+    .auto-save-status .saving {
+        color: #f59e0b;
+    }
+
+    .auto-save-status .error {
+        color: #dc2626;
+    }
+
+    /* Observation section for visit record */
+    .observation-section {
+        padding: 16px 20px;
+    }
+
+    .observation-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .observation-item {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .observation-item.full {
+        grid-column: 1 / -1;
+    }
+
+    .observation-item label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .observation-item textarea,
+    .observation-item input {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-size: 13px;
+        background: #fafafa;
+    }
+
+    .observation-item textarea:focus,
+    .observation-item input:focus {
+        outline: none;
+        border-color: #3b6ea5;
+        background: white;
+        box-shadow: 0 0 0 2px rgba(59, 110, 165, 0.1);
+    }
+
+    .observation-item textarea {
+        resize: vertical;
+        min-height: 60px;
+    }
+
+    /* Inline score inputs */
+    .score-inputs {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .score-inputs label {
+        font-size: 12px;
+        color: #555;
+    }
+
+    .score-inputs input {
+        width: 80px;
+        text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -435,551 +586,538 @@
 
       <!-- ① 利用者基本情報（client） -->
       <section id="tab-client" class="tab-pane active">
-        <h2>① 利用者基本情報（client）</h2>
         <form id="form-client" class="form-section">
-          <!-- client_id は共通ID。ここにも持たせておく -->
           <input type="hidden" name="client_id" class="client-id-field" />
 
-          <h3 class="sub-title">【基本情報】</h3>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>作成担当者（writer_name）</label>
-              <input type="text" name="writer_name">
+          <div class="assessment-sheet">
+            <div class="assessment-header">
+              <div>
+                <div class="assessment-title">利用者基本情報</div>
+                <div class="assessment-subtitle">認知症初期集中支援チーム　対象者情報シート</div>
+              </div>
             </div>
 
-            <div class="form-item">
-              <label>相談日（consultation_date）</label>
-              <input type="date" name="consultation_date">
+            <!-- 基本情報セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">基本情報</div>
+              <table class="info-table">
+                <tr>
+                  <th>作成担当者</th>
+                  <td><input type="text" name="writer_name" class="full-width"></td>
+                  <th>相談日</th>
+                  <td><input type="date" name="consultation_date"></td>
+                </tr>
+                <tr>
+                  <th>本人氏名</th>
+                  <td><input type="text" name="client_name" class="full-width"></td>
+                  <th>性別</th>
+                  <td>
+                    <select name="gender">
+                      <option value="">選択</option>
+                      <option value="男性">男性</option>
+                      <option value="女性">女性</option>
+                      <option value="その他">その他</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <th>生年月日</th>
+                  <td><input type="date" name="birth_date"></td>
+                  <th>電話番号</th>
+                  <td><input type="text" name="phone_number" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>住所</th>
+                  <td colspan="3"><input type="text" name="address" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>本人の現況</th>
+                  <td colspan="3"><textarea name="current_status" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item">
-              <label>本人の現況（current_status）</label>
-              <textarea name="current_status"></textarea>
+            <!-- 自立度・認定情報セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">自立度・認定情報</div>
+              <table class="info-table">
+                <tr>
+                  <th>障害高齢者の日常生活自立度</th>
+                  <td><input type="text" name="disability_adl_level" placeholder="自立 / J1 / A1 ..." class="full-width"></td>
+                  <th>認知症高齢者の日常生活自立度</th>
+                  <td><input type="text" name="dementia_adl_level" placeholder="自立 / IIa / IIIa ..." class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>認定・総合事業情報</th>
+                  <td colspan="3"><textarea name="certification_info" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>障害等認定</th>
+                  <td colspan="3"><textarea name="disability_certification" rows="2" placeholder="身障○級・療育○度 など" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item">
-              <label>本人氏名（client_name）</label>
-              <input type="text" name="client_name">
+            <!-- 生活環境セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">生活環境</div>
+              <table class="info-table">
+                <tr>
+                  <th>住居環境</th>
+                  <td><textarea name="living_environment" rows="2" placeholder="自宅 / 借家 / 集合住宅 など" class="full-width"></textarea></td>
+                  <th>経済状況</th>
+                  <td><textarea name="economic_status" rows="2" placeholder="年金・生活保護 等" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item">
-              <label>性別（gender）</label>
-              <select name="gender">
-                <option value="">選択してください</option>
-                <option value="男性">男性</option>
-                <option value="女性">女性</option>
-                <option value="その他">その他</option>
-              </select>
+            <!-- 相談者・家族情報セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">相談者・家族情報</div>
+              <table class="info-table">
+                <tr>
+                  <th>来所者・相談者氏名</th>
+                  <td><input type="text" name="visitor_name" class="full-width"></td>
+                  <th>本人との続柄</th>
+                  <td><input type="text" name="relation_to_client" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>来所者連絡先</th>
+                  <td colspan="3"><input type="text" name="visitor_contact" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>家族構成</th>
+                  <td colspan="3"><textarea name="family_composition" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>緊急連絡先氏名</th>
+                  <td><input type="text" name="emergency_contact_name" class="full-width"></td>
+                  <th>続柄</th>
+                  <td><input type="text" name="emergency_relation" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>緊急連絡先</th>
+                  <td colspan="3"><input type="text" name="emergency_contact_info" class="full-width"></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item">
-              <label>生年月日（birth_date）</label>
-              <input type="date" name="birth_date">
+            <!-- 生活歴・日常生活セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">生活歴・日常生活</div>
+              <table class="info-table">
+                <tr>
+                  <th>今までの生活歴</th>
+                  <td colspan="3"><textarea name="life_history" rows="3" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>現在の生活状況・1日の過ごし方</th>
+                  <td colspan="3"><textarea name="daily_life_pattern" rows="3" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>時間帯</th>
+                  <td colspan="3"><input type="text" name="time_of_day" placeholder="例：日中 / 夜間 など" class="full-width"></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item">
-              <label>住所（address）</label>
-              <input type="text" name="address">
+            <!-- 本人・家族の思いセクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">本人・家族の思い</div>
+              <table class="info-table">
+                <tr>
+                  <th>本人の思い・気持ち</th>
+                  <td colspan="3"><textarea name="person_content" rows="3" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>介護者・家族の思い</th>
+                  <td colspan="3"><textarea name="caregiver_content" rows="3" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>趣味・楽しみ</th>
+                  <td><textarea name="hobbies" rows="2" class="full-width"></textarea></td>
+                  <th>友人・地域とのつながり</th>
+                  <td><textarea name="social_connections" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item">
-              <label>電話番号（phone_number）</label>
-              <input type="text" name="phone_number">
+            <!-- 現病歴・既往歴セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">現病歴・既往歴と経過</div>
+              <table class="info-table">
+                <tr>
+                  <th>発症時期</th>
+                  <td><input type="date" name="disease_onset_date"></td>
+                  <th>主な疾患名</th>
+                  <td><input type="text" name="disease_name" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>主治医・医療機関</th>
+                  <td colspan="3"><input type="text" name="medical_institution" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>既往歴</th>
+                  <td colspan="3"><textarea name="medical_history" rows="3" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>現在の状態・経過</th>
+                  <td colspan="3"><textarea name="current_condition" rows="3" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item">
-              <label>障害高齢者の日常生活自立度（disability_adl_level）</label>
-              <input type="text" name="disability_adl_level" placeholder="自立 / J1 / A1 ...">
+            <!-- 利用サービスセクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">現在利用しているサービス</div>
+              <table class="info-table">
+                <tr>
+                  <th>公的サービス</th>
+                  <td colspan="3"><textarea name="public_services" rows="3" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>非公的サービス</th>
+                  <td colspan="3"><textarea name="private_services" rows="3" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item">
-              <label>認知症高齢者の日常生活自立度（dementia_adl_level）</label>
-              <input type="text" name="dementia_adl_level" placeholder="自立 / IIa / IIIa ...">
+            <div class="assessment-footer">
+              <div class="auto-save-status">
+                <span id="client-save-status"></span>
+              </div>
+              <div class="assessment-actions">
+                <button type="button" class="btn-excel" onclick="exportClientToExcel()">Excel出力</button>
+                <button type="button" class="btn-save" onclick="saveClient()">保存</button>
+              </div>
             </div>
-
-            <div class="form-item">
-              <label>認定・総合事業情報（certification_info）</label>
-              <textarea name="certification_info"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>障害等認定（disability_certification）</label>
-              <textarea name="disability_certification" placeholder="身障○級・療育○度 など"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>住居環境（living_environment）</label>
-              <textarea name="living_environment" placeholder="自宅 / 借家 / 集合住宅 など"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>経済状況（economic_status）</label>
-              <textarea name="economic_status" placeholder="年金・生活保護 等"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>来所者・相談者氏名（visitor_name）</label>
-              <input type="text" name="visitor_name">
-            </div>
-
-            <div class="form-item">
-              <label>来所者連絡先（visitor_contact）</label>
-              <input type="text" name="visitor_contact">
-            </div>
-
-            <div class="form-item">
-              <label>本人との続柄（relation_to_client）</label>
-              <input type="text" name="relation_to_client">
-            </div>
-
-            <div class="form-item">
-              <label>家族構成（family_composition）</label>
-              <textarea name="family_composition"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>緊急連絡先氏名（emergency_contact_name）</label>
-              <input type="text" name="emergency_contact_name">
-            </div>
-          </div>
-
-          <h3 class="sub-title">【介護予防に関する事項】</h3>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>続柄（emergency_relation）</label>
-              <input type="text" name="emergency_relation">
-            </div>
-
-            <div class="form-item">
-              <label>緊急連絡先（emergency_contact_info）</label>
-              <input type="text" name="emergency_contact_info">
-            </div>
-
-            <div class="form-item">
-              <label>今までの生活歴（life_history）</label>
-              <textarea name="life_history"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>現在の生活状況・1日の過ごし方（daily_life_pattern）</label>
-              <textarea name="daily_life_pattern"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>時間帯（time_of_day）</label>
-              <input type="text" name="time_of_day" placeholder="例：日中 / 夜間 など">
-            </div>
-
-            <div class="form-item">
-              <label>本人の思い・気持ち（person_content）</label>
-              <textarea name="person_content"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>介護者・家族の思い（caregiver_content）</label>
-              <textarea name="caregiver_content"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>趣味・楽しみ（hobbies）</label>
-              <textarea name="hobbies"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>友人・地域とのつながり（social_connections）</label>
-              <textarea name="social_connections"></textarea>
-            </div>
-          </div>
-
-          <h3 class="sub-title">【現病歴・既往歴と経過】（新しいものから書く・現在の状況に関連するものは必ず書く）</h3>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>発症時期（disease_onset_date）</label>
-              <input type="date" name="disease_onset_date">
-            </div>
-
-            <div class="form-item">
-              <label>主な疾患名（disease_name）</label>
-              <input type="text" name="disease_name">
-            </div>
-
-            <div class="form-item">
-              <label>主治医・医療機関（medical_institution）</label>
-              <input type="text" name="medical_institution">
-            </div>
-
-            <div class="form-item">
-              <label>既往歴（medical_history）</label>
-              <textarea name="medical_history"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>現在の状態・経過（current_condition）</label>
-              <textarea name="current_condition"></textarea>
-            </div>
-          </div>
-
-          <h3 class="sub-title">【現在利用しているサービス】</h3>
-
-          <div class="form-grid">
-            <div class="form-item">
-              <label>現在利用中の公的サービス（public_services）</label>
-              <textarea name="public_services"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>現在利用中の非公的サービス（private_services）</label>
-              <textarea name="private_services"></textarea>
-            </div>
-          </div>
-
-          <div class="form-actions right">
-            <button type="button" class="btn-excel" onclick="exportClientToExcel()">Excel出力</button>
-            <button type="button" class="btn-primary" onclick="saveClient()">保存</button>
           </div>
         </form>
       </section>
 
       <!-- ② 訪問記録表（visit_record） -->
       <section id="tab-visit" class="tab-pane">
-        <h2>② 訪問記録表（visit_record）</h2>
-
         <form id="form-visit" class="form-section">
           <input type="hidden" name="client_id" class="client-id-field" />
 
-          <div class="form-grid">
-            <div class="form-item">
-              <label>訪問日時（visit_datetime）</label>
-              <input type="datetime-local" name="visit_datetime">
-            </div>
-
-            <div class="form-item">
-              <label>訪問者氏名（visitor_name）</label>
-              <input type="text" name="visitor_name">
-            </div>
-
-            <div class="form-item full">
-              <label>訪問目的（visit_purpose）</label>
-              <textarea name="visit_purpose" rows="2"></textarea>
-            </div>
-          </div>
-
-          <h3 class="sub-title">【訪問時の観察項目】</h3>
-
-          <div class="long-section">
-
-            <div class="form-item full">
-              <label>［訪問に対する本人の反応・理解］</label>
-              <textarea name="vr_reaction"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>［認知機能］</label>
-              <textarea name="vr_cognition"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>認知症日常生活自立度</label>
-              <input type="text" name="vr_dementia_adl" placeholder="例：IIa / IIIa">
-            </div>
-
-            <div class="form-item full">
-              <label>［精神症状・行動症状］</label>
-              <textarea name="vr_behavior"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>［身体状況］</label>
-              <textarea name="vr_physical"></textarea>
-            </div>
-
-            <div class="form-item">
-              <label>障害高齢者日常生活自立度</label>
-              <input type="text" name="vr_disability_adl" placeholder="例：J1 / A1">
-            </div>
-
-            <div class="form-item full">
-              <label>［生活状況］</label>
-              <textarea name="vr_living"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>［アセスメントシート合計］</label>
-              <div class="inline-inputs">
-                <label>DASC-21：</label><input type="number" name="vr_dasc">
-                <label>DBD13：</label><input type="number" name="vr_dbd">
-                <label>J-ZBI_8：</label><input type="number" name="vr_jzbi">
+          <div class="assessment-sheet">
+            <div class="assessment-header">
+              <div>
+                <div class="assessment-title">訪問記録表</div>
+                <div class="assessment-subtitle">認知症初期集中支援チーム　訪問記録</div>
               </div>
             </div>
 
-            <div class="form-item full">
-              <label>［本人の意向・希望］</label>
-              <textarea name="vr_person_intent"></textarea>
+            <!-- 基本情報セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">訪問基本情報</div>
+              <table class="info-table">
+                <tr>
+                  <th>訪問日時</th>
+                  <td><input type="datetime-local" name="visit_datetime" class="full-width"></td>
+                  <th>訪問者氏名</th>
+                  <td><input type="text" name="visitor_name" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>訪問目的</th>
+                  <td colspan="3"><textarea name="visit_purpose" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item full">
-              <label>［介護者の意向・希望］</label>
-              <textarea name="vr_family_intent"></textarea>
+            <!-- 訪問時の観察項目セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">訪問時の観察項目</div>
+              <table class="info-table">
+                <tr>
+                  <th>訪問に対する本人の反応・理解</th>
+                  <td colspan="3"><textarea name="vr_reaction" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>認知機能</th>
+                  <td><textarea name="vr_cognition" rows="2" class="full-width"></textarea></td>
+                  <th>認知症日常生活自立度</th>
+                  <td><input type="text" name="vr_dementia_adl" placeholder="例：IIa / IIIa" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>精神症状・行動症状</th>
+                  <td colspan="3"><textarea name="vr_behavior" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>身体状況</th>
+                  <td><textarea name="vr_physical" rows="2" class="full-width"></textarea></td>
+                  <th>障害高齢者日常生活自立度</th>
+                  <td><input type="text" name="vr_disability_adl" placeholder="例：J1 / A1" class="full-width"></td>
+                </tr>
+                <tr>
+                  <th>生活状況</th>
+                  <td colspan="3"><textarea name="vr_living" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>アセスメントシート合計</th>
+                  <td colspan="3">
+                    <div class="score-inputs">
+                      <label>DASC-21：</label><input type="number" name="vr_dasc">
+                      <label>DBD13：</label><input type="number" name="vr_dbd">
+                      <label>J-ZBI_8：</label><input type="number" name="vr_jzbi">
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th>本人の意向・希望</th>
+                  <td colspan="3"><textarea name="vr_person_intent" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>介護者の意向・希望</th>
+                  <td colspan="3"><textarea name="vr_family_intent" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>その他</th>
+                  <td colspan="3"><textarea name="vr_other" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item full">
-              <label>［その他］</label>
-              <textarea name="vr_other"></textarea>
+            <!-- 訪問時の詳細観察セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">訪問時の詳細観察（身体状況チェック要約）</div>
+              <table class="info-table">
+                <tr>
+                  <th>運動機能・立ち上がり・歩行状況</th>
+                  <td><textarea name="vr_mobility" rows="2" class="full-width"></textarea></td>
+                  <th>移動方法・日常的な移動範囲</th>
+                  <td><textarea name="vr_movement" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>意思疎通の状況</th>
+                  <td><textarea name="vr_communication" rows="2" class="full-width"></textarea></td>
+                  <th>視力・聴力</th>
+                  <td><textarea name="vr_senses" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>入浴・衛生・清潔状況</th>
+                  <td><textarea name="vr_hygiene" rows="2" class="full-width"></textarea></td>
+                  <th>栄養状態・食事状況</th>
+                  <td><textarea name="vr_nutrition" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>排泄状況（尿・便・失禁）</th>
+                  <td><textarea name="vr_excretion" rows="2" class="full-width"></textarea></td>
+                  <th>睡眠状況（睡眠薬・生活リズム含む）</th>
+                  <td><textarea name="vr_sleep" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>居住環境の問題</th>
+                  <td><textarea name="vr_house" rows="2" class="full-width"></textarea></td>
+                  <th>金銭管理の状況</th>
+                  <td><textarea name="vr_money" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>家族の介護力</th>
+                  <td><textarea name="vr_family_care" rows="2" class="full-width"></textarea></td>
+                  <th>虐待の可能性</th>
+                  <td><textarea name="vr_abuse" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>見守りの状況</th>
+                  <td><textarea name="vr_watch" rows="2" class="full-width"></textarea></td>
+                  <th>緊急時のSOS発信の可否</th>
+                  <td><textarea name="vr_sos" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-          </div>
-
-          <h3 class="sub-title">【訪問時の詳細観察（身体状況チェック）】</h3>
-          <p class="note">※身体状況チェック表の内容を要約して記録する欄です</p>
-
-          <div class="long-section">
-            <div class="form-item full">
-              <label>運動機能・立ち上がり・歩行状況</label>
-              <textarea name="vr_mobility"></textarea>
+            <!-- 判断・支援内容セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">判断・支援内容</div>
+              <table class="info-table">
+                <tr>
+                  <th>判断・支援内容</th>
+                  <td colspan="3"><textarea name="support_decision" rows="4" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>今後の方針・支援計画</th>
+                  <td colspan="3"><textarea name="future_plan" rows="4" class="full-width"></textarea></td>
+                </tr>
+              </table>
             </div>
 
-            <div class="form-item full">
-              <label>移動方法・日常的な移動範囲</label>
-              <textarea name="vr_movement"></textarea>
+            <!-- 類似事例検索セクション -->
+            <div class="similar-case-section">
+              <h4>類似事例を検索</h4>
+              <p>この対象者のアセスメント情報をもとに、類似した支援事例を検索できます</p>
+              <button type="button" class="similar-case-btn" onclick="openSimilarCases()">
+                類似事例を検索
+              </button>
             </div>
 
-            <div class="form-item full">
-              <label>意思疎通の状況</label>
-              <textarea name="vr_communication"></textarea>
+            <div class="assessment-footer">
+              <div class="auto-save-status">
+                <span id="visit-save-status"></span>
+              </div>
+              <div class="assessment-actions">
+                <button type="button" class="btn-excel" onclick="exportVisitToExcel()">Excel出力</button>
+                <button type="button" class="btn-save" onclick="saveVisit()">保存</button>
+              </div>
             </div>
-
-            <div class="form-item full">
-              <label>視力・聴力</label>
-              <textarea name="vr_senses"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>入浴・衛生・清潔状況</label>
-              <textarea name="vr_hygiene"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>栄養状態・食事状況</label>
-              <textarea name="vr_nutrition"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>排泄状況（尿・便・失禁）</label>
-              <textarea name="vr_excretion"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>睡眠状況（睡眠薬・生活リズム含む）</label>
-              <textarea name="vr_sleep"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>居住環境の問題</label>
-              <textarea name="vr_house"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>金銭管理の状況</label>
-              <textarea name="vr_money"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>家族の介護力</label>
-              <textarea name="vr_family_care"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>虐待の可能性</label>
-              <textarea name="vr_abuse"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>見守りの状況</label>
-              <textarea name="vr_watch"></textarea>
-            </div>
-
-            <div class="form-item full">
-              <label>緊急時のSOS発信の可否</label>
-              <textarea name="vr_sos"></textarea>
-            </div>
-          </div>
-
-          <h3 class="sub-title">【判断・支援内容】</h3>
-          <div class="form-item full">
-            <label>判断・支援内容（support_decision）</label>
-            <textarea name="support_decision" rows="4"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>今後の方針・支援計画（future_plan）</label>
-            <textarea name="future_plan" rows="4"></textarea>
-          </div>
-
-          <!-- 類似事例検索セクション -->
-          <div class="similar-case-section">
-            <h4>類似事例を検索</h4>
-            <p>この対象者のアセスメント情報をもとに、類似した支援事例を検索できます</p>
-            <button type="button" class="similar-case-btn" onclick="openSimilarCases()">
-              類似事例を検索
-            </button>
-          </div>
-
-          <div class="form-actions right">
-            <button type="button" class="btn-excel" onclick="exportVisitToExcel()">Excel出力</button>
-            <button type="button" onclick="saveVisit()">保存</button>
           </div>
         </form>
       </section>
 
       <!-- ③ 身体状況チェック表（physical_status） -->
       <section id="tab-physical" class="tab-pane">
-      <h2>③ 身体状況チェック表（physical_status）</h2>
+        <form id="form-physical" class="form-section">
+          <input type="hidden" name="client_id" class="client-id-field" />
 
-      <form id="form-physical" class="form-section">
-        <input type="hidden" name="client_id" class="client-id-field" />
+          <div class="assessment-sheet">
+            <div class="assessment-header">
+              <div>
+                <div class="assessment-title">身体状況チェック表</div>
+                <div class="assessment-subtitle">認知症初期集中支援チーム　身体状況アセスメント</div>
+              </div>
+            </div>
 
-        <div class="long-section">
+            <!-- 運動機能・移動セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">運動機能・移動</div>
+              <table class="info-table">
+                <tr>
+                  <th>立ち上がり・運動機能</th>
+                  <td><textarea name="ps_mobility" rows="2" placeholder="例：支えなしで立てる／支えが必要 など" class="full-width"></textarea></td>
+                  <th>歩行状況・歩行レベル</th>
+                  <td><textarea name="ps_walking" rows="2" placeholder="室内：自立/介助　屋外：自立/介助" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>移動方法・範囲</th>
+                  <td colspan="3"><textarea name="ps_transport" rows="2" placeholder="公共交通機関／タクシー／自家用車／自転車／徒歩など" class="full-width"></textarea></td>
+                </tr>
+              </table>
+            </div>
 
-          <div class="form-item full">
-            <label>［立ち上がり・運動機能］</label>
-            <textarea name="ps_mobility" placeholder="例：支えなしで立てる／支えが必要 など"></textarea>
+            <!-- コミュニケーション・認知セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">コミュニケーション・認知</div>
+              <table class="info-table">
+                <tr>
+                  <th>意思疎通</th>
+                  <td><textarea name="ps_communication" rows="2" placeholder="訪問者と意思疎通ができるか、指示の理解など" class="full-width"></textarea></td>
+                  <th>日常の意思決定</th>
+                  <td><textarea name="ps_decision" rows="2" placeholder="できる／ややできる／できない など" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>視力・聴力・補聴器の有無</th>
+                  <td colspan="3"><textarea name="ps_senses" rows="2" placeholder="目が見えにくい／耳が聞こえにくい／補聴器の使用など" class="full-width"></textarea></td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- 清潔・衛生セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">清潔・衛生</div>
+              <table class="info-table">
+                <tr>
+                  <th>入浴・清潔保持</th>
+                  <td><textarea name="ps_hygiene" rows="2" placeholder="入浴頻度・シャワー・清拭・清潔状態など" class="full-width"></textarea></td>
+                  <th>衣類・家屋の清潔さ</th>
+                  <td><textarea name="ps_cleanliness" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- 栄養・食事セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">栄養・食事</div>
+              <table class="info-table">
+                <tr>
+                  <th>栄養状態・体重・食事状況</th>
+                  <td><textarea name="ps_nutrition" rows="2" class="full-width"></textarea></td>
+                  <th>過食／異食</th>
+                  <td><textarea name="ps_eating_behavior" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>食物を噛む・飲み込む能力</th>
+                  <td><textarea name="ps_swallowing" rows="2" class="full-width"></textarea></td>
+                  <th>食事拒否・時間</th>
+                  <td><textarea name="ps_meal_refusal" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>水分摂取状況</th>
+                  <td><textarea name="ps_water" rows="2" class="full-width"></textarea></td>
+                  <th>飲酒・喫煙</th>
+                  <td><textarea name="ps_habits" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- 排泄セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">排泄</div>
+              <table class="info-table">
+                <tr>
+                  <th>排尿・排便</th>
+                  <td><textarea name="ps_excretion" rows="2" class="full-width"></textarea></td>
+                  <th>便秘（下剤の使用）</th>
+                  <td><textarea name="ps_constipation" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- 睡眠・生活リズムセクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">睡眠・生活リズム</div>
+              <table class="info-table">
+                <tr>
+                  <th>睡眠状況（睡眠薬の有無）</th>
+                  <td><textarea name="ps_sleep" rows="2" class="full-width"></textarea></td>
+                  <th>起床・就寝時間</th>
+                  <td><textarea name="ps_daily_rhythm" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>日中の睡眠</th>
+                  <td><textarea name="ps_daytime_sleep" rows="2" class="full-width"></textarea></td>
+                  <th>夜間の行動（大声・起き上がり）</th>
+                  <td><textarea name="ps_night_behavior" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- 生活環境・支援体制セクション -->
+            <div class="assessment-section">
+              <div class="assessment-section-header">生活環境・支援体制</div>
+              <table class="info-table">
+                <tr>
+                  <th>居住環境の問題</th>
+                  <td><textarea name="ps_house_env" rows="2" class="full-width"></textarea></td>
+                  <th>金銭管理</th>
+                  <td><textarea name="ps_money" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>家族の介護力</th>
+                  <td><textarea name="ps_family_care" rows="2" class="full-width"></textarea></td>
+                  <th>虐待の可能性</th>
+                  <td><textarea name="ps_abuse" rows="2" class="full-width"></textarea></td>
+                </tr>
+                <tr>
+                  <th>見守りの状況</th>
+                  <td><textarea name="ps_watch" rows="2" class="full-width"></textarea></td>
+                  <th>緊急時のSOS発信</th>
+                  <td><textarea name="ps_sos" rows="2" class="full-width"></textarea></td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="assessment-footer">
+              <div class="auto-save-status">
+                <span id="physical-save-status"></span>
+              </div>
+              <div class="assessment-actions">
+                <button type="button" class="btn-excel" onclick="exportPhysicalToExcel()">Excel出力</button>
+                <button type="button" class="btn-save" onclick="savePhysical()">保存</button>
+              </div>
+            </div>
           </div>
-
-          <div class="form-item full">
-            <label>［歩行状況・歩行レベル］</label>
-            <textarea name="ps_walking" placeholder="室内：自立/介助　屋外：自立/介助　独歩/杖/歩行車/車いすなど"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［移動方法・範囲］</label>
-            <textarea name="ps_transport" placeholder="公共交通機関／タクシー／自家用車／自転車／徒歩など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［意思疎通］</label>
-            <textarea name="ps_communication" placeholder="訪問者と意思疎通ができるか、指示の理解など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［日常の意思決定］</label>
-            <textarea name="ps_decision" placeholder="できる／ややできる／できない など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［視力・聴力・補聴器の有無］</label>
-            <textarea name="ps_senses" placeholder="目が見えにくい／耳が聞こえにくい／補聴器の使用など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［入浴・清潔保持］</label>
-            <textarea name="ps_hygiene" placeholder="入浴頻度・シャワー・清拭・清潔状態など"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［衣類・家屋の清潔さ］</label>
-            <textarea name="ps_cleanliness"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［栄養状態・体重・食事状況］</label>
-            <textarea name="ps_nutrition"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［過食／異食］</label>
-            <textarea name="ps_eating_behavior"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［食物を噛む・飲み込む能力］</label>
-            <textarea name="ps_swallowing"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［食事拒否・時間］</label>
-            <textarea name="ps_meal_refusal"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［水分摂取状況］</label>
-            <textarea name="ps_water"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［飲酒・喫煙］</label>
-            <textarea name="ps_habits"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［排尿・排便］</label>
-            <textarea name="ps_excretion"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［便秘（下剤の使用）］</label>
-            <textarea name="ps_constipation"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［睡眠状況（睡眠薬の有無）］</label>
-            <textarea name="ps_sleep"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［起床・就寝時間］</label>
-            <textarea name="ps_daily_rhythm"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［日中の睡眠］</label>
-            <textarea name="ps_daytime_sleep"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［夜間の行動（大声・起き上がり）］</label>
-            <textarea name="ps_night_behavior"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［居住環境の問題］</label>
-            <textarea name="ps_house_env"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［金銭管理］</label>
-            <textarea name="ps_money"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［家族の介護力］</label>
-            <textarea name="ps_family_care"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［虐待の可能性］</label>
-            <textarea name="ps_abuse"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［見守りの状況］</label>
-            <textarea name="ps_watch"></textarea>
-          </div>
-
-          <div class="form-item full">
-            <label>［緊急時のSOS発信］</label>
-            <textarea name="ps_sos"></textarea>
-          </div>
-        </div>
-
-        <div class="form-actions right">
-          <button type="button" class="btn-excel" onclick="exportPhysicalToExcel()">Excel出力</button>
-          <button type="button" onclick="savePhysical()">保存</button>
-        </div>
-      </form>
-    </section>
+        </form>
+      </section>
 
 
       <!-- ④ DASC-21 -->
@@ -1283,6 +1421,7 @@
                 <input type="number" name="total_score" id="dasc-total" readonly>
                 <span style="font-size: 12px; color: #666;">（21〜84点、31点以上で認知症の疑い）</span>
               </div>
+              <div class="auto-save-status" id="dasc-save-status"></div>
               <div class="assessment-actions">
                 <button type="button" class="btn-excel" onclick="exportDascToExcel()">Excel出力</button>
                 <button type="button" class="btn-save" onclick="saveDasc()">保存</button>
@@ -1455,6 +1594,7 @@
                 <input type="number" name="total_score" id="dbd_total" readonly>
                 <span style="font-size: 12px; color: #666;">（0〜52点、点数が高いほど行動障害が重い）</span>
               </div>
+              <div class="auto-save-status" id="dbd-save-status"></div>
               <div class="assessment-actions">
                 <button type="button" class="btn-excel" onclick="exportDbdToExcel()">Excel出力</button>
                 <button type="button" class="btn-save" onclick="saveDbd()">保存</button>
@@ -1577,7 +1717,7 @@
     // -----------------------------
     // 共通 POST 関数
     // -----------------------------
-    async function postJSON(url, data) {
+    async function postJSON(url, data, showAlert = true) {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1586,10 +1726,81 @@
       const json = await res.json();
       if (!res.ok || json.status !== "saved") {
         console.error(json);
-        alert("保存中にエラーが発生しました：" + (json.message || res.statusText));
-        return;
+        if (showAlert) {
+          alert("保存中にエラーが発生しました：" + (json.message || res.statusText));
+        }
+        return false;
       }
-      alert("保存しました");
+      if (showAlert) {
+        alert("保存しました");
+      }
+      return true;
+    }
+
+    // -----------------------------
+    // 自動保存機能（途中保存対応）
+    // -----------------------------
+    const autoSaveTimers = {};
+    const AUTO_SAVE_DELAY = 3000;
+
+    function updateSaveStatus(statusElementId, status) {
+      const el = document.getElementById(statusElementId);
+      if (!el) return;
+      
+      switch(status) {
+        case 'saving':
+          el.innerHTML = '<span class="saving">保存中...</span>';
+          break;
+        case 'saved':
+          el.innerHTML = '<span class="saved">自動保存済み</span>';
+          setTimeout(() => {
+            if (el.innerHTML.includes('自動保存済み')) {
+              el.innerHTML = '';
+            }
+          }, 5000);
+          break;
+        case 'error':
+          el.innerHTML = '<span class="error">保存エラー</span>';
+          break;
+        default:
+          el.innerHTML = '';
+      }
+    }
+
+    async function autoSaveForm(formId, apiUrl, statusElementId) {
+      const cid = document.getElementById("global_client_id").value.trim();
+      if (!cid) return;
+      
+      syncClientIdFields(cid);
+      updateSaveStatus(statusElementId, 'saving');
+      
+      const data = formToJSON(document.getElementById(formId));
+      const success = await postJSON(apiUrl, data, false);
+      
+      if (success) {
+        updateSaveStatus(statusElementId, 'saved');
+      } else {
+        updateSaveStatus(statusElementId, 'error');
+      }
+    }
+
+    function setupAutoSave(formId, apiUrl, statusElementId) {
+      const form = document.getElementById(formId);
+      if (!form) return;
+      
+      const triggerAutoSave = () => {
+        if (autoSaveTimers[formId]) {
+          clearTimeout(autoSaveTimers[formId]);
+        }
+        autoSaveTimers[formId] = setTimeout(() => {
+          autoSaveForm(formId, apiUrl, statusElementId);
+        }, AUTO_SAVE_DELAY);
+      };
+      
+      form.querySelectorAll('input, textarea, select').forEach(field => {
+        field.addEventListener('input', triggerAutoSave);
+        field.addEventListener('change', triggerAutoSave);
+      });
     }
 
     // =============================
@@ -1820,6 +2031,13 @@
         loadAllData();
         loadFiles();
       });
+
+      // 自動保存機能の初期化（途中保存対応）
+      setupAutoSave('form-client', '/api/save_client', 'client-save-status');
+      setupAutoSave('form-visit', '/api/save_visit_record', 'visit-save-status');
+      setupAutoSave('form-physical', '/api/save_physical_status', 'physical-save-status');
+      setupAutoSave('form-dasc', '/api/save_dasc21', 'dasc-save-status');
+      setupAutoSave('form-dbd', '/api/save_dbd13', 'dbd-save-status');
 
     });
     //----------------------------------------
