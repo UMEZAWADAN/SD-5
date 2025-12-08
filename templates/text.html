@@ -246,6 +246,7 @@
     <div class="app-header-nav">
         <a href="/top" class="app-header-link">トップ</a>
         <a href="/list" class="app-header-link">対象者一覧</a>
+        <a href="#" id="backToShousai" class="app-header-link" style="display:none;">詳細ページに戻る</a>
         <a href="/login" class="app-header-link">ログアウト</a>
     </div>
 </div>
@@ -294,7 +295,7 @@
     <textarea id="kangosha_will" rows="3" placeholder="例：娘（市外）と民生委員が協力し見守り体制を希望..."></textarea>
   </div>
 
-  <div class="btn-group">
+  <div class="btn-group" id="btnGroup">
     <button class="btn btn-purple" onclick="searchCases()">類似事例を検索</button>
     <button class="btn btn-secondary" onclick="clearForm()">クリア</button>
   </div>
@@ -319,6 +320,59 @@
 </div>
 
 <script>
+// ページ読み込み時の処理
+document.addEventListener("DOMContentLoaded", function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const fromShousai = urlParams.get("from") === "shousai";
+  const clientId = urlParams.get("client_id");
+  
+  if (fromShousai) {
+    // 詳細ページに戻るボタンを表示
+    const backBtn = document.getElementById("backToShousai");
+    if (backBtn) {
+      backBtn.style.display = "inline";
+      backBtn.href = clientId ? `/shousai?client_id=${clientId}` : "/shousai";
+    }
+    
+    // localStorageからデータを取得
+    const savedData = localStorage.getItem("textMiningData");
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      
+      // フィールドにデータを設定
+      document.getElementById("know").value = data.know || "";
+      document.getElementById("ninchi_kinou").value = data.ninchi_kinou || "";
+      document.getElementById("symptom").value = data.symptom || "";
+      document.getElementById("body_con").value = data.body_con || "";
+      document.getElementById("life_con").value = data.life_con || "";
+      document.getElementById("honnin_will").value = data.honnin_will || "";
+      document.getElementById("kangosha_will").value = data.kangosha_will || "";
+      
+      // フィールドを読み取り専用に設定
+      const textareas = document.querySelectorAll(".form-section textarea");
+      textareas.forEach(ta => {
+        ta.readOnly = true;
+        ta.style.backgroundColor = "#f5f5f5";
+        ta.style.cursor = "default";
+      });
+      
+      // ボタングループを非表示にする（検索・クリアボタン）
+      const btnGroup = document.getElementById("btnGroup");
+      if (btnGroup) {
+        btnGroup.style.display = "none";
+      }
+      
+      // 自動的に検索を実行
+      setTimeout(function() {
+        searchCases();
+      }, 500);
+      
+      // 使用後にlocalStorageをクリア
+      localStorage.removeItem("textMiningData");
+    }
+  }
+});
+
 function searchCases() {
   // 全フィールドからテキストを収集
   const know = document.getElementById("know").value;
