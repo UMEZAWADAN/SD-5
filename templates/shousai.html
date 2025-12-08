@@ -1599,10 +1599,27 @@
     // 類似事例検索ボタン
     function openSimilarCases() {
         const cid = document.getElementById("global_client_id").value.trim();
+        
+        // 訪問記録表のデータを収集
+        const form = document.getElementById("form-visit");
+        const visitData = {
+            know: form.querySelector('[name="reaction_understanding"]')?.value || "",
+            ninchi_kinou: form.querySelector('[name="cognitive_function"]')?.value || "",
+            symptom: form.querySelector('[name="psychiatric_symptoms"]')?.value || "",
+            body_con: form.querySelector('[name="physical_condition"]')?.value || "",
+            life_con: form.querySelector('[name="living_situation"]')?.value || "",
+            honnin_will: form.querySelector('[name="person_wishes"]')?.value || "",
+            kangosha_will: form.querySelector('[name="caregiver_wishes"]')?.value || "",
+            client_id: cid
+        };
+        
+        // localStorageに保存
+        localStorage.setItem("textMiningData", JSON.stringify(visitData));
+        
         if (cid) {
-            window.location.href = `/text?client_id=${cid}`;
+            window.location.href = `/text?client_id=${cid}&from=shousai`;
         } else {
-            window.location.href = '/text';
+            window.location.href = '/text?from=shousai';
         }
     }
 
