@@ -853,55 +853,6 @@
               </table>
             </div>
 
-            <!-- 訪問時の詳細観察セクション -->
-            <div class="assessment-section">
-              <div class="assessment-section-header">訪問時の詳細観察（身体状況チェック要約）</div>
-              <table class="info-table">
-                <tr>
-                  <th>運動機能・立ち上がり・歩行状況</th>
-                  <td><textarea name="vr_mobility" rows="2" class="full-width"></textarea></td>
-                  <th>移動方法・日常的な移動範囲</th>
-                  <td><textarea name="vr_movement" rows="2" class="full-width"></textarea></td>
-                </tr>
-                <tr>
-                  <th>意思疎通の状況</th>
-                  <td><textarea name="vr_communication" rows="2" class="full-width"></textarea></td>
-                  <th>視力・聴力</th>
-                  <td><textarea name="vr_senses" rows="2" class="full-width"></textarea></td>
-                </tr>
-                <tr>
-                  <th>入浴・衛生・清潔状況</th>
-                  <td><textarea name="vr_hygiene" rows="2" class="full-width"></textarea></td>
-                  <th>栄養状態・食事状況</th>
-                  <td><textarea name="vr_nutrition" rows="2" class="full-width"></textarea></td>
-                </tr>
-                <tr>
-                  <th>排泄状況（尿・便・失禁）</th>
-                  <td><textarea name="vr_excretion" rows="2" class="full-width"></textarea></td>
-                  <th>睡眠状況（睡眠薬・生活リズム含む）</th>
-                  <td><textarea name="vr_sleep" rows="2" class="full-width"></textarea></td>
-                </tr>
-                <tr>
-                  <th>居住環境の問題</th>
-                  <td><textarea name="vr_house" rows="2" class="full-width"></textarea></td>
-                  <th>金銭管理の状況</th>
-                  <td><textarea name="vr_money" rows="2" class="full-width"></textarea></td>
-                </tr>
-                <tr>
-                  <th>家族の介護力</th>
-                  <td><textarea name="vr_family_care" rows="2" class="full-width"></textarea></td>
-                  <th>虐待の可能性</th>
-                  <td><textarea name="vr_abuse" rows="2" class="full-width"></textarea></td>
-                </tr>
-                <tr>
-                  <th>見守りの状況</th>
-                  <td><textarea name="vr_watch" rows="2" class="full-width"></textarea></td>
-                  <th>緊急時のSOS発信の可否</th>
-                  <td><textarea name="vr_sos" rows="2" class="full-width"></textarea></td>
-                </tr>
-              </table>
-            </div>
-
             <!-- 判断・支援内容セクション -->
             <div class="assessment-section">
               <div class="assessment-section-header">判断・支援内容</div>
@@ -1603,13 +1554,13 @@
         // 訪問記録表のデータを収集
         const form = document.getElementById("form-visit");
         const visitData = {
-            know: form.querySelector('[name="reaction_understanding"]')?.value || "",
-            ninchi_kinou: form.querySelector('[name="cognitive_function"]')?.value || "",
-            symptom: form.querySelector('[name="psychiatric_symptoms"]')?.value || "",
-            body_con: form.querySelector('[name="physical_condition"]')?.value || "",
-            life_con: form.querySelector('[name="living_situation"]')?.value || "",
-            honnin_will: form.querySelector('[name="person_wishes"]')?.value || "",
-            kangosha_will: form.querySelector('[name="caregiver_wishes"]')?.value || "",
+            know: form.querySelector('[name="vr_reaction"]')?.value || "",
+            ninchi_kinou: form.querySelector('[name="vr_cognition"]')?.value || "",
+            symptom: form.querySelector('[name="vr_behavior"]')?.value || "",
+            body_con: form.querySelector('[name="vr_physical"]')?.value || "",
+            life_con: form.querySelector('[name="vr_living"]')?.value || "",
+            honnin_will: form.querySelector('[name="vr_person_intent"]')?.value || "",
+            kangosha_will: form.querySelector('[name="vr_family_intent"]')?.value || "",
             client_id: cid
         };
         
@@ -1941,6 +1892,13 @@
         }
       }
       document.getElementById("dasc-total").value = total;
+      
+      // 訪問記録表のvr_dascにも反映
+      const visitForm = document.getElementById("form-visit");
+      if (visitForm) {
+        const vrDasc = visitForm.querySelector('[name="vr_dasc"]');
+        if (vrDasc) vrDasc.value = total;
+      }
     }
 
     // -----------------------------
@@ -1956,6 +1914,13 @@
 
       const totalEl = document.getElementById("dbd_total");
       if (totalEl) totalEl.value = subtotal;
+      
+      // 訪問記録表のvr_dbdにも反映
+      const visitForm = document.getElementById("form-visit");
+      if (visitForm) {
+        const vrDbd = visitForm.querySelector('[name="vr_dbd"]');
+        if (vrDbd) vrDbd.value = subtotal;
+      }
     }
 
     // ラジオ変更時にリアルタイム計算
