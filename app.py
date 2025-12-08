@@ -231,49 +231,54 @@ def extract_keywords(text, top_n=10):
 
 def get_visit_records_for_tfidf():
     """DBから訪問記録を取得してTF-IDF用のドキュメントを作成"""
-    conn = get_connection()
     records = []
     
-    with conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT 
-                    visit_record_id,
-                    client_id,
-                    COALESCE(reaction_understanding, '') as reaction,
-                    COALESCE(cognitive_function, '') as cognitive,
-                    COALESCE(psychiatric_symptoms, '') as psychiatric,
-                    COALESCE(physical_condition, '') as physical,
-                    COALESCE(living_situation, '') as living,
-                    COALESCE(person_wishes, '') as person_wishes,
-                    COALESCE(caregiver_wishes, '') as caregiver_wishes,
-                    COALESCE(judgment_support, '') as judgment
-                FROM visit_record
-                WHERE reaction_understanding IS NOT NULL 
-                   OR cognitive_function IS NOT NULL
-                   OR psychiatric_symptoms IS NOT NULL
-            """)
-            rows = cur.fetchall()
-            
-            for row in rows:
-                combined_text = " ".join([
-                    str(row.get("reaction", "")),
-                    str(row.get("cognitive", "")),
-                    str(row.get("psychiatric", "")),
-                    str(row.get("physical", "")),
-                    str(row.get("living", "")),
-                    str(row.get("person_wishes", "")),
-                    str(row.get("caregiver_wishes", ""))
-                ])
+    try:
+        conn = get_connection()
+        
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT 
+                        visit_record_id,
+                        client_id,
+                        COALESCE(reaction_understanding, '') as reaction,
+                        COALESCE(cognitive_function, '') as cognitive,
+                        COALESCE(psychiatric_symptoms, '') as psychiatric,
+                        COALESCE(physical_condition, '') as physical,
+                        COALESCE(living_situation, '') as living,
+                        COALESCE(person_wishes, '') as person_wishes,
+                        COALESCE(caregiver_wishes, '') as caregiver_wishes,
+                        COALESCE(judgment_support, '') as judgment
+                    FROM visit_record
+                    WHERE reaction_understanding IS NOT NULL 
+                       OR cognitive_function IS NOT NULL
+                       OR psychiatric_symptoms IS NOT NULL
+                """)
+                rows = cur.fetchall()
                 
-                if combined_text.strip():
-                    records.append({
-                        "id": row["visit_record_id"],
-                        "client_id": row["client_id"],
-                        "text": combined_text,
-                        "policy": str(row.get("judgment", "")),
-                        "source": "システム入力"
-                    })
+                for row in rows:
+                    combined_text = " ".join([
+                        str(row.get("reaction", "")),
+                        str(row.get("cognitive", "")),
+                        str(row.get("psychiatric", "")),
+                        str(row.get("physical", "")),
+                        str(row.get("living", "")),
+                        str(row.get("person_wishes", "")),
+                        str(row.get("caregiver_wishes", ""))
+                    ])
+                    
+                    if combined_text.strip():
+                        records.append({
+                            "id": row["visit_record_id"],
+                            "client_id": row["client_id"],
+                            "text": combined_text,
+                            "policy": str(row.get("judgment", "")),
+                            "source": "システム入力"
+                        })
+    except Exception as e:
+        print(f"データベースからの訪問記録取得エラー: {e}")
+        return []
     
     return records
 
