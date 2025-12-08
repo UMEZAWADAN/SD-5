@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import re
+import json
 from io import BytesIO
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
@@ -270,15 +271,52 @@ def get_visit_records_for_tfidf():
                         "id": row["visit_record_id"],
                         "client_id": row["client_id"],
                         "text": combined_text,
-                        "policy": str(row.get("judgment", ""))
+                        "policy": str(row.get("judgment", "")),
+                        "source": "システム入力"
                     })
     
     return records
 
 
+def get_pdf_case_studies():
+    """PDF事例集からのデータを取得"""
+    case_file = os.path.join(os.path.dirname(__file__), "data", "case_studies", "cases.json")
+    
+    if not os.path.exists(case_file):
+        return []
+    
+    try:
+        with open(case_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        records = []
+        for case in data.get("cases", []):
+            records.append({
+                "id": case.get("id", ""),
+                "client_id": None,
+                "text": case.get("text", ""),
+                "policy": case.get("policy", ""),
+                "source": case.get("source", "PDF事例集"),
+                "difficulty_keywords": case.get("difficulty_keywords", []),
+                "support_keywords": case.get("support_keywords", [])
+            })
+        
+        return records
+    except Exception as e:
+        print(f"PDF事例集の読み込みエラー: {e}")
+        return []
+
+
+def get_all_records_for_tfidf():
+    """DBの訪問記録とPDF事例集を統合して取得"""
+    db_records = get_visit_records_for_tfidf()
+    pdf_records = get_pdf_case_studies()
+    return db_records + pdf_records
+
+
 @app.route("/api/search_similar", methods=["POST"])
 def search_similar():
-    """TF-IDFベースの類似事例検索API"""
+    """TF-IDFベースの類似事例検索API（システム入力データ + PDF事例集）"""
     data = request.json or {}
     
     input_parts = [
@@ -297,13 +335,14 @@ def search_similar():
     
     keywords = extract_keywords(input_text, top_n=8)
     
-    records = get_visit_records_for_tfidf()
+    # システム入力データとPDF事例集を統合して取得
+    records = get_all_records_for_tfidf()
     
     if not records:
         return jsonify({
             "results": [],
             "keywords": keywords,
-            "message": "事例データがありません。訪問記録を登録してください。"
+            "message": "事例データがありません。訪問記録を登録するか、PDF事例集をインポートしてください。"
         })
     
     corpus = [r["text"] for r in records]
@@ -325,14 +364,21 @@ def search_similar():
         results = []
         for i, sim in enumerate(similarities):
             if sim > 0.01:
-                results.append({
+                result = {
                     "similarity": round(sim * 100, 1),
                     "text": records[i]["text"][:500],
                     "policy": records[i]["policy"][:500] if records[i]["policy"] else "支援方針未登録",
-                    "client_id": records[i]["client_id"]
-                })
+                    "client_id": records[i].get("client_id"),
+                    "source": records[i].get("source", "不明")
+                }
+                # PDF事例集の場合はキーワード情報も追加
+                if records[i].get("difficulty_keywords"):
+                    result["difficulty_keywords"] = records[i]["difficulty_keywords"]
+                if records[i].get("support_keywords"):
+                    result["support_keywords"] = records[i]["support_keywords"]
+                results.append(result)
         
-        results = sorted(results, key=lambda x: x["similarity"], reverse=True)[:5]
+        results = sorted(results, key=lambda x: x["similarity"], reverse=True)[:10]
         
     except Exception as e:
         return jsonify({
@@ -341,9 +387,18 @@ def search_similar():
             "error": str(e)
         })
     
+    # 統計情報を追加
+    db_count = len([r for r in records if r.get("source") == "システム入力"])
+    pdf_count = len([r for r in records if r.get("source") != "システム入力"])
+    
     return jsonify({
         "results": results,
-        "keywords": keywords
+        "keywords": keywords,
+        "stats": {
+            "total_records": len(records),
+            "db_records": db_count,
+            "pdf_records": pdf_count
+        }
     })
 
 

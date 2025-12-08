@@ -126,11 +126,62 @@
         border-left: 4px solid #8b5cf6;
     }
     
+    .case-box.pdf-source {
+        border-left-color: #10b981;
+    }
+    
     .case-title {
         font-weight: bold;
         color: #7c3aed;
         margin-bottom: 12px;
         font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .source-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .source-badge.system {
+        background: #ede9fe;
+        color: #7c3aed;
+    }
+    
+    .source-badge.pdf {
+        background: #d1fae5;
+        color: #059669;
+    }
+    
+    .case-keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 10px 0;
+    }
+    
+    .difficulty-tag {
+        display: inline-block;
+        padding: 3px 8px;
+        background: #fee2e2;
+        color: #dc2626;
+        border-radius: 12px;
+        font-size: 11px;
+    }
+    
+    .support-tag {
+        display: inline-block;
+        padding: 3px 8px;
+        background: #dbeafe;
+        color: #2563eb;
+        border-radius: 12px;
+        font-size: 11px;
     }
     
     .case-content,
@@ -146,6 +197,27 @@
         padding: 12px;
         border-radius: 6px;
         margin-top: 12px;
+    }
+    
+    .stats-bar {
+        display: flex;
+        gap: 16px;
+        padding: 12px 16px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        color: #4b5563;
+    }
+    
+    .stats-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .stats-item strong {
+        color: #1f2937;
     }
     
     .empty-state {
@@ -298,20 +370,52 @@ function searchCases() {
     let resultDiv = document.getElementById("resultArea");
     resultDiv.innerHTML = "";
 
+    // 統計情報を表示
+    if (data.stats) {
+      let statsHtml = `<div class="stats-bar">
+        <div class="stats-item">検索対象: <strong>${data.stats.total_records}件</strong></div>
+        <div class="stats-item">システム入力: <strong>${data.stats.db_records}件</strong></div>
+        <div class="stats-item">PDF事例集: <strong>${data.stats.pdf_records}件</strong></div>
+      </div>`;
+      resultDiv.innerHTML = statsHtml;
+    }
+
     if (data.results && data.results.length > 0) {
       data.results.forEach((item, i) => {
         let box = document.createElement("div");
-        box.className = "case-box";
+        let isPdf = item.source !== "システム入力";
+        box.className = "case-box" + (isPdf ? " pdf-source" : "");
+
+        // ソースバッジを作成
+        let sourceBadge = isPdf 
+          ? `<span class="source-badge pdf">${item.source}</span>`
+          : `<span class="source-badge system">システム入力</span>`;
+
+        // キーワードタグを作成
+        let keywordsHtml = "";
+        if (item.difficulty_keywords && item.difficulty_keywords.length > 0) {
+          keywordsHtml += item.difficulty_keywords.map(k => `<span class="difficulty-tag">${k}</span>`).join("");
+        }
+        if (item.support_keywords && item.support_keywords.length > 0) {
+          keywordsHtml += item.support_keywords.map(k => `<span class="support-tag">${k}</span>`).join("");
+        }
+        if (keywordsHtml) {
+          keywordsHtml = `<div class="case-keywords">${keywordsHtml}</div>`;
+        }
 
         box.innerHTML =
-          `<div class="case-title">【類似度 ${item.similarity}%】事例 ${i+1}</div>
+          `<div class="case-title">
+             <span>【類似度 ${item.similarity}%】事例 ${i+1}</span>
+             ${sourceBadge}
+           </div>
+           ${keywordsHtml}
            <div class="case-content"><strong>状況：</strong>${item.text}</div>
            <div class="case-policy"><strong>支援方針：</strong>${item.policy}</div>`;
 
         resultDiv.appendChild(box);
       });
     } else {
-      resultDiv.innerHTML = "<p style='color:#888;'>類似事例が見つかりませんでした。事例データを登録してください。</p>";
+      resultDiv.innerHTML += "<p style='color:#888;'>類似事例が見つかりませんでした。</p>";
     }
   })
   .catch(err => {
