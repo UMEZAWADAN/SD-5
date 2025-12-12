@@ -211,6 +211,52 @@ def similar_cases():
 #  2.5 TF-IDF ベースのテキストマイニング
 # ================================
 
+# 書き方の差異を吸収するための同義語マッピング
+SYNONYM_MAP = {
+    "一人暮らし": "独居",
+    "ひとり暮らし": "独居",
+    "単身": "独居",
+    "夫婦二人暮らし": "老老介護",
+    "夫婦のみ": "老老介護",
+    "高齢夫婦": "老老介護",
+    "金銭管理が難しい": "金銭管理困難",
+    "お金の管理": "金銭管理困難",
+    "薬の管理": "服薬管理困難",
+    "服薬できない": "服薬管理困難",
+    "外に出たがる": "徘徊",
+    "出歩く": "徘徊",
+    "迷子": "徘徊",
+    "物を盗られた": "幻覚・妄想",
+    "被害妄想": "幻覚・妄想",
+    "幻聴": "幻覚・妄想",
+    "怒りっぽい": "易怒性・興奮",
+    "興奮する": "易怒性・興奮",
+    "暴れる": "暴力・暴言",
+    "手が出る": "暴力・暴言",
+    "ゴミ屋敷": "セルフネグレクト・ごみ屋敷",
+    "片付けられない": "セルフネグレクト・ごみ屋敷",
+    "介護拒否": "支援拒否",
+    "サービス拒否": "支援拒否",
+    "受診拒否": "未受診",
+    "病院に行かない": "未受診",
+    "デイサービス": "デイサービス導入",
+    "通所介護": "デイサービス導入",
+    "訪問介護": "訪問介護導入",
+    "ヘルパー": "訪問介護導入",
+    "訪問看護": "訪問看護導入",
+    "ショートステイ": "ショートステイ利用",
+    "短期入所": "ショートステイ利用",
+}
+
+def normalize_text(text):
+    """テキストを正規化して書き方の差異を吸収"""
+    if not text:
+        return ""
+    normalized = text
+    for variant, canonical in SYNONYM_MAP.items():
+        normalized = normalized.replace(variant, canonical)
+    return normalized
+
 def extract_keywords(text, top_n=10):
     """テキストからキーワードを抽出（TF-IDF上位語）"""
     if not text or not text.strip():
@@ -238,34 +284,48 @@ def get_visit_records_for_tfidf():
         
         with conn:
             with conn.cursor() as cur:
+                # 実際のカラム名に合わせて修正
                 cur.execute("""
                     SELECT 
                         visit_record_id,
                         client_id,
-                        COALESCE(reaction_understanding, '') as reaction,
-                        COALESCE(cognitive_function, '') as cognitive,
-                        COALESCE(psychiatric_symptoms, '') as psychiatric,
-                        COALESCE(physical_condition, '') as physical,
-                        COALESCE(living_situation, '') as living,
-                        COALESCE(person_wishes, '') as person_wishes,
-                        COALESCE(caregiver_wishes, '') as caregiver_wishes,
-                        COALESCE(judgment_support, '') as judgment
+                        COALESCE(vr_reaction, '') as reaction,
+                        COALESCE(vr_cognition, '') as cognitive,
+                        COALESCE(vr_behavior, '') as behavior,
+                        COALESCE(vr_physical, '') as physical,
+                        COALESCE(vr_living, '') as living,
+                        COALESCE(vr_person_intent, '') as person_wishes,
+                        COALESCE(vr_family_intent, '') as caregiver_wishes,
+                        COALESCE(support_decision, '') as judgment,
+                        COALESCE(visit_purpose, '') as visit_purpose,
+                        COALESCE(visit_condition, '') as visit_condition,
+                        COALESCE(vr_dementia_adl, '') as dementia_adl,
+                        COALESCE(vr_disability_adl, '') as disability_adl,
+                        COALESCE(vr_other, '') as other_notes
                     FROM visit_record
-                    WHERE reaction_understanding IS NOT NULL 
-                       OR cognitive_function IS NOT NULL
-                       OR psychiatric_symptoms IS NOT NULL
+                    WHERE vr_reaction IS NOT NULL AND vr_reaction != ''
+                       OR vr_cognition IS NOT NULL AND vr_cognition != ''
+                       OR vr_behavior IS NOT NULL AND vr_behavior != ''
+                       OR vr_physical IS NOT NULL AND vr_physical != ''
+                       OR vr_living IS NOT NULL AND vr_living != ''
                 """)
                 rows = cur.fetchall()
                 
                 for row in rows:
+                    # すべてのフィールドを結合してテキストを作成
                     combined_text = " ".join([
                         str(row.get("reaction", "")),
                         str(row.get("cognitive", "")),
-                        str(row.get("psychiatric", "")),
+                        str(row.get("behavior", "")),
                         str(row.get("physical", "")),
                         str(row.get("living", "")),
                         str(row.get("person_wishes", "")),
-                        str(row.get("caregiver_wishes", ""))
+                        str(row.get("caregiver_wishes", "")),
+                        str(row.get("visit_purpose", "")),
+                        str(row.get("visit_condition", "")),
+                        str(row.get("dementia_adl", "")),
+                        str(row.get("disability_adl", "")),
+                        str(row.get("other_notes", ""))
                     ])
                     
                     if combined_text.strip():
@@ -338,7 +398,9 @@ def search_similar():
     if not input_text.strip():
         return jsonify({"results": [], "keywords": []})
     
-    keywords = extract_keywords(input_text, top_n=8)
+    # 入力テキストを正規化（書き方の差異を吸収）
+    normalized_input = normalize_text(input_text)
+    keywords = extract_keywords(normalized_input, top_n=8)
     
     # システム入力データとPDF事例集を統合して取得
     records = get_all_records_for_tfidf()
@@ -350,14 +412,18 @@ def search_similar():
             "message": "事例データがありません。訪問記録を登録するか、PDF事例集をインポートしてください。"
         })
     
-    corpus = [r["text"] for r in records]
-    corpus.append(input_text)
+    # コーパスも正規化（書き方の差異を吸収）
+    corpus = [normalize_text(r["text"]) for r in records]
+    corpus.append(normalized_input)
     
     try:
+        # TF-IDFパラメータを改善: より多くの特徴量とより広いn-gram範囲で類似度の分散を改善
         vectorizer = TfidfVectorizer(
             analyzer='char',
-            ngram_range=(2, 4),
-            max_features=1000
+            ngram_range=(2, 5),
+            max_features=5000,
+            min_df=1,
+            max_df=0.95
         )
         tfidf_matrix = vectorizer.fit_transform(corpus)
         
