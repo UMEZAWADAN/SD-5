@@ -14,6 +14,14 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from datetime import datetime
 
+# Sentence Transformers for semantic similarity (optional, with fallback to TF-IDF)
+try:
+    from sentence_transformers import SentenceTransformer
+    SENTENCE_TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    SENTENCE_TRANSFORMERS_AVAILABLE = False
+    print("Warning: sentence-transformers not installed. Using TF-IDF fallback.")
+
 app = Flask(__name__)
 
 # ================================
@@ -208,8 +216,218 @@ def similar_cases():
 
 
 # ================================
-#  2.5 TF-IDF ベースのテキストマイニング
+#  2.5 テキストマイニング（セマンティック検索 + TF-IDFフォールバック）
 # ================================
+
+# セマンティック検索用の設定
+EMBEDDING_MODEL_NAME = "intfloat/multilingual-e5-small"
+EMBEDDINGS_CACHE_FILE = os.path.join(os.path.dirname(__file__), "data", "case_studies", "embeddings.npy")
+EMBEDDINGS_IDS_FILE = os.path.join(os.path.dirname(__file__), "data", "case_studies", "embeddings_ids.json")
+
+# グローバル変数でモデルとキャッシュを保持
+_embedding_model = None
+_synthetic_embeddings = None
+_synthetic_ids = None
+
+
+def get_embedding_model():
+    """埋め込みモデルを取得（遅延ロード）"""
+    global _embedding_model
+    if _embedding_model is None and SENTENCE_TRANSFORMERS_AVAILABLE:
+        try:
+            print(f"Loading embedding model: {EMBEDDING_MODEL_NAME}...")
+            _embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+            print("Embedding model loaded successfully!")
+        except Exception as e:
+            print(f"Failed to load embedding model: {e}")
+            return None
+    return _embedding_model
+
+
+def load_synthetic_embeddings():
+    """事前計算済みの合成データ埋め込みをロード"""
+    global _synthetic_embeddings, _synthetic_ids
+    
+    if _synthetic_embeddings is not None:
+        return _synthetic_embeddings, _synthetic_ids
+    
+    if os.path.exists(EMBEDDINGS_CACHE_FILE) and os.path.exists(EMBEDDINGS_IDS_FILE):
+        try:
+            _synthetic_embeddings = np.load(EMBEDDINGS_CACHE_FILE)
+            with open(EMBEDDINGS_IDS_FILE, "r", encoding="utf-8") as f:
+                _synthetic_ids = json.load(f)
+            print(f"Loaded {len(_synthetic_ids)} pre-computed embeddings from cache")
+            return _synthetic_embeddings, _synthetic_ids
+        except Exception as e:
+            print(f"Failed to load embeddings cache: {e}")
+    
+    return None, None
+
+
+def compute_and_cache_synthetic_embeddings():
+    """合成データの埋め込みを計算してキャッシュに保存"""
+    global _synthetic_embeddings, _synthetic_ids
+    
+    model = get_embedding_model()
+    if model is None:
+        return False
+    
+    # 合成データを取得
+    records = get_pdf_case_studies()
+    if not records:
+        print("No synthetic cases found")
+        return False
+    
+    print(f"Computing embeddings for {len(records)} synthetic cases...")
+    
+    # テキストを正規化してE5モデル用にフォーマット
+    texts = [f"passage: {normalize_text(r['text'])}" for r in records]
+    ids = [r.get("id", f"case_{i}") for i, r in enumerate(records)]
+    
+    # バッチで埋め込みを計算
+    embeddings = model.encode(texts, batch_size=32, show_progress_bar=True, convert_to_numpy=True)
+    
+    # キャッシュに保存
+    os.makedirs(os.path.dirname(EMBEDDINGS_CACHE_FILE), exist_ok=True)
+    np.save(EMBEDDINGS_CACHE_FILE, embeddings)
+    with open(EMBEDDINGS_IDS_FILE, "w", encoding="utf-8") as f:
+        json.dump(ids, f, ensure_ascii=False)
+    
+    _synthetic_embeddings = embeddings
+    _synthetic_ids = ids
+    
+    print(f"Saved {len(ids)} embeddings to cache")
+    return True
+
+
+def search_similar_embeddings(normalized_input, records, keywords):
+    """セマンティック埋め込みを使用した類似事例検索"""
+    model = get_embedding_model()
+    if model is None:
+        raise Exception("Embedding model not available")
+    
+    # 合成データの埋め込みをロード
+    synthetic_embeddings, synthetic_ids = load_synthetic_embeddings()
+    
+    # キャッシュがない場合は計算
+    if synthetic_embeddings is None:
+        if not compute_and_cache_synthetic_embeddings():
+            raise Exception("Failed to compute synthetic embeddings")
+        synthetic_embeddings, synthetic_ids = load_synthetic_embeddings()
+    
+    # 入力テキストの埋め込みを計算（E5モデル用にquery:プレフィックス）
+    query_embedding = model.encode(f"query: {normalized_input}", convert_to_numpy=True)
+    
+    # DBレコードとPDF事例集を分離
+    db_records = [r for r in records if r.get("source") == "システム入力"]
+    synthetic_records = [r for r in records if r.get("source") != "システム入力"]
+    
+    results = []
+    
+    # DBレコードの埋め込みを計算（少数なのでオンザフライで計算）
+    if db_records:
+        db_texts = [f"passage: {normalize_text(r['text'])}" for r in db_records]
+        db_embeddings = model.encode(db_texts, batch_size=32, convert_to_numpy=True)
+        
+        # コサイン類似度を計算
+        db_similarities = cosine_similarity([query_embedding], db_embeddings)[0]
+        
+        for i, sim in enumerate(db_similarities):
+            if sim > 0.01:
+                display_text = db_records[i].get("display_text", db_records[i]["text"])
+                results.append({
+                    "similarity": round(sim * 100, 1),
+                    "text": display_text[:500],
+                    "policy": db_records[i]["policy"][:500] if db_records[i]["policy"] else "支援方針未登録",
+                    "client_id": db_records[i].get("client_id"),
+                    "source": "システム入力"
+                })
+    
+    # 合成データの類似度を計算
+    if synthetic_embeddings is not None and len(synthetic_embeddings) > 0:
+        synthetic_similarities = cosine_similarity([query_embedding], synthetic_embeddings)[0]
+        
+        # IDからレコードを検索するためのマップを作成
+        id_to_record = {r.get("id", f"case_{i}"): r for i, r in enumerate(synthetic_records)}
+        
+        for i, sim in enumerate(synthetic_similarities):
+            if sim > 0.01 and i < len(synthetic_ids):
+                case_id = synthetic_ids[i]
+                record = id_to_record.get(case_id)
+                if record:
+                    display_text = record.get("display_text", record["text"])
+                    result = {
+                        "similarity": round(sim * 100, 1),
+                        "text": display_text[:500],
+                        "policy": record["policy"][:500] if record["policy"] else "支援方針未登録",
+                        "client_id": None,
+                        "source": record.get("source", "合成データ")
+                    }
+                    if record.get("difficulty_keywords"):
+                        result["difficulty_keywords"] = record["difficulty_keywords"]
+                    if record.get("support_keywords"):
+                        result["support_keywords"] = record["support_keywords"]
+                    results.append(result)
+    
+    # 結果をソートしてシステム入力と合成データのバランスを取る
+    sorted_results = sorted(results, key=lambda x: x["similarity"], reverse=True)
+    
+    db_results = [r for r in sorted_results if r["source"] == "システム入力"][:3]
+    synthetic_results = [r for r in sorted_results if r["source"] != "システム入力"][:10]
+    
+    combined_results = db_results + synthetic_results
+    final_results = sorted(combined_results, key=lambda x: x["similarity"], reverse=True)[:10]
+    
+    return final_results
+
+
+def search_similar_tfidf(normalized_input, records, keywords):
+    """TF-IDFベースの類似事例検索（フォールバック用）"""
+    corpus = [normalize_text(r["text"]) for r in records]
+    corpus.append(normalized_input)
+    
+    vectorizer = TfidfVectorizer(
+        analyzer='char',
+        ngram_range=(2, 5),
+        max_features=5000,
+        min_df=1,
+        max_df=0.95
+    )
+    tfidf_matrix = vectorizer.fit_transform(corpus)
+    
+    input_vector = tfidf_matrix[-1]
+    doc_vectors = tfidf_matrix[:-1]
+    
+    similarities = cosine_similarity(input_vector, doc_vectors)[0]
+    
+    results = []
+    for i, sim in enumerate(similarities):
+        if sim > 0.01:
+            display_text = records[i].get("display_text", records[i]["text"])
+            
+            result = {
+                "similarity": round(sim * 100, 1),
+                "text": display_text[:500],
+                "policy": records[i]["policy"][:500] if records[i]["policy"] else "支援方針未登録",
+                "client_id": records[i].get("client_id"),
+                "source": records[i].get("source", "不明")
+            }
+            if records[i].get("difficulty_keywords"):
+                result["difficulty_keywords"] = records[i]["difficulty_keywords"]
+            if records[i].get("support_keywords"):
+                result["support_keywords"] = records[i]["support_keywords"]
+            results.append(result)
+    
+    sorted_results = sorted(results, key=lambda x: x["similarity"], reverse=True)
+    
+    db_results = [r for r in sorted_results if r["source"] == "システム入力"][:3]
+    synthetic_results = [r for r in sorted_results if r["source"] != "システム入力"][:10]
+    
+    combined_results = db_results + synthetic_results
+    final_results = sorted(combined_results, key=lambda x: x["similarity"], reverse=True)[:10]
+    
+    return final_results
+
 
 # 書き方の差異を吸収するための同義語マッピング
 SYNONYM_MAP = {
@@ -386,7 +604,7 @@ def get_all_records_for_tfidf():
 
 @app.route("/api/search_similar", methods=["POST"])
 def search_similar():
-    """TF-IDFベースの類似事例検索API（システム入力データ + PDF事例集）"""
+    """セマンティック類似事例検索API（TF-IDFフォールバック付き）"""
     data = request.json or {}
     
     input_parts = [
@@ -417,56 +635,20 @@ def search_similar():
             "message": "事例データがありません。訪問記録を登録するか、PDF事例集をインポートしてください。"
         })
     
-    # コーパスも正規化（書き方の差異を吸収）
-    corpus = [normalize_text(r["text"]) for r in records]
-    corpus.append(normalized_input)
+    search_method = "tfidf"  # デフォルトはTF-IDF
     
     try:
-        # TF-IDFパラメータを改善: より多くの特徴量とより広いn-gram範囲で類似度の分散を改善
-        vectorizer = TfidfVectorizer(
-            analyzer='char',
-            ngram_range=(2, 5),
-            max_features=5000,
-            min_df=1,
-            max_df=0.95
-        )
-        tfidf_matrix = vectorizer.fit_transform(corpus)
-        
-        input_vector = tfidf_matrix[-1]
-        doc_vectors = tfidf_matrix[:-1]
-        
-        similarities = cosine_similarity(input_vector, doc_vectors)[0]
-        
-        results = []
-        for i, sim in enumerate(similarities):
-            if sim > 0.01:
-                # 表示用テキスト: display_textがあればそれを使用、なければtextを使用
-                display_text = records[i].get("display_text", records[i]["text"])
-                
-                result = {
-                    "similarity": round(sim * 100, 1),
-                    "text": display_text[:500],
-                    "policy": records[i]["policy"][:500] if records[i]["policy"] else "支援方針未登録",
-                    "client_id": records[i].get("client_id"),
-                    "source": records[i].get("source", "不明")
-                }
-                # PDF事例集の場合はキーワード情報も追加
-                if records[i].get("difficulty_keywords"):
-                    result["difficulty_keywords"] = records[i]["difficulty_keywords"]
-                if records[i].get("support_keywords"):
-                    result["support_keywords"] = records[i]["support_keywords"]
-                results.append(result)
-        
-        # 結果をソートしてシステム入力と合成データのバランスを取る
-        # システム入力が上位を独占しないように、それぞれから上位を取得
-        sorted_results = sorted(results, key=lambda x: x["similarity"], reverse=True)
-        
-        db_results = [r for r in sorted_results if r["source"] == "システム入力"][:3]
-        synthetic_results = [r for r in sorted_results if r["source"] != "システム入力"][:10]
-        
-        # 類似度順に統合（システム入力は最大3件まで）
-        combined_results = db_results + synthetic_results
-        results = sorted(combined_results, key=lambda x: x["similarity"], reverse=True)[:10]
+        # セマンティック検索を試行（sentence-transformersが利用可能な場合）
+        if SENTENCE_TRANSFORMERS_AVAILABLE:
+            try:
+                results = search_similar_embeddings(normalized_input, records, keywords)
+                search_method = "semantic"
+            except Exception as e:
+                print(f"Semantic search failed, falling back to TF-IDF: {e}")
+                results = search_similar_tfidf(normalized_input, records, keywords)
+        else:
+            # TF-IDFフォールバック
+            results = search_similar_tfidf(normalized_input, records, keywords)
         
     except Exception as e:
         return jsonify({
@@ -485,7 +667,8 @@ def search_similar():
         "stats": {
             "total_records": len(records),
             "db_records": db_count,
-            "pdf_records": pdf_count
+            "pdf_records": pdf_count,
+            "search_method": search_method
         }
     })
 
