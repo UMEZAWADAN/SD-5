@@ -30,7 +30,3 @@ document.getElementById("saveAllBtn").addEventListener("click", async () => {
     const result = await res.json();
     alert(result.status === "ok" ? "保存しました ✅" : "保存に失敗しました ❌");
 });
-</script>
-
-</body>
-</html>
