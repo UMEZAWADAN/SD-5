@@ -65,9 +65,10 @@ def top():
 def list_page():
     return render_template("list.html")
 
-@app.route("/touroku")
-def touroku():
-    return render_template("touroku.html")
+@app.route("/register")
+@app.route("/touroku")  # Keep old route for backward compatibility
+def register():
+    return render_template("register.html")
 
 @app.route("/detail")
 @app.route("/shousai")  # Keep old route for backward compatibility
