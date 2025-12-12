@@ -699,7 +699,7 @@ def get_all_records_for_tfidf():
 
 @app.route("/api/search_similar", methods=["POST"])
 def search_similar():
-    """セマンティック類似事例検索API（TF-IDFフォールバック付き）"""
+    """TF-IDF類似事例検索API（文字n-gramベースで正確な類似度を計算）"""
     data = request.json or {}
     
     input_parts = [
@@ -730,20 +730,11 @@ def search_similar():
             "message": "事例データがありません。訪問記録を登録するか、PDF事例集をインポートしてください。"
         })
     
-    search_method = "tfidf"  # デフォルトはTF-IDF
+    search_method = "tfidf"
     
     try:
-        # セマンティック検索を試行（sentence-transformersが利用可能な場合）
-        if SENTENCE_TRANSFORMERS_AVAILABLE:
-            try:
-                results = search_similar_embeddings(normalized_input, records, keywords)
-                search_method = "semantic"
-            except Exception as e:
-                print(f"Semantic search failed, falling back to TF-IDF: {e}")
-                results = search_similar_tfidf(normalized_input, records, keywords)
-        else:
-            # TF-IDFフォールバック
-            results = search_similar_tfidf(normalized_input, records, keywords)
+        # TF-IDFのみを使用（より正確な類似度計算のため）
+        results = search_similar_tfidf(normalized_input, records, keywords)
         
     except Exception as e:
         return jsonify({
