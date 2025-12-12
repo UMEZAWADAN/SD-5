@@ -273,119 +273,353 @@ def generate_support_process(support_keywords: List[str], months: int) -> str:
     return "\n".join(process_parts)
 
 
-def generate_visit_like_text(age: int, gender: str, living_situation: str, 
-                             dementia_type: str, dementia_adl: str, disability_adl: str,
-                             difficulty_keywords: List[str], support_keywords: List[str],
-                             bpsd: List[str], physical_conditions: List[str],
-                             outcome: str) -> str:
-    """訪問記録表と同じ構造のテキストを生成（TF-IDF用）
+def generate_visit_fields(age: int, gender: str, living_situation: str, 
+                          dementia_type: str, dementia_adl: str, disability_adl: str,
+                          difficulty_keywords: List[str], support_keywords: List[str],
+                          bpsd: List[str], physical_conditions: List[str],
+                          outcome: str) -> Dict[str, str]:
+    """訪問記録表の7つのフィールドを個別に生成
     
     訪問記録表のフィールド:
-    - vr_reaction (反応・理解)
-    - vr_cognition (認知機能)
-    - vr_behavior (行動・心理症状)
-    - vr_physical (身体状況)
+    - vr_reaction (訪問に対する本人の反応・理解)
+    - vr_cognition (認知機能・認知症日常生活自立度)
+    - vr_behavior (精神症状・行動症状)
+    - vr_physical (身体状況・障害高齢者の日常生活自立度)
     - vr_living (生活状況)
-    - vr_person_intent (本人の意向)
-    - vr_family_intent (家族の意向)
+    - vr_person_intent (本人の意向・希望)
+    - vr_family_intent (介護者の意向・希望)
     - support_decision (支援方針)
+    
+    Returns:
+        Dict with individual field values and concatenated visit_like_text
     """
     
-    # 反応・理解
-    reaction_templates = [
-        "訪問を快く受け入れ、笑顔で対応された。会話も楽しそうにされ、昔の話を詳しく話された。",
-        "初めは警戒した様子で「どなたですか」と繰り返し尋ねられた。夫が説明すると徐々に打ち解け、お茶を出してくださった。",
+    # 反応・理解 - test_data.sqlの実際の表現を参考に多様なテンプレート
+    reaction_templates_base = [
+        "訪問を快く受け入れ、笑顔で対応された。会話も楽しそうにされ、昔の話を詳しく語られた。ただし、同じ話を繰り返す場面が見られた。",
+        "初めは警戒した様子で「どなたですか」と繰り返し尋ねられた。家族が説明すると徐々に打ち解け、お茶を出してくださった。",
         "にこやかに対応。「お客さんが来てくれて嬉しい」と歓迎された。",
         "訪問者を認識できず、不安そうな表情を見せた。家族の説明で落ち着いた。",
-        "「何しに来た」と警戒的な態度。時間をかけて説明し、徐々に受け入れてくれた。"
+        "穏やかに対応。自分の病気について「仕方ない」と受け入れている様子。ただし、時々涙ぐむ場面あり。",
+        "穏やかに対応されたが、「家に帰りたい」と繰り返し訴えられた。ここが自宅であることを説明しても理解されない。",
+        "本人は車椅子で対応。言葉は出にくいが、うなずきで意思表示。",
+        "退院直後で疲労の様子。ベッドで横になりながら対応。",
+        "穏やかに対応。「薬はちゃんと飲んでいる」と言うが、実際は飲み忘れや重複服用がある。",
+        "穏やかに対応。家族の話し合いには参加せず、テレビを見ていた。",
+        "穏やかに対応。「息子が来てくれないから寂しい」と訴え。",
+        "二人とも穏やかに対応。ただし、訪問の目的を何度も尋ねられた。",
+        "無表情で対応。質問に対して短い返答のみ。家族が代わりに説明。"
     ]
-    reaction = random.choice(reaction_templates)
     
-    # 認知機能
-    cognition_parts = []
-    if dementia_adl in ["I", "IIa"]:
-        cognition_parts.append("軽度の認知機能低下。短期記憶の低下が顕著。")
-    elif dementia_adl in ["IIb", "IIIa"]:
-        cognition_parts.append("中等度の認知機能低下。自分の年齢や生年月日が言えない。季節の認識も曖昧。")
-    elif dementia_adl in ["IIIb", "IV", "M"]:
-        cognition_parts.append("重度の認知機能低下。見当識障害が著明。家族の顔も認識できないことがある。")
+    reaction_templates_negative = [
+        "訪問を強く拒否。「何しに来た」「帰れ」と怒鳴られた。家族の説得で玄関先での短時間の対応となった。",
+        "「何しに来た」と警戒的な態度。時間をかけて説明し、徐々に受け入れてくれた。",
+        "ドア越しの対応。「用はない」「帰ってくれ」と拒否的。粘り強く説明し、玄関先で短時間話を聞けた。",
+        "最初は警戒していたが、民生委員の紹介と伝えると態度が軟化。ただし、医療の話になると拒否的。",
+        "おびえた様子。家族の顔色をうかがいながら話す。"
+    ]
+    
+    if "支援拒否" in difficulty_keywords:
+        reaction = random.choice(reaction_templates_negative)
+    elif "虐待疑い" in difficulty_keywords:
+        reaction = "おびえた様子。家族の顔色をうかがいながら話す。家族は「転んだだけ」と説明。"
     else:
-        cognition_parts.append("認知機能は比較的保たれている。")
+        reaction = random.choice(reaction_templates_base)
     
+    # 認知機能 - 認知症タイプと自立度に応じた詳細な記述
+    cognition_parts = []
+    
+    # 認知症タイプ別の記述
+    if dementia_type == "レビー小体型認知症":
+        cognition_parts.append(f"レビー小体型認知症。認知機能の変動あり。調子の良い時と悪い時の差が大きい。")
+    elif dementia_type == "前頭側頭型認知症":
+        cognition_parts.append(f"前頭側頭型認知症。社会的認知の低下が顕著。善悪の判断が困難。")
+    elif dementia_type == "血管性認知症":
+        cognition_parts.append(f"脳梗塞後遺症による血管性認知症。言語障害あり。理解力は比較的保たれている。")
+    elif dementia_type == "軽度認知障害（MCI）":
+        cognition_parts.append(f"軽度認知障害（MCI）の疑い。物忘れが目立つが、日常生活は概ね自立。")
+    else:
+        # アルツハイマー型・混合型
+        if dementia_adl in ["I", "IIa"]:
+            cognition_parts.append(f"軽度の認知機能低下。短期記憶の低下が顕著。5分前の話を覚えていない。長期記憶は比較的保たれており、昔の仕事の話は詳細に語れる。見当識は日付の認識に曖昧さあり。")
+        elif dementia_adl in ["IIb", "IIIa"]:
+            cognition_parts.append(f"中等度の認知機能低下。自分の年齢や生年月日が言えない。季節の認識も曖昧。訪問者の顔は覚えられない。")
+        elif dementia_adl in ["IIIb", "IV", "M"]:
+            cognition_parts.append(f"中等度～重度の認知機能低下。見当識障害が顕著。自宅を実家と混同している。家族の顔も認識できないことがある。")
+        else:
+            cognition_parts.append(f"認知機能は比較的保たれている。日常生活は概ね自立しているが、複雑な判断は困難。")
+    
+    # 認知症日常生活自立度を追加
+    cognition_parts.append(f"認知症日常生活自立度：{dementia_adl}。")
+    
+    # 特定の症状に応じた追加記述
     if "幻覚・妄想" in difficulty_keywords:
-        cognition_parts.append("物盗られ妄想あり。「財布を盗まれた」と訴える。")
+        if dementia_type == "レビー小体型認知症":
+            cognition_parts.append("幻視が頻繁にある。「知らない人が家にいる」と訴える。")
+        else:
+            cognition_parts.append("物盗られ妄想が顕著。「財布を盗まれた」と頻繁に訴える。")
     if "徘徊" in difficulty_keywords:
         cognition_parts.append("夜中に起き出して「仕事に行かなきゃ」と言うことがある。昼夜逆転傾向。")
+    if "若年性認知症" in difficulty_keywords:
+        cognition_parts.append("若年性アルツハイマー型認知症。記憶障害が進行中。仕事でのミスが増え、退職を余儀なくされた。")
     
     cognition = " ".join(cognition_parts)
     
-    # 行動・心理症状
+    # 行動・心理症状 - BPSDに応じた詳細な記述
     behavior_parts = []
-    if bpsd:
-        behavior_parts.append(f"{', '.join(bpsd[:3])}が見られる。")
-    if "易怒性・興奮" in difficulty_keywords:
-        behavior_parts.append("些細なことで怒りっぽくなり、家族に暴言を吐くことがある。")
-    if "支援拒否" in difficulty_keywords:
-        behavior_parts.append("介護サービスの利用を拒否。「自分でできる」と主張。")
-    if not behavior_parts:
-        behavior_parts.append("特に問題となる行動・心理症状は見られない。穏やかな性格で、近隣との関係も良好。")
+    
+    if "前頭側頭型認知症" in difficulty_keywords or dementia_type == "前頭側頭型認知症":
+        behavior_parts.append("脱抑制行動あり。スーパーで商品を無断で持ち出し、警察沙汰に。本人は悪いことをした認識がない。")
+    elif "徘徊" in difficulty_keywords:
+        behavior_parts.append("夕方になると外出しようとする（夕暮れ症候群）。警察に保護されたこともある。帰宅願望が強い。")
+    elif "幻覚・妄想" in difficulty_keywords:
+        if dementia_type == "レビー小体型認知症":
+            behavior_parts.append("幻視が頻繁にある。「知らない人が家にいる」と訴える。パーキンソン症状あり。")
+        else:
+            behavior_parts.append("物盗られ妄想が顕著。家族を泥棒扱いすることがある。興奮すると大声を出す。")
+    elif "易怒性・興奮" in difficulty_keywords or "暴力・暴言" in difficulty_keywords:
+        behavior_parts.append("些細なことで怒りっぽくなり、家族に暴言を吐くことがある。興奮時の対応が困難。")
+    elif "支援拒否" in difficulty_keywords:
+        behavior_parts.append("介護サービスの利用を拒否。「自分でできる」と主張。支援の必要性を感じていない様子。")
+    elif "セルフネグレクト・ごみ屋敷" in difficulty_keywords:
+        behavior_parts.append("セルフネグレクト状態。入浴していない様子。衣類も汚れている。")
+    elif bpsd:
+        bpsd_details = []
+        for symptom in bpsd[:3]:
+            if symptom == "夜間不穏":
+                bpsd_details.append("夜間の不穏あり")
+            elif symptom == "昼夜逆転":
+                bpsd_details.append("昼夜逆転傾向")
+            elif symptom == "介護抵抗":
+                bpsd_details.append("介護への抵抗あり")
+            elif symptom == "抑うつ":
+                bpsd_details.append("抑うつ傾向が心配。「自分は役立たずだ」という発言あり")
+            elif symptom == "帰宅願望":
+                bpsd_details.append("「家に帰りたい」と繰り返し訴える")
+            else:
+                bpsd_details.append(f"{symptom}あり")
+        behavior_parts.append(f"{', '.join(bpsd_details)}。")
+    else:
+        behavior_parts.append("特に問題行動は見られない。穏やかな性格で、近隣との関係も良好。")
+    
+    # 老老介護の場合の追加
+    if "老老介護" in difficulty_keywords:
+        behavior_parts.append("夜間の頻尿あり。配偶者が毎晩2-3回起きて対応。")
     
     behavior = " ".join(behavior_parts)
     
-    # 身体状況
+    # 身体状況 - 障害高齢者の日常生活自立度と身体疾患
     physical_parts = []
+    
+    # 身体疾患の記述
     if physical_conditions:
-        physical_parts.append(f"既往歴: {', '.join(physical_conditions)}。")
-    if disability_adl in ["A1", "A2"]:
-        physical_parts.append("歩行は自立しているが、腰痛あり。基本的なADLは自立。買い物は近所のスーパーで可能。")
+        condition_details = []
+        for cond in physical_conditions:
+            if cond == "パーキンソン病":
+                condition_details.append("パーキンソン病を合併。小刻み歩行、すくみ足あり。転倒リスク高い")
+            elif cond == "脳梗塞後遺症":
+                condition_details.append("脳梗塞後遺症。右片麻痺あり")
+            elif cond == "大腿骨骨折術後":
+                condition_details.append("大腿骨骨折術後。リハビリ中")
+            elif cond == "心疾患":
+                condition_details.append("心疾患があり、興奮時の血圧上昇が心配")
+            elif cond == "慢性腎臓病":
+                condition_details.append("慢性腎臓病あり。週3回の透析が必要")
+            else:
+                condition_details.append(f"{cond}あり")
+        physical_parts.append(f"{', '.join(condition_details)}。")
+    
+    # 障害高齢者の日常生活自立度に応じた記述
+    if disability_adl in ["J1", "J2"]:
+        physical_parts.append(f"障害高齢者の日常生活自立度：{disability_adl}。歩行は自立。基本的なADLは自立。")
+    elif disability_adl in ["A1", "A2"]:
+        if "骨粗鬆症" in physical_conditions:
+            physical_parts.append(f"障害高齢者の日常生活自立度：{disability_adl}。骨粗鬆症のため転倒リスクあり。歩行は自立しているが、やや不安定。")
+        else:
+            physical_parts.append(f"障害高齢者の日常生活自立度：{disability_adl}。歩行は自立しているが、腰痛あり。買い物は近所のスーパーまで徒歩で行ける。")
     elif disability_adl in ["B1", "B2"]:
-        physical_parts.append("屋内での生活は概ね自立だが、外出には介助が必要。")
+        physical_parts.append(f"障害高齢者の日常生活自立度：{disability_adl}。車椅子使用。移乗には介助が必要。屋内での生活は概ね自立だが、外出には介助が必要。")
     elif disability_adl in ["C1", "C2"]:
-        physical_parts.append("ベッド上での生活が中心。全介助が必要。")
+        physical_parts.append(f"障害高齢者の日常生活自立度：{disability_adl}。ベッド上での生活が中心。全介助が必要。嚥下機能低下あり。")
     else:
-        physical_parts.append("身体機能は年齢相応。歩行も安定している。")
+        physical_parts.append(f"身体機能は年齢相応。歩行も安定している。")
+    
+    # セルフネグレクトの場合
+    if "セルフネグレクト・ごみ屋敷" in difficulty_keywords:
+        physical_parts.append("栄養状態不良の疑い。痩せている。医療機関未受診のため詳細不明。")
     
     physical = " ".join(physical_parts)
     
-    # 生活状況
+    # 生活状況 - 世帯状況と困難キーワードに応じた詳細
     living_parts = []
-    living_parts.append(f"{living_situation}。")
-    if "独居" in difficulty_keywords:
-        living_parts.append("一人暮らしで、日常生活の管理が困難になってきている。食事は配食サービスを利用。")
-    if "老老介護" in difficulty_keywords:
-        living_parts.append("配偶者も高齢で、お互いに支え合いながら生活している。")
-    if "セルフネグレクト・ごみ屋敷" in difficulty_keywords:
-        living_parts.append("自宅内にゴミが堆積。衛生状態が悪化している。")
-    if "金銭管理困難" in difficulty_keywords:
-        living_parts.append("金銭管理ができていない。訪問販売で高額商品を購入してしまう。")
+    
+    # 世帯状況の詳細
+    if living_situation == "独居":
+        living_parts.append("独居。")
+        if "セルフネグレクト・ごみ屋敷" in difficulty_keywords:
+            living_parts.append("室内はゴミが堆積し、悪臭あり。近隣から苦情が出ている。電気・ガスは通っているが、水道が止まりかけている。")
+        elif "金銭管理困難" in difficulty_keywords:
+            living_parts.append("基本的なADLは自立。買い物は近所のスーパーで可能。ただし、金銭管理ができていない。")
+        else:
+            living_parts.append("基本的なADLは自立。買い物は近所のスーパーまで徒歩で行ける。調理は簡単なものは可能だが、最近は惣菜を購入することが増えた。")
+    elif "配偶者と二人暮らし" in living_situation:
+        living_parts.append("配偶者と二人暮らし。")
+        if "老老介護" in difficulty_keywords:
+            living_parts.append("家事は配偶者が全て担当。本人は日中テレビを見て過ごすことが多い。入浴は配偶者の介助が必要。")
+        elif "認認介護" in difficulty_keywords:
+            living_parts.append("夫婦ともに認知機能の低下あり。お互いの状況を正確に把握できていない。食事は惣菜や弁当が中心。")
+        else:
+            living_parts.append("日中は比較的穏やかに過ごしている。")
+    elif "子ども家族と同居" in living_situation:
+        living_parts.append("子ども家族と同居。")
+        if "日中独居" in difficulty_keywords:
+            living_parts.append("日中は家族が仕事で不在。一人で昼食を作ろうとして火の不始末が発生することがある。")
+        else:
+            living_parts.append("家族が主介護者。")
+    else:
+        living_parts.append(f"{living_situation}。")
+    
+    # 追加の生活状況
     if "火の不始末" in difficulty_keywords:
-        living_parts.append("調理中に火を消し忘れることがある。火災のリスクが高い。")
+        living_parts.append("ガスコンロの消し忘れが複数回あり。鍋を焦がしたことも。本人は覚えていない。")
+    if "服薬管理困難" in difficulty_keywords:
+        living_parts.append("薬の飲み忘れや重複服用があり、血糖コントロールが悪化。最近、低血糖発作があった。")
+    if "遠距離介護" in difficulty_keywords:
+        living_parts.append("子どもは遠方在住で月1回程度訪問。近所付き合いは少ない。")
     
     living = " ".join(living_parts)
     
-    # 本人の意向
-    person_intent_templates = [
+    # 本人の意向 - 困難状況に応じた多様なテンプレート
+    person_intent_templates_base = [
+        "今の生活を続けたい。施設には入りたくない。家族には迷惑をかけたくない。",
         "「このまま家で暮らしたい」と希望。施設入所には消極的。",
         "「家族に迷惑をかけたくない」と話す。サービス利用には前向き。",
+        "配偶者と一緒にいたい。家にいたい。",
+        "早く元気になりたい。歩けるようになりたい。",
+        "何か役に立つことがしたい。社会とのつながりを持ちたい。",
+        "子どもの近くに住みたいが、迷惑をかけたくない。ここで頑張る。"
+    ]
+    
+    person_intent_templates_negative = [
+        "何も困っていない。余計なお世話だ。",
         "「自分のことは自分でできる」と主張。支援の必要性を感じていない様子。",
+        "一人で大丈夫。放っておいてくれ。",
+        "病院は嫌い。薬を飲むと体に悪い。自然に治る。",
+        "良いものを買っただけ。騙されてなんかいない。"
+    ]
+    
+    person_intent_templates_passive = [
         "「どうなってもいい」と投げやりな発言。意欲の低下が見られる。",
-        "「子どもたちに会いたい」と話す。家族との交流を望んでいる。"
+        "（言葉で表現困難だが、自宅にいたい様子）",
+        "（自分の意見を明確に表現できない状態）",
+        "（自分の行動の問題を認識できていない）"
     ]
-    person_intent = random.choice(person_intent_templates)
     
-    # 家族の意向
-    family_intent_templates = [
+    if "支援拒否" in difficulty_keywords or "未受診" in difficulty_keywords:
+        person_intent = random.choice(person_intent_templates_negative)
+    elif dementia_adl in ["IIIb", "IV", "M"] or "虐待疑い" in difficulty_keywords:
+        person_intent = random.choice(person_intent_templates_passive)
+    elif "徘徊" in difficulty_keywords:
+        person_intent = "家に帰りたい（実家のことを指している）。お母さんに会いたい。"
+    elif "幻覚・妄想" in difficulty_keywords:
+        person_intent = "（幻視について）あの人たちは誰？怖くはないけど気になる。"
+    else:
+        person_intent = random.choice(person_intent_templates_base)
+    
+    # 家族の意向 - 介護状況に応じた多様なテンプレート
+    family_intent_templates_home = [
+        "できるだけ自宅で生活させたい。週1回は様子を見に来ている。何かあったらすぐ連絡してほしい。",
         "「できるだけ在宅で」と希望。介護サービスの利用を検討中。",
-        "「介護が大変」と疲弊している様子。レスパイトケアを希望。",
-        "「施設入所も視野に」と話す。在宅介護の限界を感じている。",
         "「本人の意思を尊重したい」と話す。サービス導入に協力的。",
-        "遠方に住んでおり、頻繁な訪問は困難。見守りサービスを希望。"
+        "本人の気持ちを大切にしたい。働ける場所があれば働かせてあげたい。経済的な不安もある。"
     ]
-    family_intent = random.choice(family_intent_templates)
     
-    # 支援方針
+    family_intent_templates_burden = [
+        "できる限り自宅で介護したいが、自分も腰が痛くて限界を感じている。デイサービスを利用させたい。",
+        "「介護が大変」と疲弊している様子。レスパイトケアを希望。",
+        "限界を感じている。夜眠れない。自分が倒れたらどうなるか不安。でも施設には入れたくない。",
+        "本人の妄想に疲弊している。どこかに相談したかったが、本人が拒否するので困っていた。薬で落ち着かせてほしい。",
+        "本人の行動に振り回されている。外出するたびにヒヤヒヤする。でも施設は嫌がる。"
+    ]
+    
+    family_intent_templates_facility = [
+        "「施設入所も視野に」と話す。在宅介護の限界を感じている。",
+        "仕事があるので日中は見られない。GPSを持たせているが、外すことがある。施設入所も考えている。",
+        "入院中に急に認知症が進んでショック。でも自宅で看たい。リハビリを頑張ってほしい。"
+    ]
+    
+    family_intent_templates_distant = [
+        "遠方に住んでおり、頻繁な訪問は困難。見守りサービスを希望。",
+        "親のことが心配だが、仕事があり頻繁には来られない。サービスを利用してほしい。",
+        "遠方（県外）に在住。年に1回程度しか会えない。できることがあれば協力したい。",
+        "本人のことは心配だが、仕事があり頻繁には帰れない。サービスを利用してほしい。電話は毎日している。"
+    ]
+    
+    family_intent_templates_conflict = [
+        "長女：父を施設に入れたくない。私が看る。 長男：姉の負担が心配。施設の方が安心。",
+        "母が高額な買い物をしていて困っている。通帳を預かりたいが、母が拒否する。",
+        "幻視への対応に困っている。否定すると怒るし、肯定するのも良くないと聞いた。どうすればいいか。",
+        "薬の管理が心配。毎日は来られないので、何か良い方法はないか。",
+        "火事が心配。IHに変えたいが、本人が使い方を覚えられるか不安。デイサービスで昼食を食べてほしい。"
+    ]
+    
+    if "遠距離介護" in difficulty_keywords:
+        family_intent = random.choice(family_intent_templates_distant)
+    elif "家族間の意見相違" in difficulty_keywords:
+        family_intent = random.choice(family_intent_templates_conflict)
+    elif "介護者の負担" in difficulty_keywords or "老老介護" in difficulty_keywords:
+        family_intent = random.choice(family_intent_templates_burden)
+    elif "幻覚・妄想" in difficulty_keywords:
+        family_intent = "幻視への対応に困っている。否定すると怒るし、肯定するのも良くないと聞いた。どうすればいいか。"
+    elif "金銭管理困難" in difficulty_keywords:
+        family_intent = "本人が高額な買い物をしていて困っている。通帳を預かりたいが、本人が拒否する。"
+    elif "服薬管理困難" in difficulty_keywords:
+        family_intent = "薬の管理が心配。毎日は来られないので、何か良い方法はないか。"
+    elif "火の不始末" in difficulty_keywords:
+        family_intent = "火事が心配。IHに変えたいが、本人が使い方を覚えられるか不安。デイサービスで昼食を食べてほしい。"
+    elif "虐待疑い" in difficulty_keywords:
+        family_intent = "本人の世話は自分がしている。余計なお世話だ。"
+    elif living_situation == "独居":
+        family_intent = random.choice(family_intent_templates_distant)
+    else:
+        family_intent = random.choice(family_intent_templates_home + family_intent_templates_burden)
+    
+    # 支援方針 - 困難状況に応じた具体的な支援方針
     support_parts = []
-    support_parts.append(f"{', '.join(difficulty_keywords)}の課題に対応。")
+    
+    # 困難状況に応じた支援方針
+    if "支援拒否" in difficulty_keywords:
+        support_parts.append("支援拒否ケース。まずは信頼関係構築を優先し、段階的な支援導入を目指す。")
+    elif "虐待疑い" in difficulty_keywords:
+        support_parts.append("虐待対応。本人の安全確保を最優先。関係機関との連携が必要。")
+    elif "セルフネグレクト・ごみ屋敷" in difficulty_keywords:
+        support_parts.append("セルフネグレクトの緊急ケース。関係機関と連携し、介入を継続。")
+    elif "老老介護" in difficulty_keywords:
+        support_parts.append("老老介護の典型的なケース。介護者支援と本人へのサービス導入が急務。")
+    elif "認認介護" in difficulty_keywords:
+        support_parts.append("認認介護の典型的なケース。夫婦への包括的支援が必要。服薬管理サービスと配食サービスの導入を優先。")
+    elif "徘徊" in difficulty_keywords:
+        support_parts.append("徘徊対策と家族支援が必要。デイサービスの増回と見守りサービスの導入を検討。")
+    elif "幻覚・妄想" in difficulty_keywords:
+        support_parts.append("専門医との連携を強化。幻視への対応方法を家族に指導。")
+    elif "金銭管理困難" in difficulty_keywords:
+        support_parts.append("金銭管理支援と消費者被害防止が必要。日常生活自立支援事業の利用を検討。")
+    elif "服薬管理困難" in difficulty_keywords:
+        support_parts.append("服薬管理支援が最優先。訪問薬剤管理指導と見守りサービスの導入。")
+    elif "火の不始末" in difficulty_keywords:
+        support_parts.append("火災予防と日中の見守り体制構築が必要。")
+    elif "介護者の負担" in difficulty_keywords:
+        support_parts.append("介護者支援が最優先。レスパイトケアの充実と介護者の健康管理が必要。")
+    elif "遠距離介護" in difficulty_keywords:
+        support_parts.append("社会的孤立の防止と見守り体制の強化。")
+    elif "若年性認知症" in difficulty_keywords:
+        support_parts.append("若年性認知症の専門的支援が必要。本人の意欲を活かした支援計画を立てる。")
+    elif "前頭側頭型認知症" in difficulty_keywords:
+        support_parts.append("専門医との連携強化。行動障害への対応と家族の支援が必要。")
+    else:
+        support_parts.append(f"{', '.join(difficulty_keywords[:2])}の課題に対応。")
+    
+    # 具体的な支援内容
     support_parts.append(f"{', '.join(support_keywords[:3])}等の支援を検討。")
     support_parts.append(f"目標: {outcome}")
     
@@ -403,7 +637,17 @@ def generate_visit_like_text(age: int, gender: str, living_situation: str,
         support_decision
     ])
     
-    return visit_like_text
+    return {
+        "vr_reaction": reaction,
+        "vr_cognition": cognition,
+        "vr_behavior": behavior,
+        "vr_physical": physical,
+        "vr_living": living,
+        "vr_person_intent": person_intent,
+        "vr_family_intent": family_intent,
+        "support_decision": support_decision,
+        "visit_like_text": visit_like_text
+    }
 
 
 def generate_outcome(outcome: str, support_keywords: List[str]) -> str:
@@ -488,8 +732,8 @@ def generate_case(case_id: int) -> Dict[str, Any]:
     support_process = generate_support_process(support_keywords, support_months)
     outcome_text = generate_outcome(outcome, support_keywords)
     
-    # 訪問記録表と同じ構造のテキストを生成（TF-IDF用）
-    visit_like_text = generate_visit_like_text(
+    # 訪問記録表の7つのフィールドを個別に生成（TF-IDF用）
+    visit_fields = generate_visit_fields(
         age, gender, living_situation, dementia_type, dementia_adl, disability_adl,
         difficulty_keywords, support_keywords, bpsd, physical_conditions, outcome
     )
@@ -518,7 +762,15 @@ def generate_case(case_id: int) -> Dict[str, Any]:
         "id": f"synthetic_case_{case_id:05d}",
         "source": "合成データ",
         "text": full_text,
-        "visit_like_text": visit_like_text,  # TF-IDF用の訪問記録表形式テキスト
+        "visit_like_text": visit_fields["visit_like_text"],  # TF-IDF用の訪問記録表形式テキスト
+        "vr_reaction": visit_fields["vr_reaction"],  # 訪問に対する本人の反応・理解
+        "vr_cognition": visit_fields["vr_cognition"],  # 認知機能・認知症日常生活自立度
+        "vr_behavior": visit_fields["vr_behavior"],  # 精神症状・行動症状
+        "vr_physical": visit_fields["vr_physical"],  # 身体状況・障害高齢者の日常生活自立度
+        "vr_living": visit_fields["vr_living"],  # 生活状況
+        "vr_person_intent": visit_fields["vr_person_intent"],  # 本人の意向・希望
+        "vr_family_intent": visit_fields["vr_family_intent"],  # 介護者の意向・希望
+        "support_decision": visit_fields["support_decision"],  # 支援方針
         "difficulty_keywords": difficulty_keywords,
         "support_keywords": support_keywords,
         "policy": policy_summary,
