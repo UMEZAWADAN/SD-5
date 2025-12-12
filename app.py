@@ -69,10 +69,11 @@ def list_page():
 def touroku():
     return render_template("touroku.html")
 
-@app.route("/shousai")
-def shousai():
+@app.route("/detail")
+@app.route("/shousai")  # Keep old route for backward compatibility
+def detail():
     # ?client_id=1 などのクエリは JS 側で拾って使う
-    return render_template("shousai.html")
+    return render_template("detail.html")
 
 @app.route("/text")
 def text():
@@ -1361,16 +1362,39 @@ def get_clients():
     with conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT client_id, client_name, gender, consultation_date, current_status
-                FROM client
-                ORDER BY client_id DESC
+                SELECT 
+                    c.client_id, 
+                    c.client_name, 
+                    c.birth_date,
+                    c.disease_name,
+                    c.living_environment,
+                    c.writer_name,
+                    (SELECT MAX(v.visit_datetime) FROM visit_record v WHERE v.client_id = c.client_id) as last_visit_date
+                FROM client c
+                ORDER BY c.client_id DESC
             """)
             clients = cur.fetchall()
+            
+            # Calculate age from birth_date
+            from datetime import date
+            for client in clients:
+                if client.get('birth_date'):
+                    try:
+                        birth = client['birth_date']
+                        if isinstance(birth, str):
+                            birth = datetime.strptime(birth, '%Y-%m-%d').date()
+                        today = date.today()
+                        age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
+                        client['age'] = age
+                    except:
+                        client['age'] = None
+                else:
+                    client['age'] = None
 
     return jsonify({"status": "ok", "clients": clients})
 
 
-# ------- shousai 画面用：一括取得API -------
+# ------- detail 画面用：一括取得API -------
 
 @app.route("/api/get_all_data")
 def get_all_data():
@@ -1561,7 +1585,7 @@ def create_excel_styles():
     header_fill = PatternFill(start_color="E8F4FC", end_color="E8F4FC", fill_type="solid")
     title_font = Font(bold=True, size=16, color="FFFFFF")
     title_fill = PatternFill(start_color="2C5282", end_color="2C5282", fill_type="solid")
-    # セクションヘッダー用スタイル（shousai.htmlのassessment-section-headerに対応）
+    # セクションヘッダー用スタイル（detail.htmlのassessment-section-headerに対応）
     section_font = Font(bold=True, size=12, color="FFFFFF")
     section_fill = PatternFill(start_color="4A5568", end_color="4A5568", fill_type="solid")
     thin_border = Border(
