@@ -356,10 +356,15 @@ def get_pdf_case_studies():
         
         records = []
         for case in data.get("cases", []):
+            # TF-IDF用テキスト: visit_like_textがあればそれを使用、なければtextを使用
+            # visit_like_textは訪問記録表と同じ構造のテキストで、TF-IDFマッチングに最適化
+            tfidf_text = case.get("visit_like_text", case.get("text", ""))
+            
             records.append({
                 "id": case.get("id", ""),
                 "client_id": None,
-                "text": case.get("text", ""),
+                "text": tfidf_text,  # TF-IDF用（訪問記録表形式）
+                "display_text": case.get("text", ""),  # 表示用（ナラティブ形式）
                 "policy": case.get("policy", ""),
                 "source": case.get("source", "PDF事例集"),
                 "difficulty_keywords": case.get("difficulty_keywords", []),
@@ -435,9 +440,12 @@ def search_similar():
         results = []
         for i, sim in enumerate(similarities):
             if sim > 0.01:
+                # 表示用テキスト: display_textがあればそれを使用、なければtextを使用
+                display_text = records[i].get("display_text", records[i]["text"])
+                
                 result = {
                     "similarity": round(sim * 100, 1),
-                    "text": records[i]["text"][:500],
+                    "text": display_text[:500],
                     "policy": records[i]["policy"][:500] if records[i]["policy"] else "支援方針未登録",
                     "client_id": records[i].get("client_id"),
                     "source": records[i].get("source", "不明")
@@ -449,7 +457,16 @@ def search_similar():
                     result["support_keywords"] = records[i]["support_keywords"]
                 results.append(result)
         
-        results = sorted(results, key=lambda x: x["similarity"], reverse=True)[:10]
+        # 結果をソートしてシステム入力と合成データのバランスを取る
+        # システム入力が上位を独占しないように、それぞれから上位を取得
+        sorted_results = sorted(results, key=lambda x: x["similarity"], reverse=True)
+        
+        db_results = [r for r in sorted_results if r["source"] == "システム入力"][:3]
+        synthetic_results = [r for r in sorted_results if r["source"] != "システム入力"][:10]
+        
+        # 類似度順に統合（システム入力は最大3件まで）
+        combined_results = db_results + synthetic_results
+        results = sorted(combined_results, key=lambda x: x["similarity"], reverse=True)[:10]
         
     except Exception as e:
         return jsonify({
