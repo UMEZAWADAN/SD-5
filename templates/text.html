@@ -192,11 +192,117 @@
         margin-bottom: 8px;
     }
     
+    .case-content-text,
+    .case-policy-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .case-content-text:hover,
+    .case-policy-text:hover {
+        color: #7c3aed;
+    }
+    
+    .expand-hint {
+        color: #8b5cf6;
+        font-size: 12px;
+        margin-top: 4px;
+        cursor: pointer;
+    }
+    
+    .expand-hint:hover {
+        text-decoration: underline;
+    }
+    
     .case-policy {
         background: white;
         padding: 12px;
         border-radius: 6px;
         margin-top: 12px;
+    }
+    
+    .case-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .case-modal.active {
+        display: flex;
+    }
+    
+    .case-modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        margin: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .case-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .case-modal-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #7c3aed;
+    }
+    
+    .case-modal-close {
+        background: #f3f4f6;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .case-modal-close:hover {
+        background: #e5e7eb;
+        color: #374151;
+    }
+    
+    .case-modal-section {
+        margin-bottom: 16px;
+    }
+    
+    .case-modal-section-title {
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    
+    .case-modal-section-content {
+        font-size: 14px;
+        color: #4b5563;
+        line-height: 1.8;
+        white-space: pre-wrap;
     }
     
     .stats-bar {
@@ -319,7 +425,51 @@
 
 </div>
 
+<!-- 事例全文表示モーダル -->
+<div id="caseModal" class="case-modal" onclick="closeCaseModal(event)">
+  <div class="case-modal-content" onclick="event.stopPropagation()">
+    <div class="case-modal-header">
+      <span class="case-modal-title" id="modalTitle">事例詳細</span>
+      <button class="case-modal-close" onclick="closeCaseModal()">&times;</button>
+    </div>
+    <div id="modalKeywords"></div>
+    <div class="case-modal-section">
+      <div class="case-modal-section-title">状況</div>
+      <div class="case-modal-section-content" id="modalText"></div>
+    </div>
+    <div class="case-modal-section">
+      <div class="case-modal-section-title">支援方針</div>
+      <div class="case-modal-section-content" id="modalPolicy"></div>
+    </div>
+  </div>
+</div>
+
 <script>
+// モーダル関連の関数
+function openCaseModal(title, text, policy, keywordsHtml) {
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalText").textContent = text;
+  document.getElementById("modalPolicy").textContent = policy;
+  document.getElementById("modalKeywords").innerHTML = keywordsHtml;
+  document.getElementById("caseModal").classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closeCaseModal(event) {
+  if (event && event.target !== document.getElementById("caseModal")) {
+    return;
+  }
+  document.getElementById("caseModal").classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+// ESCキーでモーダルを閉じる
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    closeCaseModal();
+  }
+});
+
 // ページ読み込み時の処理
 document.addEventListener("DOMContentLoaded", function() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -457,14 +607,32 @@ function searchCases() {
           keywordsHtml = `<div class="case-keywords">${keywordsHtml}</div>`;
         }
 
+        // テキストを保存（モーダル用）
+        const caseTitle = `【類似度 ${item.similarity}%】事例 ${i+1}`;
+        const caseText = item.text || "";
+        const casePolicy = item.policy || "";
+        
         box.innerHTML =
           `<div class="case-title">
-             <span>【類似度 ${item.similarity}%】事例 ${i+1}</span>
+             <span>${caseTitle}</span>
              ${sourceBadge}
            </div>
            ${keywordsHtml}
-           <div class="case-content"><strong>状況：</strong>${item.text}</div>
-           <div class="case-policy"><strong>支援方針：</strong>${item.policy}</div>`;
+           <div class="case-content">
+             <strong>状況：</strong>
+             <span class="case-content-text">${caseText}</span>
+             <div class="expand-hint">クリックで全文表示</div>
+           </div>
+           <div class="case-policy">
+             <strong>支援方針：</strong>
+             <span class="case-policy-text">${casePolicy}</span>
+           </div>`;
+        
+        // クリックイベントを追加
+        box.style.cursor = "pointer";
+        box.onclick = function() {
+          openCaseModal(caseTitle, caseText, casePolicy, keywordsHtml);
+        };
 
         resultDiv.appendChild(box);
       });

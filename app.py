@@ -1357,8 +1357,7 @@ def export_client():
     ws.column_dimensions['A'].width = 32
     ws.column_dimensions['B'].width = 60
 
-    save_excel_to_client_folder(wb, client_id, "client")
-
+    # ファイルをメモリに保存してダウンロード（uploadsフォルダには保存しない）
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -1444,8 +1443,7 @@ def export_visit():
     ws.column_dimensions['A'].width = 32
     ws.column_dimensions['B'].width = 60
 
-    save_excel_to_client_folder(wb, client_id, "visit")
-
+    # ファイルをメモリに保存してダウンロード（uploadsフォルダには保存しない）
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -1548,8 +1546,7 @@ def export_physical():
     ws.column_dimensions['A'].width = 32
     ws.column_dimensions['B'].width = 60
 
-    save_excel_to_client_folder(wb, client_id, "physical")
-
+    # ファイルをメモリに保存してダウンロード（uploadsフォルダには保存しない）
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -1696,8 +1693,7 @@ def export_dasc21():
         ws.column_dimensions[col].width = 6
     ws.column_dimensions['G'].width = 8
 
-    save_excel_to_client_folder(wb, client_id, "dasc21")
-
+    # ファイルをメモリに保存してダウンロード（uploadsフォルダには保存しない）
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -1812,8 +1808,7 @@ def export_dbd13():
         ws.column_dimensions[col].width = 6
     ws.column_dimensions['H'].width = 8
 
-    save_excel_to_client_folder(wb, client_id, "dbd13")
-
+    # ファイルをメモリに保存してダウンロード（uploadsフォルダには保存しない）
     output = BytesIO()
     wb.save(output)
     output.seek(0)
