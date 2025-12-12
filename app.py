@@ -300,8 +300,41 @@ def compute_and_cache_synthetic_embeddings():
     return True
 
 
+def compute_tfidf_similarities(normalized_input, records):
+    """TF-IDF類似度を計算するヘルパー関数"""
+    if not records:
+        return np.array([])
+    
+    corpus = [normalize_text(r["text"]) for r in records]
+    corpus.append(normalized_input)
+    
+    vectorizer = TfidfVectorizer(
+        analyzer='char',
+        ngram_range=(2, 5),
+        max_features=5000,
+        min_df=1,
+        max_df=0.95
+    )
+    tfidf_matrix = vectorizer.fit_transform(corpus)
+    
+    input_vector = tfidf_matrix[-1]
+    doc_vectors = tfidf_matrix[:-1]
+    
+    return cosine_similarity(input_vector, doc_vectors)[0]
+
+
+def compute_keyword_overlap(record, query_keywords):
+    """キーワードの重複度を計算"""
+    case_keywords = set(record.get("difficulty_keywords", [])) | set(record.get("support_keywords", []))
+    if not case_keywords or not query_keywords:
+        return 0
+    overlap = len(case_keywords & set(query_keywords))
+    # 正規化: 最大5キーワードの重複で1.0
+    return min(overlap / 5.0, 1.0)
+
+
 def search_similar_embeddings(normalized_input, records, keywords):
-    """セマンティック埋め込みを使用した類似事例検索"""
+    """ハイブリッド類似事例検索（セマンティック + TF-IDF + キーワード重複）"""
     model = get_embedding_model()
     if model is None:
         raise Exception("Embedding model not available")
@@ -322,61 +355,122 @@ def search_similar_embeddings(normalized_input, records, keywords):
     db_records = [r for r in records if r.get("source") == "システム入力"]
     synthetic_records = [r for r in records if r.get("source") != "システム入力"]
     
-    results = []
+    # ハイブリッドスコアリングの重み
+    ALPHA_EMBEDDING = 0.5  # セマンティック類似度の重み
+    ALPHA_TFIDF = 0.35     # TF-IDF類似度の重み
+    ALPHA_KEYWORD = 0.15   # キーワード重複の重み
     
-    # DBレコードの埋め込みを計算（少数なのでオンザフライで計算）
+    results = []
+    all_scores = []  # スコア正規化用
+    
+    # DBレコードの処理
     if db_records:
         db_texts = [f"passage: {normalize_text(r['text'])}" for r in db_records]
         db_embeddings = model.encode(db_texts, batch_size=32, convert_to_numpy=True)
         
-        # コサイン類似度を計算
-        db_similarities = cosine_similarity([query_embedding], db_embeddings)[0]
+        # セマンティック類似度
+        db_embedding_sims = cosine_similarity([query_embedding], db_embeddings)[0]
         
-        for i, sim in enumerate(db_similarities):
-            if sim > 0.01:
-                display_text = db_records[i].get("display_text", db_records[i]["text"])
-                results.append({
-                    "similarity": float(round(sim * 100, 1)),
-                    "text": display_text[:500],
-                    "policy": db_records[i]["policy"][:500] if db_records[i]["policy"] else "支援方針未登録",
-                    "client_id": db_records[i].get("client_id"),
-                    "source": "システム入力"
-                })
+        # TF-IDF類似度
+        db_tfidf_sims = compute_tfidf_similarities(normalized_input, db_records)
+        
+        for i in range(len(db_records)):
+            embedding_sim = float(db_embedding_sims[i])
+            tfidf_sim = float(db_tfidf_sims[i]) if i < len(db_tfidf_sims) else 0
+            keyword_sim = compute_keyword_overlap(db_records[i], keywords)
+            
+            # ハイブリッドスコア
+            combined_score = (
+                ALPHA_EMBEDDING * embedding_sim +
+                ALPHA_TFIDF * tfidf_sim +
+                ALPHA_KEYWORD * keyword_sim
+            )
+            
+            all_scores.append(combined_score)
+            display_text = db_records[i].get("display_text", db_records[i]["text"])
+            results.append({
+                "raw_score": combined_score,
+                "embedding_sim": embedding_sim,
+                "tfidf_sim": tfidf_sim,
+                "keyword_sim": keyword_sim,
+                "text": display_text[:500],
+                "policy": db_records[i]["policy"][:500] if db_records[i]["policy"] else "支援方針未登録",
+                "client_id": db_records[i].get("client_id"),
+                "source": "システム入力"
+            })
     
-    # 合成データの類似度を計算
+    # 合成データの処理
     if synthetic_embeddings is not None and len(synthetic_embeddings) > 0:
-        synthetic_similarities = cosine_similarity([query_embedding], synthetic_embeddings)[0]
+        # セマンティック類似度
+        synthetic_embedding_sims = cosine_similarity([query_embedding], synthetic_embeddings)[0]
         
-        # IDからレコードを検索するためのマップを作成
-        id_to_record = {r.get("id", f"case_{i}"): r for i, r in enumerate(synthetic_records)}
+        # TF-IDF類似度（合成データ全体に対して計算）
+        synthetic_tfidf_sims = compute_tfidf_similarities(normalized_input, synthetic_records)
         
-        for i, sim in enumerate(synthetic_similarities):
-            if sim > 0.01 and i < len(synthetic_ids):
-                case_id = synthetic_ids[i]
-                record = id_to_record.get(case_id)
-                if record:
-                    display_text = record.get("display_text", record["text"])
-                    result = {
-                        "similarity": float(round(sim * 100, 1)),
-                        "text": display_text[:500],
-                        "policy": record["policy"][:500] if record["policy"] else "支援方針未登録",
-                        "client_id": None,
-                        "source": record.get("source", "合成データ")
-                    }
-                    if record.get("difficulty_keywords"):
-                        result["difficulty_keywords"] = record["difficulty_keywords"]
-                    if record.get("support_keywords"):
-                        result["support_keywords"] = record["support_keywords"]
-                    results.append(result)
+        # IDからレコードとインデックスを検索するためのマップを作成
+        id_to_record_idx = {r.get("id", f"case_{i}"): (i, r) for i, r in enumerate(synthetic_records)}
+        
+        for emb_idx, case_id in enumerate(synthetic_ids):
+            if case_id in id_to_record_idx:
+                record_idx, record = id_to_record_idx[case_id]
+                
+                embedding_sim = float(synthetic_embedding_sims[emb_idx])
+                tfidf_sim = float(synthetic_tfidf_sims[record_idx]) if record_idx < len(synthetic_tfidf_sims) else 0
+                keyword_sim = compute_keyword_overlap(record, keywords)
+                
+                # ハイブリッドスコア
+                combined_score = (
+                    ALPHA_EMBEDDING * embedding_sim +
+                    ALPHA_TFIDF * tfidf_sim +
+                    ALPHA_KEYWORD * keyword_sim
+                )
+                
+                all_scores.append(combined_score)
+                display_text = record.get("display_text", record["text"])
+                result = {
+                    "raw_score": combined_score,
+                    "embedding_sim": embedding_sim,
+                    "tfidf_sim": tfidf_sim,
+                    "keyword_sim": keyword_sim,
+                    "text": display_text[:500],
+                    "policy": record["policy"][:500] if record["policy"] else "支援方針未登録",
+                    "client_id": None,
+                    "source": record.get("source", "合成データ")
+                }
+                if record.get("difficulty_keywords"):
+                    result["difficulty_keywords"] = record["difficulty_keywords"]
+                if record.get("support_keywords"):
+                    result["support_keywords"] = record["support_keywords"]
+                results.append(result)
+    
+    # スコアを正規化して表示用の類似度に変換
+    if all_scores:
+        min_score = min(all_scores)
+        max_score = max(all_scores)
+        score_range = max_score - min_score if max_score > min_score else 1
+        
+        for result in results:
+            # 正規化スコア（0-100%）
+            normalized = (result["raw_score"] - min_score) / score_range
+            # 表示用に40-100%の範囲にマッピング（より直感的な表示）
+            display_score = 40 + normalized * 60
+            result["similarity"] = float(round(display_score, 1))
     
     # 結果をソートしてシステム入力と合成データのバランスを取る
-    sorted_results = sorted(results, key=lambda x: x["similarity"], reverse=True)
+    sorted_results = sorted(results, key=lambda x: x["raw_score"], reverse=True)
     
     db_results = [r for r in sorted_results if r["source"] == "システム入力"][:3]
     synthetic_results = [r for r in sorted_results if r["source"] != "システム入力"][:10]
     
     combined_results = db_results + synthetic_results
-    final_results = sorted(combined_results, key=lambda x: x["similarity"], reverse=True)[:10]
+    final_results = sorted(combined_results, key=lambda x: x["raw_score"], reverse=True)[:10]
+    
+    # デバッグ情報を削除
+    for result in final_results:
+        result.pop("raw_score", None)
+        result.pop("embedding_sim", None)
+        result.pop("tfidf_sim", None)
+        result.pop("keyword_sim", None)
     
     return final_results
 
