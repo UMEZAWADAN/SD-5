@@ -336,7 +336,7 @@ def search_similar_embeddings(normalized_input, records, keywords):
             if sim > 0.01:
                 display_text = db_records[i].get("display_text", db_records[i]["text"])
                 results.append({
-                    "similarity": round(sim * 100, 1),
+                    "similarity": float(round(sim * 100, 1)),
                     "text": display_text[:500],
                     "policy": db_records[i]["policy"][:500] if db_records[i]["policy"] else "支援方針未登録",
                     "client_id": db_records[i].get("client_id"),
@@ -357,7 +357,7 @@ def search_similar_embeddings(normalized_input, records, keywords):
                 if record:
                     display_text = record.get("display_text", record["text"])
                     result = {
-                        "similarity": round(sim * 100, 1),
+                        "similarity": float(round(sim * 100, 1)),
                         "text": display_text[:500],
                         "policy": record["policy"][:500] if record["policy"] else "支援方針未登録",
                         "client_id": None,
