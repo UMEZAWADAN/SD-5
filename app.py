@@ -323,128 +323,8 @@ def compute_tfidf_similarities(normalized_input, records):
     return cosine_similarity(input_vector, doc_vectors)[0]
 
 
-# 臨床キーワードマッピング: クエリテキストから困難キーワード/支援キーワードを抽出
-CLINICAL_KEYWORD_PATTERNS = {
-    # 困難キーワード (difficulty_keywords)
-    "徘徊": ["徘徊", "外出", "迷子", "行方不明", "警察に保護"],
-    "幻覚・妄想": ["幻覚", "妄想", "物盗られ", "被害妄想", "幻視", "幻聴", "泥棒"],
-    "易怒性・興奮": ["易怒", "興奮", "暴言", "暴力", "怒り", "攻撃"],
-    "独居": ["独居", "一人暮らし", "単身"],
-    "老老介護": ["老老介護", "高齢の配偶者", "高齢の夫", "高齢の妻"],
-    "認認介護": ["認認介護"],
-    "日中独居": ["日中独居", "昼間は一人"],
-    "セルフネグレクト・ごみ屋敷": ["セルフネグレクト", "ごみ屋敷", "不衛生", "ゴミ"],
-    "金銭管理困難": ["金銭管理", "お金の管理", "浪費", "借金"],
-    "服薬管理困難": ["服薬管理", "薬を飲まない", "飲み忘れ", "重複服用"],
-    "火の不始末": ["火の不始末", "火事", "コンロ", "IH"],
-    "運転の問題": ["運転", "免許", "車"],
-    "支援拒否": ["支援拒否", "拒否", "介入を拒む"],
-    "未受診": ["未受診", "受診していない", "病院に行かない"],
-    "近隣トラブル": ["近隣トラブル", "近所", "苦情"],
-    "家族間の意見相違": ["家族間", "意見の相違", "家族の意見"],
-    "キーパーソンの協力不足": ["キーパーソン", "協力不足", "家族の協力"],
-    "遠距離介護": ["遠距離", "遠方"],
-    "介護者の負担": ["介護者の負担", "介護疲れ", "疲弊", "レスパイト"],
-    "経済的困窮": ["経済的", "生活保護", "困窮", "お金がない"],
-    "入院後の在宅復帰": ["入院後", "退院", "在宅復帰"],
-    "若年性認知症": ["若年性", "65歳未満"],
-    "前頭側頭型認知症": ["前頭側頭型", "FTD", "脱抑制"],
-    "虐待疑い": ["虐待", "ネグレクト", "身体的虐待"],
-    "アルコール問題": ["アルコール", "飲酒", "酒"],
-    "多問題世帯": ["多問題", "複合的"],
-}
-
-# 支援キーワードマッピング
-SUPPORT_KEYWORD_PATTERNS = {
-    "デイサービス導入": ["デイサービス", "通所"],
-    "訪問介護導入": ["訪問介護", "ヘルパー"],
-    "訪問看護導入": ["訪問看護"],
-    "ショートステイ利用": ["ショートステイ", "短期入所"],
-    "入院/施設の利用": ["入院", "施設入所", "入所"],
-    "服薬管理支援": ["服薬管理", "薬の管理"],
-    "住環境整備": ["住環境", "バリアフリー", "手すり"],
-    "見守りサービス": ["見守り", "安否確認"],
-    "GPS見守り": ["GPS", "位置情報"],
-    "成年後見制度": ["成年後見", "後見人"],
-    "日常生活自立支援事業": ["日常生活自立支援"],
-    "介護保険申請支援": ["介護保険", "要介護認定"],
-    "医療機関受診": ["受診", "医療機関"],
-    "認知症疾患医療センター連携": ["認知症疾患医療センター", "専門医"],
-    "レスパイトケア": ["レスパイト", "介護者支援"],
-    "介護者支援": ["介護者支援", "家族支援"],
-    "家族会紹介": ["家族会"],
-    "地域ケア会議": ["地域ケア会議"],
-}
-
-
-def extract_clinical_keywords(text):
-    """テキストから臨床キーワードを抽出"""
-    found_difficulty = set()
-    found_support = set()
-    
-    text_lower = text.lower()
-    
-    for keyword, patterns in CLINICAL_KEYWORD_PATTERNS.items():
-        for pattern in patterns:
-            if pattern in text_lower:
-                found_difficulty.add(keyword)
-                break
-    
-    for keyword, patterns in SUPPORT_KEYWORD_PATTERNS.items():
-        for pattern in patterns:
-            if pattern in text_lower:
-                found_support.add(keyword)
-                break
-    
-    return found_difficulty, found_support
-
-
-def compute_structured_similarity(record, query_difficulty, query_support, query_metadata=None):
-    """構造化された臨床属性に基づく類似度を計算"""
-    score = 0.0
-    max_score = 0.0
-    
-    # 困難キーワードの重複（重み: 高）
-    case_difficulty = set(record.get("difficulty_keywords", []))
-    if query_difficulty:
-        difficulty_overlap = len(case_difficulty & query_difficulty)
-        # 各キーワード一致で+3点、最大15点
-        score += min(difficulty_overlap * 3, 15)
-        max_score += 15
-    
-    # 支援キーワードの重複（重み: 中）
-    case_support = set(record.get("support_keywords", []))
-    if query_support:
-        support_overlap = len(case_support & query_support)
-        # 各キーワード一致で+2点、最大10点
-        score += min(support_overlap * 2, 10)
-        max_score += 10
-    
-    # メタデータの一致（重み: 中）
-    metadata = record.get("metadata", {})
-    if metadata:
-        # 認知症タイプの一致（+5点）
-        if query_metadata and query_metadata.get("dementia_type"):
-            if metadata.get("dementia_type") == query_metadata.get("dementia_type"):
-                score += 5
-            max_score += 5
-        
-        # 生活状況の一致（+3点）
-        if query_metadata and query_metadata.get("living_situation"):
-            if metadata.get("living_situation") == query_metadata.get("living_situation"):
-                score += 3
-            max_score += 3
-    
-    # 困難キーワードが全くない場合でも、支援キーワードだけで評価
-    if max_score == 0:
-        max_score = 1  # ゼロ除算を防ぐ
-    
-    # 正規化（0-1の範囲）
-    return score / max_score if max_score > 0 else 0
-
-
 def compute_keyword_overlap(record, query_keywords):
-    """キーワードの重複度を計算（後方互換性のため維持）"""
+    """キーワードの重複度を計算"""
     case_keywords = set(record.get("difficulty_keywords", [])) | set(record.get("support_keywords", []))
     if not case_keywords or not query_keywords:
         return 0
@@ -454,31 +334,37 @@ def compute_keyword_overlap(record, query_keywords):
 
 
 def search_similar_embeddings(normalized_input, records, keywords):
-    """構造化類似度検索（合成データ用）+ ハイブリッド検索（DBレコード用）
-    
-    合成データ: 臨床属性（困難キーワード、支援キーワード、メタデータ）に基づく構造化類似度
-    DBレコード: セマンティック埋め込み + TF-IDF のハイブリッド類似度
-    """
+    """ハイブリッド類似事例検索（セマンティック + TF-IDF + キーワード重複）"""
     model = get_embedding_model()
     if model is None:
         raise Exception("Embedding model not available")
+    
+    # 合成データの埋め込みをロード
+    synthetic_embeddings, synthetic_ids = load_synthetic_embeddings()
+    
+    # キャッシュがない場合は計算
+    if synthetic_embeddings is None:
+        if not compute_and_cache_synthetic_embeddings():
+            raise Exception("Failed to compute synthetic embeddings")
+        synthetic_embeddings, synthetic_ids = load_synthetic_embeddings()
+    
+    # 入力テキストの埋め込みを計算（E5モデル用にquery:プレフィックス）
+    query_embedding = model.encode(f"query: {normalized_input}", convert_to_numpy=True)
     
     # DBレコードとPDF事例集を分離
     db_records = [r for r in records if r.get("source") == "システム入力"]
     synthetic_records = [r for r in records if r.get("source") != "システム入力"]
     
-    # クエリから臨床キーワードを抽出
-    query_difficulty, query_support = extract_clinical_keywords(normalized_input)
-    print(f"抽出された困難キーワード: {query_difficulty}")
-    print(f"抽出された支援キーワード: {query_support}")
+    # ハイブリッドスコアリングの重み
+    ALPHA_EMBEDDING = 0.5  # セマンティック類似度の重み
+    ALPHA_TFIDF = 0.35     # TF-IDF類似度の重み
+    ALPHA_KEYWORD = 0.15   # キーワード重複の重み
     
     results = []
+    all_scores = []  # スコア正規化用
     
-    # === DBレコードの処理（ハイブリッド: 埋め込み + TF-IDF）===
+    # DBレコードの処理
     if db_records:
-        # 入力テキストの埋め込みを計算（E5モデル用にquery:プレフィックス）
-        query_embedding = model.encode(f"query: {normalized_input}", convert_to_numpy=True)
-        
         db_texts = [f"passage: {normalize_text(r['text'])}" for r in db_records]
         db_embeddings = model.encode(db_texts, batch_size=32, convert_to_numpy=True)
         
@@ -491,59 +377,61 @@ def search_similar_embeddings(normalized_input, records, keywords):
         for i in range(len(db_records)):
             embedding_sim = float(db_embedding_sims[i])
             tfidf_sim = float(db_tfidf_sims[i]) if i < len(db_tfidf_sims) else 0
+            keyword_sim = compute_keyword_overlap(db_records[i], keywords)
             
-            # DBレコード用ハイブリッドスコア（埋め込み60% + TF-IDF40%）
-            combined_score = 0.6 * embedding_sim + 0.4 * tfidf_sim
+            # ハイブリッドスコア
+            combined_score = (
+                ALPHA_EMBEDDING * embedding_sim +
+                ALPHA_TFIDF * tfidf_sim +
+                ALPHA_KEYWORD * keyword_sim
+            )
             
+            all_scores.append(combined_score)
             display_text = db_records[i].get("display_text", db_records[i]["text"])
             results.append({
                 "raw_score": combined_score,
+                "embedding_sim": embedding_sim,
+                "tfidf_sim": tfidf_sim,
+                "keyword_sim": keyword_sim,
                 "text": display_text[:500],
                 "policy": db_records[i]["policy"][:500] if db_records[i]["policy"] else "支援方針未登録",
                 "client_id": db_records[i].get("client_id"),
                 "source": "システム入力"
             })
     
-    # === 合成データの処理（構造化類似度: 臨床属性ベース）===
-    if synthetic_records and (query_difficulty or query_support):
-        for record in synthetic_records:
-            # 構造化類似度を計算（臨床属性に基づく）
-            structured_sim = compute_structured_similarity(
-                record, 
-                query_difficulty, 
-                query_support,
-                query_metadata=None  # 将来的にメタデータも使用可能
-            )
-            
-            # 構造化類似度が0より大きい場合のみ結果に追加
-            if structured_sim > 0:
-                display_text = record.get("display_text", record["text"])
-                result = {
-                    "raw_score": structured_sim,
-                    "text": display_text[:500],
-                    "policy": record["policy"][:500] if record["policy"] else "支援方針未登録",
-                    "client_id": None,
-                    "source": record.get("source", "合成データ"),
-                    "matched_difficulty": list(set(record.get("difficulty_keywords", [])) & query_difficulty),
-                    "matched_support": list(set(record.get("support_keywords", [])) & query_support)
-                }
-                if record.get("difficulty_keywords"):
-                    result["difficulty_keywords"] = record["difficulty_keywords"]
-                if record.get("support_keywords"):
-                    result["support_keywords"] = record["support_keywords"]
-                results.append(result)
-    
-    # 結果がない場合のフォールバック（キーワードが抽出できなかった場合）
-    if not results and synthetic_records:
-        print("キーワードが抽出できなかったため、TF-IDFフォールバックを使用")
-        # TF-IDF類似度で上位を取得
+    # 合成データの処理
+    if synthetic_embeddings is not None and len(synthetic_embeddings) > 0:
+        # セマンティック類似度
+        synthetic_embedding_sims = cosine_similarity([query_embedding], synthetic_embeddings)[0]
+        
+        # TF-IDF類似度（合成データ全体に対して計算）
         synthetic_tfidf_sims = compute_tfidf_similarities(normalized_input, synthetic_records)
-        for i, sim in enumerate(synthetic_tfidf_sims):
-            if sim > 0.1:  # 最低閾値
-                record = synthetic_records[i]
+        
+        # IDからレコードとインデックスを検索するためのマップを作成
+        id_to_record_idx = {r.get("id", f"case_{i}"): (i, r) for i, r in enumerate(synthetic_records)}
+        
+        for emb_idx, case_id in enumerate(synthetic_ids):
+            if case_id in id_to_record_idx:
+                record_idx, record = id_to_record_idx[case_id]
+                
+                embedding_sim = float(synthetic_embedding_sims[emb_idx])
+                tfidf_sim = float(synthetic_tfidf_sims[record_idx]) if record_idx < len(synthetic_tfidf_sims) else 0
+                keyword_sim = compute_keyword_overlap(record, keywords)
+                
+                # ハイブリッドスコア
+                combined_score = (
+                    ALPHA_EMBEDDING * embedding_sim +
+                    ALPHA_TFIDF * tfidf_sim +
+                    ALPHA_KEYWORD * keyword_sim
+                )
+                
+                all_scores.append(combined_score)
                 display_text = record.get("display_text", record["text"])
                 result = {
-                    "raw_score": float(sim),
+                    "raw_score": combined_score,
+                    "embedding_sim": embedding_sim,
+                    "tfidf_sim": tfidf_sim,
+                    "keyword_sim": keyword_sim,
                     "text": display_text[:500],
                     "policy": record["policy"][:500] if record["policy"] else "支援方針未登録",
                     "client_id": None,
@@ -556,8 +444,7 @@ def search_similar_embeddings(normalized_input, records, keywords):
                 results.append(result)
     
     # スコアを正規化して表示用の類似度に変換
-    if results:
-        all_scores = [r["raw_score"] for r in results]
+    if all_scores:
         min_score = min(all_scores)
         max_score = max(all_scores)
         score_range = max_score - min_score if max_score > min_score else 1
@@ -565,8 +452,8 @@ def search_similar_embeddings(normalized_input, records, keywords):
         for result in results:
             # 正規化スコア（0-100%）
             normalized = (result["raw_score"] - min_score) / score_range
-            # 表示用に30-100%の範囲にマッピング
-            display_score = 30 + normalized * 70
+            # 表示用に40-100%の範囲にマッピング（より直感的な表示）
+            display_score = 40 + normalized * 60
             result["similarity"] = float(round(display_score, 1))
     
     # 結果をソートしてシステム入力と合成データのバランスを取る
@@ -578,9 +465,12 @@ def search_similar_embeddings(normalized_input, records, keywords):
     combined_results = db_results + synthetic_results
     final_results = sorted(combined_results, key=lambda x: x["raw_score"], reverse=True)[:10]
     
-    # デバッグ情報を削除（matched_difficulty/matched_supportは残す）
+    # デバッグ情報を削除
     for result in final_results:
         result.pop("raw_score", None)
+        result.pop("embedding_sim", None)
+        result.pop("tfidf_sim", None)
+        result.pop("keyword_sim", None)
     
     return final_results
 
