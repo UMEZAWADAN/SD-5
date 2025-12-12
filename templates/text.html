@@ -352,7 +352,7 @@
     <div class="app-header-nav">
         <a href="/top" class="app-header-link">トップ</a>
         <a href="/list" class="app-header-link">対象者一覧</a>
-        <a href="#" id="backToShousai" class="app-header-link" style="display:none;">詳細ページに戻る</a>
+        <a href="#" id="backToDetail" class="app-header-link" style="display:none;">詳細ページに戻る</a>
         <a href="/login" class="app-header-link">ログアウト</a>
     </div>
 </div>
@@ -473,15 +473,15 @@ document.addEventListener("keydown", function(e) {
 // ページ読み込み時の処理
 document.addEventListener("DOMContentLoaded", function() {
   const urlParams = new URLSearchParams(window.location.search);
-  const fromShousai = urlParams.get("from") === "shousai";
+  const fromDetail = urlParams.get("from") === "detail" || urlParams.get("from") === "shousai";
   const clientId = urlParams.get("client_id");
   
-  if (fromShousai) {
+  if (fromDetail) {
     // 詳細ページに戻るボタンを表示
-    const backBtn = document.getElementById("backToShousai");
+    const backBtn = document.getElementById("backToDetail");
     if (backBtn) {
       backBtn.style.display = "inline";
-      backBtn.href = clientId ? `/shousai?client_id=${clientId}` : "/shousai";
+      backBtn.href = clientId ? `/detail?client_id=${clientId}` : "/detail";
     }
     
     // localStorageからデータを取得

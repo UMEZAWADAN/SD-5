@@ -145,7 +145,7 @@
         <div class="app-header-title">認知症初期支援業務管理システム</div>
         <div class="app-header-nav">
             <a href="/top" class="app-header-link">トップ</a>
-            <a href="/shousai" class="app-header-link">新規登録</a>
+            <a href="/list" class="app-header-link">対象者一覧</a>
             <a href="/login" class="app-header-link">ログアウト</a>
         </div>
     </div>
@@ -157,23 +157,25 @@
         <div class="toolbar">
             <div style="display: flex; gap: 12px; align-items: center;">
                 <input type="text" id="searchInput" class="search-input" placeholder="氏名で検索..." onkeyup="filterTable()">
-                <form action="/shousai" method="GET" style="display: flex; gap: 8px; align-items: center;">
+                <form action="/detail" method="GET" style="display: flex; gap: 8px; align-items: center;">
                     <input type="number" name="client_id" class="search-input" style="width: 150px;" placeholder="対象者ID">
                     <button type="submit" class="btn btn-primary" style="white-space: nowrap; min-width: 80px;">ID検索</button>
                 </form>
             </div>
-            <a href="/shousai" class="btn btn-primary">新規対象者登録</a>
+            <a href="/detail" class="btn btn-primary">新規対象者登録</a>
         </div>
 
         <table class="data-table" id="clientTable">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>氏名</th>
-                    <th>性別</th>
-                    <th>相談日</th>
-                    <th>現況</th>
-                    <th>操作</th>
+                    <th style="width: 60px;">ID</th>
+                    <th style="width: 120px;">氏名</th>
+                    <th style="width: 60px;">年齢</th>
+                    <th style="width: 150px;">疾患名</th>
+                    <th style="width: 120px;">生活環境</th>
+                    <th style="width: 120px;">担当者</th>
+                    <th style="width: 120px;">最終訪問日</th>
+                    <th style="width: 80px;">操作</th>
                 </tr>
             </thead>
             <tbody id="clientTableBody">
@@ -183,7 +185,7 @@
         <div id="noData" class="no-data" style="display: none;">
             <div class="no-data-icon">📋</div>
             <p>対象者データがありません</p>
-            <a href="/shousai" class="btn btn-primary" style="margin-top: 16px;">新規対象者を登録</a>
+            <a href="/detail" class="btn btn-primary" style="margin-top: 16px;">新規対象者を登録</a>
         </div>
     </div>
 
@@ -204,14 +206,30 @@ function loadClients() {
                 tbody.innerHTML = '';
                 data.clients.forEach(client => {
                     const row = document.createElement('tr');
+                    row.style.cursor = 'pointer';
+                    row.onclick = function() { window.location.href = '/detail?client_id=' + client.client_id; };
+                    
+                    // Format last visit date
+                    let lastVisit = '---';
+                    if (client.last_visit_date) {
+                        const date = new Date(client.last_visit_date);
+                        lastVisit = date.toLocaleDateString('ja-JP');
+                    }
+                    
+                    // Truncate long text
+                    const diseaseName = client.disease_name ? (client.disease_name.length > 15 ? client.disease_name.substring(0, 15) + '...' : client.disease_name) : '---';
+                    const livingEnv = client.living_environment ? (client.living_environment.length > 10 ? client.living_environment.substring(0, 10) + '...' : client.living_environment) : '---';
+                    
                     row.innerHTML = `
                         <td>${client.client_id}</td>
                         <td>${client.client_name || '---'}</td>
-                        <td>${client.gender || '---'}</td>
-                        <td>${client.consultation_date || '---'}</td>
-                        <td>${client.current_status ? client.current_status.substring(0, 30) + '...' : '---'}</td>
+                        <td>${client.age !== null ? client.age + '歳' : '---'}</td>
+                        <td title="${client.disease_name || ''}">${diseaseName}</td>
+                        <td title="${client.living_environment || ''}">${livingEnv}</td>
+                        <td>${client.writer_name || '---'}</td>
+                        <td>${lastVisit}</td>
                         <td>
-                            <a href="/shousai?client_id=${client.client_id}" class="action-btn">詳細</a>
+                            <a href="/detail?client_id=${client.client_id}" class="action-btn" onclick="event.stopPropagation();">詳細</a>
                         </td>
                     `;
                     tbody.appendChild(row);
